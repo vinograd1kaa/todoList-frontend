@@ -1,0 +1,20 @@
+{
+  "en": {
+    "Projects": {
+      "pageTitle": "Creative motion projects",
+      "pageSubTitle": "Discover client work pitch on.",
+      "projectsSearchPlaceholder": "Search creative projects",
+      "allJobsAmount": "All jobs - {{amount}} results",
+      "Card": {
+        "location": "{{country}}, {{city}}",
+        "video": "{{amount}} video",
+        "videos": "{{amount}} videos"
+      }
+    },
+    "Footer": {
+      "copyright": "© 2020 | SKILLDAR | All Rights Reserved",
+      "contact": "Contact",
+      "termsAndPrivacy": "Terms and privacy"
+    }
+  }
+}
