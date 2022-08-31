@@ -1,1 +1,2 @@
-export const ADD_TASK = 'TODO/GET_TODOS';
+export const ADD_TASK = 'TODO/ADD_TASK';
+export const CHANGE_TASK_CHECKED = 'TODO/CHANGE_TASK_CHECKED';

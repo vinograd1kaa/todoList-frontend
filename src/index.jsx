@@ -8,7 +8,7 @@ import { I18nextProvider } from 'react-i18next';
 import history from './services/history';
 import store from './store/configureStore';
 import Projects from './containers/Projects';
-import Todo from './containers/Todo/Todo';
+import Todo from './containers/Todo';
 
 import i18n from './i18n';
 import theme from './theme';

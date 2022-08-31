@@ -3,20 +3,25 @@ import { connect } from 'react-redux';
 
 import { withTranslation } from 'react-i18next';
 import Todo from './Todo';
+import { ADD_TASK, CHANGE_TASK_CHECKED } from '../../actions/Todo';
 
 const mapStateToProps = (state) => ({
   tasksList: state.todo.items,
-  items: 1,
-  number: 12,
-  strings: 'asdasd',
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  getProjects: ({ search }) =>
+  addTask: (title) =>
     dispatch({
-      type: GET_PROJECTS_PENDING,
+      type: ADD_TASK,
       payload: {
-        search,
+        title,
+      },
+    }),
+  changeTaskChecked: (id) =>
+    dispatch({
+      type: CHANGE_TASK_CHECKED,
+      payload: {
+        id,
       },
     }),
 });
