@@ -9,10 +9,10 @@ import {
   TaskListItem,
   ItemCheckedCircle,
   SubTasksList,
-  SubTasksItem,
   AddSubTaskButton,
   AddSubTaskForm,
 } from './styles/Todo';
+import TodoItem from './TodoItem';
 
 const Todo = ({ tasksList, addTask, changeTaskChecked, addSubTask, t }) => {
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
@@ -56,10 +56,7 @@ const Todo = ({ tasksList, addTask, changeTaskChecked, addSubTask, t }) => {
             value={addTaskInputValue}
             onChange={(e) => setAddTaskInputValue(e.target.value)}
           />
-          <AddTasksButton
-            disabled={addTaskInputValue === ''}
-            onClick={() => handleClickAddTaskBtn()}
-          >
+          <AddTasksButton disabled={addTaskInputValue === ''} onClick={handleClickAddTaskBtn}>
             {t('Todo.addTasksButton')}
           </AddTasksButton>
         </Form>
@@ -76,26 +73,16 @@ const Todo = ({ tasksList, addTask, changeTaskChecked, addSubTask, t }) => {
             </SubTaskIcon>
             {subTaskOpenedState && (
               <SubTasksList>
-                <SubTasksItem level={1}>
-                  RD
-                  <SubTasksItem level={2}>Feature Release</SubTasksItem>
-                  <SubTasksItem level={2}>Bug Fix</SubTasksItem>
-                </SubTasksItem>
-                <SubTasksItem level={1}>
-                  Design
-                  <SubTasksItem level={2}>
-                    UX
-                    <SubTasksItem level={3}>Mockup</SubTasksItem>
-                    <SubTasksItem level={3}>Prototype</SubTasksItem>
-                    <SubTasksItem>Testing</SubTasksItem>
-                  </SubTasksItem>
-                  <SubTasksItem level={2}>
-                    UI
-                    <SubTasksItem level={3}>Draft</SubTasksItem>
-                    <SubTasksItem level={3}>Option 1</SubTasksItem>
-                    <SubTasksItem level={3}>Option 2</SubTasksItem>
-                  </SubTasksItem>
-                </SubTasksItem>
+                <TodoItem
+                  title="RDDSD"
+                  items={['Feature Release', 'Bug Fix', 'Other']}
+                  levels={[1, 2]}
+                />
+                <TodoItem
+                  title="News"
+                  items={['Feature Release', 'Bug Fix', 'Other']}
+                  levels={[1, 2]}
+                />
               </SubTasksList>
             )}
           </TaskListItem>
@@ -107,7 +94,7 @@ const Todo = ({ tasksList, addTask, changeTaskChecked, addSubTask, t }) => {
             value={addSubTaskInputValue}
             onChange={(e) => setAddSubTaskInputValue(e.target.value)}
           />
-          <AddSubTaskButton onClick={() => handleClickAddSubTaskBtn()}>Add</AddSubTaskButton>
+          <AddSubTaskButton onClick={handleClickAddSubTaskBtn}>Add</AddSubTaskButton>
         </AddSubTaskForm>
       )}
     </Container>

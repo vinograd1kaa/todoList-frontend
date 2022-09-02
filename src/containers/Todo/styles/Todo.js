@@ -39,7 +39,7 @@ export const AddTasksButton = styled.button`
 export const TaskListItem = styled.div`
   cursor: pointer;
   position: relative;
-  padding: 12px 8px 12px 40px;
+  padding: 12px 8px 12px 48px;
   font-size: 18px;
   transition: 0.2s;
   color: #32784e;
@@ -57,9 +57,9 @@ export const ItemCheckedCircle = styled.div`
   height: 23px;
   width: 23px;
   border: none;
-  top: 10px;
   right: 60px;
   border-radius: 50%;
+  top: ${({ todoItem }) => (todoItem ? '2px' : '8px')};
 `;
 
 export const TasksList = styled.h2`
@@ -70,10 +70,9 @@ export const TasksList = styled.h2`
 export const SubTasksList = styled.ul`
   width: 93%;
   margin-top: 10px;
-  list-style-type: disclosure-open;
 `;
 
-export const SubTasksItem = styled.li`
+export const SubTaskItem = styled.li`
   border: 1px solid black;
   border-left: none;
   border-right: none;
@@ -83,7 +82,17 @@ export const SubTasksItem = styled.li`
   margin: 5px 0;
   font-size: ${({ level }) => `${22 - level * 2}px`};
   margin-left: ${({ level }) => `${level * 10}px`};
+  position: relative;
 `;
+
+export const SwitchStateSubTaskItem = styled.span`
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 14px solid black;
+  position: absolute;
+  left: -20px;
+  top: 7px;
+}`;
 
 export const AddSubTaskInput = styled.input`
   margin: 0;
