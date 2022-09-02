@@ -11,6 +11,11 @@
         "videos": "{{amount}} videos"
       }
     },
+    "Todo": {
+      "pageTitle": "My Todo List",
+      "addTasksPlaceholder": "Title...",
+      "addTasksButton": "Add"
+    },
     "Footer": {
       "copyright": "© 2020 | SKILLDAR | All Rights Reserved",
       "contact": "Contact",

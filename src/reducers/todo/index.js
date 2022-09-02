@@ -1,36 +1,20 @@
-import { ADD_TASK, CHANGE_TASK_CHECKED } from '../../actions/Todo';
+import { uniqueId } from 'lodash';
+import { ADD_SUB_TASK, ADD_TASK, CHANGE_TASK_CHECKED } from '../../actions/Todo';
 
 const initialState = {
   items: [
     {
-      title: 'победить андрея лобби на сфах',
+      title: 'Production',
       checked: false,
-      id: 1,
-    },
-    {
-      title: 'посапортить на земеле',
-      checked: false,
-      id: 2,
-    },
-    {
-      title: 'посапортить на вилке',
-      checked: false,
-      id: 3,
+      id: uniqueId(),
+      subTasks: [],
     },
   ],
 };
 
-let lastPost = null;
-
 export default function todoReducer(state = initialState, { type, payload }) {
   switch (type) {
     case ADD_TASK:
-      if (state.items[state.items.length - 1] === undefined) {
-        lastPost = 0;
-      } else {
-        lastPost = state.items[state.items.length - 1].id;
-      }
-
       return {
         ...state,
         items: [
@@ -38,10 +22,23 @@ export default function todoReducer(state = initialState, { type, payload }) {
           {
             title: payload.title,
             checked: false,
-            id: lastPost + 1,
+            id: uniqueId(),
+            subTasks: [],
           },
         ],
       };
+
+    case ADD_SUB_TASK:
+      // eslint-disable-next-line no-case-declarations
+      const findItem = state.items.find((obj) => obj.id === payload.id);
+      findItem.subTasks = [...findItem.subTasks];
+      findItem.subTasks.push({ title: payload.title, subTasks: [] });
+
+      return {
+        ...state,
+        ...state.items,
+      };
+
     case CHANGE_TASK_CHECKED:
       return {
         ...state,
