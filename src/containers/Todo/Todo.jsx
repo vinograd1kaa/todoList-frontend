@@ -1,48 +1,17 @@
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Container, Header, Title, Form, SubTaskIcon, CheckedTaskItem } from './styles';
-import {
-  AddSubTaskInput,
-  AddTasksButton,
-  TasksList,
-  AddTasksInput,
-  TaskListItem,
-  ItemCheckedCircle,
-  SubTasksList,
-  SubTasksItem,
-  AddSubTaskButton,
-  AddSubTaskForm,
-} from './styles/Todo';
+import { useDispatch } from 'react-redux';
 
-const Todo = ({ tasksList, addTask, changeTaskChecked, addSubTask, t }) => {
-  const [addTaskInputValue, setAddTaskInputValue] = useState('');
-  const [addSubTaskInputValue, setAddSubTaskInputValue] = useState('');
-  const [subTaskOpenedState, setSubTaskOpenedState] = useState(false);
+import { Container, Header, Title, Form } from './styles';
+import { AddTasksButton, TasksList, AddTasksInput } from './styles/Todo';
+import TodoItem from './TodoItem';
 
-  const [selectedTask, setSelectedTask] = useState(false);
+const Todo = ({ tasksList, t }) => {
+  const [todoText, setTodoText] = useState('');
+  const dispatch = useDispatch();
 
-  const handleClickAddTaskBtn = () => {
-    addTask(addTaskInputValue);
-    setAddTaskInputValue('');
-  };
-
-  const handleClickAddSubTaskBtn = () => {
-    if (addSubTaskInputValue === '') return;
-    addSubTask(selectedTask.id, addSubTaskInputValue);
-    setSelectedTask({
-      ...selectedTask,
-      subTasks: [...selectedTask.subTasks, { title: addSubTaskInputValue, subTasks: [] }],
-    });
-    setAddSubTaskInputValue('');
-  };
-
-  const handleClickCircleIcon = (id, checked) => {
-    changeTaskChecked(id, checked);
-  };
-
-  const handleClickListIcon = (id, title, subTasks) => {
-    setSelectedTask({ id, title, subTasks });
-    setSubTaskOpenedState(!subTaskOpenedState);
+  const handleAdd = () => {
+    dispatch({ type: 'ADD_TODO', payload: { title: todoText } });
+    setTodoText('');
   };
 
   return (
@@ -53,63 +22,17 @@ const Todo = ({ tasksList, addTask, changeTaskChecked, addSubTask, t }) => {
           <AddTasksInput
             type="text"
             placeholder={t('Todo.addTasksPlaceholder')}
-            value={addTaskInputValue}
-            onChange={(e) => setAddTaskInputValue(e.target.value)}
+            value={todoText}
+            onChange={({ target }) => setTodoText(target.value)}
           />
-          <AddTasksButton
-            disabled={addTaskInputValue === ''}
-            onClick={() => handleClickAddTaskBtn()}
-          >
+          <AddTasksButton onClick={handleAdd} disabled={!todoText}>
             {t('Todo.addTasksButton')}
           </AddTasksButton>
         </Form>
       </Header>
       <TasksList>
-        {tasksList.map((obj) => (
-          <TaskListItem selectedTask={Boolean(selectedTask)}>
-            {obj.title}
-            <ItemCheckedCircle onClick={() => handleClickCircleIcon(obj.id, obj.checked)}>
-              <CheckedTaskItem>{obj.checked && <FontAwesomeIcon icon="check" />}</CheckedTaskItem>
-            </ItemCheckedCircle>
-            <SubTaskIcon onClick={() => handleClickListIcon(obj.id, obj.title, obj.subTasks)}>
-              <FontAwesomeIcon icon="list" />
-            </SubTaskIcon>
-            {subTaskOpenedState && (
-              <SubTasksList>
-                <SubTasksItem level={1}>
-                  RD
-                  <SubTasksItem level={2}>Feature Release</SubTasksItem>
-                  <SubTasksItem level={2}>Bug Fix</SubTasksItem>
-                </SubTasksItem>
-                <SubTasksItem level={1}>
-                  Design
-                  <SubTasksItem level={2}>
-                    UX
-                    <SubTasksItem level={3}>Mockup</SubTasksItem>
-                    <SubTasksItem level={3}>Prototype</SubTasksItem>
-                    <SubTasksItem>Testing</SubTasksItem>
-                  </SubTasksItem>
-                  <SubTasksItem level={2}>
-                    UI
-                    <SubTasksItem level={3}>Draft</SubTasksItem>
-                    <SubTasksItem level={3}>Option 1</SubTasksItem>
-                    <SubTasksItem level={3}>Option 2</SubTasksItem>
-                  </SubTasksItem>
-                </SubTasksItem>
-              </SubTasksList>
-            )}
-          </TaskListItem>
-        ))}
+        <TodoItem title="" id="1" subTasks={tasksList} expanded />
       </TasksList>
-      {subTaskOpenedState && (
-        <AddSubTaskForm>
-          <AddSubTaskInput
-            value={addSubTaskInputValue}
-            onChange={(e) => setAddSubTaskInputValue(e.target.value)}
-          />
-          <AddSubTaskButton onClick={() => handleClickAddSubTaskBtn()}>Add</AddSubTaskButton>
-        </AddSubTaskForm>
-      )}
     </Container>
   );
 };

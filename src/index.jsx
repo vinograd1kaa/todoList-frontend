@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ThemeProvider } from 'styled-components';
 import { Provider } from 'react-redux';
-import { Router, Route, Switch } from 'react-router-dom';
+import { Router, Route, Switch, Redirect } from 'react-router-dom';
 
 import { I18nextProvider } from 'react-i18next';
 import history from './services/history';
@@ -33,6 +33,7 @@ ReactDOM.render(
             <Switch>
               <Route path="/projects" component={Projects} />
               <Route path="/todo" component={Todo} />
+              <Redirect from="/" to="todo" />
             </Switch>
           </Provider>
         </ThemeProvider>
