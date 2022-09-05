@@ -1,49 +1,41 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Container, Header, Title, Form, SubTaskIcon, CheckedTaskItem } from './styles';
+import { Container, Header, Title, Form, CheckedTaskItem, ItemListIcon } from './styles';
 import {
-  AddSubTaskInput,
   AddTasksButton,
   TasksList,
   AddTasksInput,
   TaskListItem,
-  ItemCheckedCircle,
-  SubTasksList,
-  AddSubTaskButton,
-  AddSubTaskForm,
+  ItemCircleIcon,
+  TaskListTitle,
+  TaskLIstInput,
 } from './styles/Todo';
 import TodoItem from './TodoItem';
 
-const Todo = ({ tasksList, addTask, changeTaskChecked, addSubTask, t }) => {
+const Todo = ({ tasksList, addTask, changeTaskChecked, changeSubTaskChecked, addSubTask, t }) => {
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
-  const [addSubTaskInputValue, setAddSubTaskInputValue] = useState('');
-  const [subTaskOpenedState, setSubTaskOpenedState] = useState(false);
-
-  const [selectedTask, setSelectedTask] = useState(false);
+  const [openedTask, setOpenedTask] = useState({ opened: false, id: false });
+  const [taskEditingState, setTaskEditingState] = useState(false);
+  const [taskEditingInputValue, setTaskEditingInputValue] = useState('');
 
   const handleClickAddTaskBtn = () => {
     addTask(addTaskInputValue);
     setAddTaskInputValue('');
   };
 
-  const handleClickAddSubTaskBtn = () => {
-    if (addSubTaskInputValue === '') return;
-    addSubTask(selectedTask.id, addSubTaskInputValue);
-    setSelectedTask({
-      ...selectedTask,
-      subTasks: [...selectedTask.subTasks, { title: addSubTaskInputValue, subTasks: [] }],
-    });
-    setAddSubTaskInputValue('');
+  const handleClickTaskBlur = (id, item) => {
+    if (taskEditingInputValue === '') {
+      setTaskEditingState(false);
+      return;
+    }
+    addSubTask(id, taskEditingInputValue, item);
+    setTaskEditingState(false);
+    setTaskEditingInputValue('');
   };
 
-  const handleClickCircleIcon = (id, checked) => {
-    changeTaskChecked(id, checked);
-  };
-
-  const handleClickListIcon = (id, title, subTasks) => {
-    setSelectedTask({ id, title, subTasks });
-    setSubTaskOpenedState(!subTaskOpenedState);
-  };
+  const handleClickTaskTitle = (id) => setTaskEditingState(id);
+  const handleClickCircleIcon = (id, checked, item) => changeTaskChecked(id, checked, item);
+  const handleClickListIcon = (id) => setOpenedTask({ opened: !openedTask.opened, id });
 
   return (
     <Container>
@@ -63,40 +55,40 @@ const Todo = ({ tasksList, addTask, changeTaskChecked, addSubTask, t }) => {
       </Header>
       <TasksList>
         {tasksList.map((obj) => (
-          <TaskListItem selectedTask={Boolean(selectedTask)}>
-            {obj.title}
-            <ItemCheckedCircle onClick={() => handleClickCircleIcon(obj.id, obj.checked)}>
+          <TaskListItem>
+            <TaskListTitle onClickCapture={() => handleClickTaskTitle(obj.id)}>
+              {obj.title}
+            </TaskListTitle>
+            {taskEditingState === obj.id && (
+              <TaskLIstInput
+                type="text"
+                value={taskEditingInputValue}
+                onChange={(e) => setTaskEditingInputValue(e.target.value)}
+                onBlur={() => handleClickTaskBlur(obj.id, { ...obj })}
+                /* eslint-disable-next-line jsx-a11y/no-autofocus */
+                autoFocus
+              />
+            )}
+
+            <ItemCircleIcon onClick={() => handleClickCircleIcon(obj.id, obj.checked, { ...obj })}>
               <CheckedTaskItem>{obj.checked && <FontAwesomeIcon icon="check" />}</CheckedTaskItem>
-            </ItemCheckedCircle>
-            <SubTaskIcon onClick={() => handleClickListIcon(obj.id, obj.title, obj.subTasks)}>
+            </ItemCircleIcon>
+
+            <ItemListIcon onClick={() => handleClickListIcon(obj.id)}>
               <FontAwesomeIcon icon="list" />
-            </SubTaskIcon>
-            {subTaskOpenedState && (
-              <SubTasksList>
-                <TodoItem
-                  title="RDDSD"
-                  items={['Feature Release', 'Bug Fix', 'Other']}
-                  levels={[1, 2]}
-                />
-                <TodoItem
-                  title="News"
-                  items={['Feature Release', 'Bug Fix', 'Other']}
-                  levels={[1, 2]}
-                />
-              </SubTasksList>
+            </ItemListIcon>
+
+            {openedTask.opened && openedTask.id === obj.id && (
+              <TodoItem
+                key={obj.id}
+                items={obj.subTasks}
+                addSubTask={addSubTask}
+                changeSubTaskChecked={changeSubTaskChecked}
+              />
             )}
           </TaskListItem>
         ))}
       </TasksList>
-      {subTaskOpenedState && (
-        <AddSubTaskForm>
-          <AddSubTaskInput
-            value={addSubTaskInputValue}
-            onChange={(e) => setAddSubTaskInputValue(e.target.value)}
-          />
-          <AddSubTaskButton onClick={handleClickAddSubTaskBtn}>Add</AddSubTaskButton>
-        </AddSubTaskForm>
-      )}
     </Container>
   );
 };
