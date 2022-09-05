@@ -2,18 +2,20 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   SubTaskItem,
-  ItemCircleIcon,
   SubTasksList,
   SubTaskArrowIcon,
   SubTaskTitle,
+  SubTaskPlusIcon,
+  SubTaskTitleEditingInput,
   AddSubTaskInput,
 } from './styles/Todo';
-import { CheckedTaskItem } from './styles';
 
-const TodoItem = ({ items, addSubTask, changeSubTaskChecked }) => {
+const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
   const [subTaskState, setSubTaskState] = useState(false);
   const [subTaskEditingState, setSubTaskEditingState] = useState(false);
   const [subTaskEditingInputValue, setSubTaskEditingInputValue] = useState('');
+  const [titleInputValue, setTitleInputValue] = useState('');
+  const [titleEditingState, setTitleEditingState] = useState(false);
 
   const handleEditingInputBlur = (id, item) => {
     if (subTaskEditingInputValue === '') {
@@ -26,9 +28,27 @@ const TodoItem = ({ items, addSubTask, changeSubTaskChecked }) => {
     setSubTaskEditingInputValue('');
   };
 
-  const handleClickCircleIcon = (id, checked, item) => changeSubTaskChecked(id, checked, item);
-  const handleClickTitle = (id) => setSubTaskEditingState(id);
-  const handleClickArrow = (id) => setSubTaskState(id);
+  const handleClickTitleEditingBlur = (id, item) => {
+    changeTaskTitle(id, titleInputValue, item);
+    setTitleEditingState('');
+    setTitleEditingState(false);
+  };
+
+  const handleClickTitle = (title, id) => {
+    setTitleInputValue(title);
+    setTitleEditingState(id);
+  };
+
+  const handleClickArrowIcon = (id, isExpended) => {
+    setSubTaskState(id);
+    changeIsExpended(id, isExpended);
+  };
+
+  const handleClickPlusIcon = (id) => {
+    setSubTaskEditingState(id);
+  };
+
+  console.log(items);
 
   return (
     <SubTasksList>
@@ -36,11 +56,27 @@ const TodoItem = ({ items, addSubTask, changeSubTaskChecked }) => {
         <SubTaskItem>
           {item.subTasks && (
             <SubTaskArrowIcon
-              onClick={() => handleClickArrow(item.id)}
-              subTaskState={subTaskState === item.id}
+              onClick={() => handleClickArrowIcon(item.id, item.isExpended, item.subTasks)}
+              subTaskState={subTaskState.id === item.id}
+              isExpended={item.isExpended}
             />
           )}
-          <SubTaskTitle onClick={() => handleClickTitle(item.id)}>{item.title}</SubTaskTitle>
+
+          {titleEditingState !== item.id ? (
+            <SubTaskTitle onClick={() => handleClickTitle(item.title, item.id)}>
+              {item.title}
+            </SubTaskTitle>
+          ) : (
+            <SubTaskTitleEditingInput
+              type="text"
+              value={titleInputValue}
+              onBlur={() => handleClickTitleEditingBlur(item.id, { ...item })}
+              onChange={(e) => setTitleInputValue(e.target.value)}
+              /* eslint-disable-next-line jsx-a11y/no-autofocus */
+              autoFocus
+            />
+          )}
+
           {subTaskEditingState === item.id && (
             <AddSubTaskInput
               type="text"
@@ -51,20 +87,18 @@ const TodoItem = ({ items, addSubTask, changeSubTaskChecked }) => {
               autoFocus
             />
           )}
+          <SubTaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
+            <FontAwesomeIcon icon="plus" />
+          </SubTaskPlusIcon>
           {item.subTasks && subTaskState === item.id && (
             <TodoItem
               key={item.id}
               items={item.subTasks}
               addSubTask={addSubTask}
-              changeSubTaskChecked={changeSubTaskChecked}
+              changeTaskTitle={changeTaskTitle}
+              changeIsExpended={changeIsExpended}
             />
           )}
-          <ItemCircleIcon
-            onClick={() => handleClickCircleIcon(item.id, item.checked, { ...item })}
-            todoItem
-          >
-            <CheckedTaskItem>{item.checked && <FontAwesomeIcon icon="check" />}</CheckedTaskItem>
-          </ItemCircleIcon>
         </SubTaskItem>
       ))}
     </SubTasksList>

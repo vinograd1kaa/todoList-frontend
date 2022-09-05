@@ -49,26 +49,6 @@ export const TaskListItem = styled.div`
   background: #c5c3c3;
 `;
 
-export const ItemCircleIcon = styled.div`
-  position: absolute;
-  font-size: 20px;
-  background: #fff;
-  height: 22px;
-  width: 22px;
-  border: none;
-  right: 60px;
-  border-radius: 50%;
-  cursor: pointer;
-  top: ${({ todoItem }) => (todoItem ? '0' : '10px')};
-  width: ${({ todoItem }) => (todoItem ? '22px' : '23px')};
-  height: ${({ todoItem }) => (todoItem ? '22px' : '23px')};
-`;
-
-export const TasksList = styled.h2`
-  margin: 0;
-  padding: 0;
-`;
-
 export const SubTasksList = styled.ul`
   background: burlywood;
 `;
@@ -90,19 +70,25 @@ export const SubTaskArrowIcon = styled.span`
   left: 4px;
   top: 4px;
   cursor: pointer;
-  transform: ${({ subTaskState }) => (subTaskState.opened ? 'rotate(0)' : 'rotate(-90deg)')};
+  transform: ${({ isExpended }) => (isExpended ? 'rotate(0)' : 'rotate(-90deg)')};
 }`;
 
 export const SubTaskTitle = styled.h4`
-  width: 30%;
+  cursor: pointer;
+  width: 50%;
+}`;
+
+export const SubTaskPlusIcon = styled.span`
+  position: absolute;
+  right: 26px;
+  top: 3px;
   cursor: pointer;
 }`;
 
-export const TaskListTitle = styled.h4`
-  margin-bottom: 3px;
+export const SubTaskTitleEditingInput = styled.input`
+  margin: 0;
+  border-radius: 0;
 }`;
-
-export const TaskLIstInput = styled.input``;
 
 export const AddSubTaskInput = styled.input`
   margin: 0;

@@ -29,14 +29,14 @@ export const Title = styled.h2`
   line-height: 50px;
 `;
 
-export const ItemListIcon = styled.span`
-  position: absolute;
-  font-size: 20px;
-  color: #fff;
-  top: 11px;
-  right: 20px;
-  cursor: pointer;
-`;
+// export const ItemListIcon = styled.span`
+//   position: absolute;
+//   font-size: 20px;
+//   color: #fff;
+//   top: 11px;
+//   right: 20px;
+//   cursor: pointer;
+// `;
 
 export const CheckedTaskItem = styled.span`
   position: absolute;
