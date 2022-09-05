@@ -22,20 +22,34 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
     dispatch({ type: 'TOGGLE_ITEM', payload: { id } });
   };
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (isEditing && inputRef.current && !inputRef.current.contains(event.target)) {
+  function handleClickOutside(event) {
+    if (isEditing && inputRef.current && !inputRef.current.contains(event.target)) {
+      setIsEditing(false);
+      dispatch({ type: 'EDIT_TODO_TITLE', payload: { id, title: newTitle } });
+    }
+
+    if (isAddingSubItem && inputRef.current && !inputRef.current.contains(event.target)) {
+      setIsAddingSubItem(false);
+      setNewSubItemTitle('');
+      dispatch({ type: 'ADD_TODO', payload: { parentId: id, title: newSubItemTitle } });
+    }
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.keyCode === 13) {
+      if (isEditing) {
         setIsEditing(false);
         dispatch({ type: 'EDIT_TODO_TITLE', payload: { id, title: newTitle } });
       }
-
-      if (isAddingSubItem && inputRef.current && !inputRef.current.contains(event.target)) {
+      if (isAddingSubItem) {
         setIsAddingSubItem(false);
         setNewSubItemTitle('');
         dispatch({ type: 'ADD_TODO', payload: { parentId: id, title: newSubItemTitle } });
       }
     }
+  };
 
+  useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
@@ -49,6 +63,7 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
         <input
           ref={inputRef}
           value={newTitle}
+          onKeyDown={handleKeyDown}
           onChange={({ target }) => setNewTitle(target.value)}
           autoFocus
         />
@@ -91,6 +106,7 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
             style={{ marginLeft: '25px' }}
             autoFocus
             value={newSubItemTitle}
+            onKeyDown={handleKeyDown}
             onChange={({ target }) => setNewSubItemTitle(target.value)}
           />
         )}
