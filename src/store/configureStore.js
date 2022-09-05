@@ -10,9 +10,7 @@ const initStore = () => {
     process.env.NODE_ENV !== 'production' &&
     typeof window === 'object' &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-      ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-          name: 'New app',
-        })
+      ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ name: 'New app' })
       : compose;
 
   const store = createStore(reducers, composeEnhancers(applyMiddleware(sagaMiddleware)));

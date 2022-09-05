@@ -20,10 +20,6 @@ class Projects extends Component {
     search: '',
   };
 
-  debouncedProjectsFetch = debounce(750, () => {
-    this.props.getProjects({ search: this.state.search });
-  });
-
   componentDidMount() {
     this.props.getProjects({ search: this.state.search });
   }
@@ -33,6 +29,10 @@ class Projects extends Component {
 
     this.setState({ search: value }, this.debouncedProjectsFetch);
   };
+
+  debouncedProjectsFetch = debounce(750, () => {
+    this.props.getProjects({ search: this.state.search });
+  });
 
   render() {
     const { isLoading, projects, t } = this.props;

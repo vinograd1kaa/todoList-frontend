@@ -12,7 +12,7 @@ export default {
     white: '#fff',
   },
   fonts: {
-    Roboto: `'Roboto', sans-serif`,
-    SourceSansPro: `'SourceSansPro', sans-serif`,
+    Roboto: 'Roboto, sans-serif',
+    SourceSansPro: 'SourceSansPro, sans-serif',
   },
 };
