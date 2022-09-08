@@ -28,20 +28,3 @@ export const Title = styled.h2`
   text-align: center;
   line-height: 50px;
 `;
-
-// export const ItemListIcon = styled.span`
-//   position: absolute;
-//   font-size: 20px;
-//   color: #fff;
-//   top: 11px;
-//   right: 20px;
-//   cursor: pointer;
-// `;
-
-export const CheckedTaskItem = styled.span`
-  position: absolute;
-  font-size: 18px;
-  color: #39cd39;
-  top: 3px;
-  right: 3px;
-`;

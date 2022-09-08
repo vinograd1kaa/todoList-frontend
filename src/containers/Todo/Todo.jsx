@@ -30,7 +30,7 @@ const Todo = ({
             value={addTaskInputValue}
             onChange={(e) => setAddTaskInputValue(e.target.value)}
           />
-          <AddTasksButton disabled={addTaskInputValue === ''} onClick={handleClickAddTaskBtn}>
+          <AddTasksButton disabled={!addTaskInputValue} onClick={handleClickAddTaskBtn}>
             {t('Todo.addTasksButton')}
           </AddTasksButton>
         </Form>

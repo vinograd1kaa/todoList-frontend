@@ -2,38 +2,10 @@ import { uniqueId } from 'lodash';
 import { ADD_SUB_TASK, ADD_TASK, CHANGE_TASK_TITLE, CHANGE_IS_EXPENDED } from '../../actions/Todo';
 
 const initialState = {
-  items: [
-    {
-      title: 'Production',
-      id: 1,
-      isExpended: false,
-      subTasks: [
-        {
-          title: 'Production 1',
-          id: 2,
-          isExpended: false,
-          subTasks: [
-            {
-              title: 'Production 1 - 1',
-              id: 3,
-              isExpended: false,
-              subTasks: [],
-            },
-            {
-              title: 'Production 1 - 2',
-              id: 4,
-              checked: false,
-              isExpended: false,
-              subTasks: [],
-            },
-          ],
-        },
-      ],
-    },
-  ],
+  items: [],
 };
 
-const findTaskById = (id, arr) => {
+function findTaskById(id, arr) {
   let result = arr.find((obj) => obj.id === id);
 
   if (!result) {
@@ -43,14 +15,16 @@ const findTaskById = (id, arr) => {
         return arr[id];
       }
       if ('subTasks' in arr[i]) {
-        // eslint-disable-next-line no-unused-vars
         result = findTaskById(id, arr[i].subTasks);
+        if (result) {
+          return result;
+        }
       }
     }
   }
 
   return result;
-};
+}
 
 export default function todoReducer(state = initialState, { type, payload }) {
   switch (type) {
@@ -62,7 +36,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
           {
             title: payload.title,
             id: uniqueId(),
-            checked: false,
+            isExpended: false,
             subTasks: [],
           },
         ],
@@ -72,7 +46,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
       payload.item.subTasks.push({
         title: payload.title,
         id: uniqueId(),
-        checked: false,
+        isExpended: false,
         subTasks: [],
       });
 
@@ -81,26 +55,19 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_TASK_TITLE:
-      // eslint-disable-next-line no-param-reassign,no-multi-assign,no-case-declarations
-      const changedTitleState = (findTaskById(payload.id, state.items).title = payload.title);
+      findTaskById(payload.id, state.items).title = payload.title;
 
       return {
         ...state,
-        ...state.items,
-        ...changedTitleState,
+        items: [...state.items],
       };
 
     case CHANGE_IS_EXPENDED:
-      // eslint-disable-next-line no-multi-assign,no-case-declarations
-      const changedIsExpendedState = (findTaskById(
-        payload.id,
-        state.items,
-      ).isExpended = !payload.isExpended);
+      findTaskById(payload.id, state.items).isExpended = !payload.isExpended;
 
       return {
         ...state,
-        ...state.items,
-        ...changedIsExpendedState,
+        items: [...state.items],
       };
 
     default:
