@@ -1,2 +1,3 @@
 export const ADD_TASK = 'TODO/ADD_TASK';
 export const CHANGE_TASK_CHECKED = 'TODO/CHANGE_TASK_CHECKED';
+export const ADD_SUB_TASK = 'TODO/ADD_SUB_TASK';

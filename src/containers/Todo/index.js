@@ -3,10 +3,11 @@ import { connect } from 'react-redux';
 
 import { withTranslation } from 'react-i18next';
 import Todo from './Todo';
-import { ADD_TASK, CHANGE_TASK_CHECKED } from '../../actions/Todo';
+import { ADD_TASK, CHANGE_TASK_CHECKED, ADD_SUB_TASK } from '../../actions/Todo';
+import { todoSelector } from '../../selectors/todo';
 
 const mapStateToProps = (state) => ({
-  tasksList: state.todo.items,
+  tasksList: todoSelector(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -17,11 +18,21 @@ const mapDispatchToProps = (dispatch) => ({
         title,
       },
     }),
-  changeTaskChecked: (id) =>
+  changeTaskChecked: (id, checked) =>
     dispatch({
       type: CHANGE_TASK_CHECKED,
       payload: {
         id,
+        checked,
+      },
+    }),
+
+  addSubTask: (id, title) =>
+    dispatch({
+      type: ADD_SUB_TASK,
+      payload: {
+        id,
+        title,
       },
     }),
 });
