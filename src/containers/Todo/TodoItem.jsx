@@ -17,13 +17,25 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
   const [titleEditingState, setTitleEditingState] = useState(false);
 
   const handleClickAddSubTaskInputBlur = (id, item) => {
-    if (subTaskEditingInputValue === '') {
+    if (!subTaskEditingInputValue) {
       setSubTaskEditingState(false);
+      return;
     }
-
+    changeIsExpended(id, false);
     addSubTask(id, subTaskEditingInputValue, item);
     setSubTaskEditingState(false);
     setSubTaskEditingInputValue('');
+  };
+
+  const handleKeyPressAddSubTaskInput = (e, id, item) => {
+    if (e.code === 'Enter' && !subTaskEditingInputValue) {
+      setSubTaskEditingState(false);
+    } else if (e.code === 'Enter' && subTaskEditingInputValue) {
+      changeIsExpended(id, false);
+      addSubTask(id, subTaskEditingInputValue, item);
+      setSubTaskEditingState(false);
+      setSubTaskEditingInputValue('');
+    }
   };
 
   const handleClickTitleEditingBlur = (id, item) => {
@@ -36,24 +48,29 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
     setTitleEditingState(false);
   };
 
+  const handleKeyPressTitleEditing = (e, id, item) => {
+    if (e.code === 'Enter' && !titleInputValue) {
+      setTitleEditingState(false);
+    } else if (e.code === 'Enter' && titleInputValue) {
+      changeTaskTitle(id, titleInputValue, item);
+      setTitleEditingState('');
+      setTitleEditingState(false);
+    }
+  };
+
   const handleClickTitle = (title, id) => {
     setTitleInputValue(title);
     setTitleEditingState(id);
   };
 
-  const handleClickArrowIcon = (id, isExpended) => {
-    changeIsExpended(id, isExpended);
-  };
-
-  const handleClickPlusIcon = (id) => {
-    setSubTaskEditingState(id);
-  };
+  const handleClickArrowIcon = (id, isExpended) => changeIsExpended(id, isExpended);
+  const handleClickPlusIcon = (id) => setSubTaskEditingState(id);
 
   return (
     <SubTasksList>
       {items.map((item) => (
         <SubTaskItem>
-          {item.subTasks && (
+          {item.subTasks[0] && (
             <SubTaskArrowIcon
               onClick={() => handleClickArrowIcon(item.id, item.isExpended)}
               isExpended={item.isExpended}
@@ -70,6 +87,7 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
               value={titleInputValue}
               onBlur={() => handleClickTitleEditingBlur(item.id, { ...item })}
               onChange={(e) => setTitleInputValue(e.target.value)}
+              onKeyPress={(e) => handleKeyPressTitleEditing(e, item.id, { ...item })}
               /* eslint-disable-next-line jsx-a11y/no-autofocus */
               autoFocus
             />
@@ -81,6 +99,7 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
               value={subTaskEditingInputValue}
               onBlur={() => handleClickAddSubTaskInputBlur(item.id, { ...item })}
               onChange={(e) => setSubTaskEditingInputValue(e.target.value)}
+              onKeyPress={(e) => handleKeyPressAddSubTaskInput(e, item.id, { ...item })}
               /* eslint-disable-next-line jsx-a11y/no-autofocus */
               autoFocus
             />

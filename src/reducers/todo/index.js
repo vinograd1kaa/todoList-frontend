@@ -43,7 +43,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case ADD_SUB_TASK:
-      payload.item.subTasks.push({
+      payload.item.subTasks.unshift({
         title: payload.title,
         id: uniqueId(),
         isExpended: false,
