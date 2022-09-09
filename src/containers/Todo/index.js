@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { withTranslation } from 'react-i18next';
 import Todo from './Todo';
-import { ADD_TASK, CHANGE_TASK_CHECKED, ADD_SUB_TASK } from '../../actions/Todo';
+import { ADD_TASK, ADD_SUB_TASK, CHANGE_TASK_TITLE, CHANGE_IS_EXPENDED } from '../../actions/Todo';
 import { todoSelector } from '../../selectors/todo';
 
 const mapStateToProps = (state) => ({
@@ -18,21 +18,33 @@ const mapDispatchToProps = (dispatch) => ({
         title,
       },
     }),
-  changeTaskChecked: (id, checked) =>
-    dispatch({
-      type: CHANGE_TASK_CHECKED,
-      payload: {
-        id,
-        checked,
-      },
-    }),
 
-  addSubTask: (id, title) =>
+  addSubTask: (id, title, item) =>
     dispatch({
       type: ADD_SUB_TASK,
       payload: {
         id,
         title,
+        item,
+      },
+    }),
+
+  changeTaskTitle: (id, title, item) =>
+    dispatch({
+      type: CHANGE_TASK_TITLE,
+      payload: {
+        id,
+        title,
+        item,
+      },
+    }),
+
+  changeIsExpended: (id, isExpended) =>
+    dispatch({
+      type: CHANGE_IS_EXPENDED,
+      payload: {
+        id,
+        isExpended,
       },
     }),
 });

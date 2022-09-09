@@ -1,16 +1,30 @@
 import { uniqueId } from 'lodash';
-import { ADD_SUB_TASK, ADD_TASK, CHANGE_TASK_CHECKED } from '../../actions/Todo';
+import { ADD_SUB_TASK, ADD_TASK, CHANGE_TASK_TITLE, CHANGE_IS_EXPENDED } from '../../actions/Todo';
 
 const initialState = {
-  items: [
-    {
-      title: 'Production',
-      checked: false,
-      id: uniqueId(),
-      subTasks: [],
-    },
-  ],
+  items: [],
 };
+
+function findTaskById(id, arr) {
+  let result = arr.find((obj) => obj.id === id);
+
+  if (!result) {
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].id === id) {
+        return arr[id];
+      }
+      if ('subTasks' in arr[i]) {
+        result = findTaskById(id, arr[i].subTasks);
+        if (result) {
+          return result;
+        }
+      }
+    }
+  }
+
+  return result;
+}
 
 export default function todoReducer(state = initialState, { type, payload }) {
   switch (type) {
@@ -21,35 +35,41 @@ export default function todoReducer(state = initialState, { type, payload }) {
           ...state.items,
           {
             title: payload.title,
-            checked: false,
             id: uniqueId(),
+            isExpended: false,
             subTasks: [],
           },
         ],
       };
 
     case ADD_SUB_TASK:
-      // eslint-disable-next-line no-case-declarations
-      const findItem = state.items.find((obj) => obj.id === payload.id);
-      findItem.subTasks = [...findItem.subTasks];
-      findItem.subTasks.push({ title: payload.title, subTasks: [] });
+      payload.item.subTasks.push({
+        title: payload.title,
+        id: uniqueId(),
+        isExpended: false,
+        subTasks: [],
+      });
 
       return {
         ...state,
-        ...state.items,
       };
 
-    case CHANGE_TASK_CHECKED:
+    case CHANGE_TASK_TITLE:
+      findTaskById(payload.id, state.items).title = payload.title;
+
       return {
         ...state,
-        items: state.items.map((obj) => {
-          if (obj.id === payload.id) {
-            return { ...obj, checked: !payload.checked };
-          }
-
-          return obj;
-        }),
+        items: [...state.items],
       };
+
+    case CHANGE_IS_EXPENDED:
+      findTaskById(payload.id, state.items).isExpended = !payload.isExpended;
+
+      return {
+        ...state,
+        items: [...state.items],
+      };
+
     default:
       return state;
   }
