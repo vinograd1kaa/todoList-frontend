@@ -4,7 +4,6 @@ interface Todo {
   title: string;
   checked: boolean;
   id: string;
-  isEditing: boolean;
   expanded: boolean;
   subTasks: Todo[];
 }
@@ -31,7 +30,6 @@ export default function todoReducer(
       const newTodo: Todo = {
         id: uniqueId(),
         title: payload.title,
-        isEditing: false,
         expanded: true,
         checked: false,
         subTasks: [],
@@ -59,6 +57,10 @@ export default function todoReducer(
       return { items: [...state.items] };
     }
     case 'EDIT_TODO_TITLE': {
+      if (!payload.title) {
+        return state;
+      }
+
       const todosFlat = collect(state.items);
       const todo: Todo | any = todosFlat.find((item: Todo) => item.id === payload.id);
       todo.title = payload.title;

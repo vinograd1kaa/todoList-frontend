@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -7,7 +7,6 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
   const [newSubItemTitle, setNewSubItemTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingSubItem, setIsAddingSubItem] = useState(false);
-  const inputRef = useRef(null);
   const dispatch = useDispatch();
 
   const handleEdit = () => {
@@ -22,68 +21,51 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
     dispatch({ type: 'TOGGLE_ITEM', payload: { id } });
   };
 
-  function handleClickOutside(event) {
-    if (isEditing && inputRef.current && !inputRef.current.contains(event.target)) {
-      setIsEditing(false);
-      dispatch({ type: 'EDIT_TODO_TITLE', payload: { id, title: newTitle } });
-    }
+  const handleEditInputBlur = () => {
+    setIsEditing(false);
+    dispatch({ type: 'EDIT_TODO_TITLE', payload: { id, title: newTitle } });
+  };
 
-    if (isAddingSubItem && inputRef.current && !inputRef.current.contains(event.target)) {
+  const handleAddInputBlur = () => {
+    setIsAddingSubItem(false);
+    setNewSubItemTitle('');
+    dispatch({ type: 'ADD_TODO', payload: { parentId: id, title: newSubItemTitle } });
+  };
+
+  const handleAddInputKeyDown = (event) => {
+    if (event.keyCode === 13) {
       setIsAddingSubItem(false);
       setNewSubItemTitle('');
       dispatch({ type: 'ADD_TODO', payload: { parentId: id, title: newSubItemTitle } });
     }
-  }
-
-  const handleKeyDown = (event) => {
-    if (event.keyCode === 13) {
-      if (isEditing) {
-        setIsEditing(false);
-        dispatch({ type: 'EDIT_TODO_TITLE', payload: { id, title: newTitle } });
-      }
-      if (isAddingSubItem) {
-        setIsAddingSubItem(false);
-        setNewSubItemTitle('');
-        dispatch({ type: 'ADD_TODO', payload: { parentId: id, title: newSubItemTitle } });
-      }
-    }
   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  });
+  const handleEditInputKeyDown = (event) => {
+    if (event.keyCode === 13) {
+      setIsEditing(false);
+      dispatch({ type: 'EDIT_TODO_TITLE', payload: { id, title: newTitle } });
+    }
+  };
 
   return (
     <div key={id} style={{ paddingLeft: `${title ? '25px' : '0'}` }}>
       {isEditing ? (
         <input
-          ref={inputRef}
           value={newTitle}
-          onKeyDown={handleKeyDown}
+          onKeyDown={handleEditInputKeyDown}
           onChange={({ target }) => setNewTitle(target.value)}
+          onBlur={handleEditInputBlur}
           autoFocus
         />
       ) : (
         <h4
           style={{ position: 'relative', display: `${title ? 'block' : 'none'}`, padding: '5px 0' }}
         >
-          {expanded ? (
-            <FontAwesomeIcon
-              onClick={handleExpandCollapse}
-              icon="chevron-down"
-              style={{ marginRight: '5px' }}
-            />
-          ) : (
-            <FontAwesomeIcon
-              onClick={handleExpandCollapse}
-              icon="chevron-right"
-              style={{ marginRight: '5px' }}
-            />
-          )}
+          <FontAwesomeIcon
+            onClick={handleExpandCollapse}
+            icon={expanded ? 'chevron-down' : 'chevron-right'}
+            style={{ marginRight: '5px' }}
+          />
           <span onClick={handleEdit}>{title}</span>
           <span
             style={{
@@ -102,11 +84,11 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
       <ul>
         {isAddingSubItem && (
           <input
-            ref={inputRef}
             style={{ marginLeft: '25px' }}
             autoFocus
             value={newSubItemTitle}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleAddInputKeyDown}
+            onBlur={handleAddInputBlur}
             onChange={({ target }) => setNewSubItemTitle(target.value)}
           />
         )}
