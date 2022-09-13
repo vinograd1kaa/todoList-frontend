@@ -11,30 +11,32 @@ import {
 } from './styles/Todo';
 
 const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
-  const [subTaskEditingState, setSubTaskEditingState] = useState(false);
-  const [subTaskEditingInputValue, setSubTaskEditingInputValue] = useState('');
+  const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
+  const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
   const [titleInputValue, setTitleInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState(false);
 
   const handleClickAddSubTaskInputBlur = (id, subTasks) => {
-    if (!subTaskEditingInputValue) {
-      setSubTaskEditingState(false);
+    if (!subTaskAddingInputValue) {
+      setSubTaskAddingInputState(false);
       return;
     }
     changeIsExpended(id, false);
-    addSubTask(id, subTaskEditingInputValue, subTasks);
-    setSubTaskEditingState(false);
-    setSubTaskEditingInputValue('');
+    addSubTask(id, subTaskAddingInputValue, subTasks);
+    setSubTaskAddingInputState(false);
+    setSubTaskAddingInputValue('');
   };
 
   const handleKeyPressAddSubTaskInput = (e, id, item) => {
-    if (e.which === 13 && !subTaskEditingInputValue) {
-      setSubTaskEditingState(false);
-    } else if (e.which === 13 && subTaskEditingInputValue) {
-      changeIsExpended(id, false);
-      addSubTask(id, subTaskEditingInputValue, item);
-      setSubTaskEditingState(false);
-      setSubTaskEditingInputValue('');
+    if (e.which === 13) {
+      if (!subTaskAddingInputValue) {
+        setSubTaskAddingInputState(false);
+      } else {
+        changeIsExpended(id, false);
+        addSubTask(id, subTaskAddingInputValue, item);
+        setSubTaskAddingInputState(false);
+        setSubTaskAddingInputValue('');
+      }
     }
   };
 
@@ -49,12 +51,14 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
   };
 
   const handleKeyPressTitleEditing = (e, id, item) => {
-    if (e.which === 13 && !titleInputValue) {
-      setTitleEditingState(false);
-    } else if (e.which === 13 && titleInputValue) {
-      changeTaskTitle(id, titleInputValue, item);
-      setTitleEditingState('');
-      setTitleEditingState(false);
+    if (e.which === 13) {
+      if (!titleInputValue) {
+        setTitleEditingState(false);
+      } else {
+        changeTaskTitle(id, titleInputValue, item);
+        setTitleEditingState('');
+        setTitleEditingState(false);
+      }
     }
   };
 
@@ -64,7 +68,7 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
   };
 
   const handleClickArrowIcon = (id, isExpended) => changeIsExpended(id, isExpended);
-  const handleClickPlusIcon = (id) => setSubTaskEditingState(id);
+  const handleClickPlusIcon = (id) => setSubTaskAddingInputState(id);
 
   return (
     <SubTasksList>
@@ -92,12 +96,12 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
             />
           )}
 
-          {subTaskEditingState === item.id && (
+          {subTaskAddingInputState === item.id && (
             <AddSubTaskInput
               type="text"
-              value={subTaskEditingInputValue}
+              value={subTaskAddingInputValue}
               onBlur={() => handleClickAddSubTaskInputBlur(item.id, item.subTasks)}
-              onChange={(e) => setSubTaskEditingInputValue(e.target.value)}
+              onChange={(e) => setSubTaskAddingInputValue(e.target.value)}
               onKeyPress={(e) => handleKeyPressAddSubTaskInput(e, item.id, { ...item })}
               autoFocus="true"
             />
