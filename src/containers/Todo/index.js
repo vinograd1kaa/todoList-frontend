@@ -19,13 +19,13 @@ const mapDispatchToProps = (dispatch) => ({
       },
     }),
 
-  addSubTask: (id, title, item) =>
+  addSubTask: (id, title, subTasks) =>
     dispatch({
       type: ADD_SUB_TASK,
       payload: {
         id,
         title,
-        item,
+        subTasks,
       },
     }),
 

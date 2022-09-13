@@ -32,7 +32,7 @@ ReactDOM.render(
             <GlobalStyles />
             <Switch>
               <Route path="/projects" component={Projects} />
-              <Route path="/" component={Todo} />
+              <Route path="/todo" component={Todo} />
             </Switch>
           </Provider>
         </ThemeProvider>
