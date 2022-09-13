@@ -13,38 +13,24 @@ import {
 const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
-  const [titleInputValue, setTitleInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState(false);
+  const [titleInputValue, setTitleInputValue] = useState('');
 
   const handleClickAddSubTaskInputBlur = (id, subTasks) => {
-    if (!subTaskAddingInputValue) {
-      setSubTaskAddingInputState(false);
-      return;
-    }
-    changeIsExpended(id, false);
     addSubTask(id, subTaskAddingInputValue, subTasks);
-    setSubTaskAddingInputState(false);
     setSubTaskAddingInputValue('');
+    setSubTaskAddingInputState(false);
   };
 
   const handleKeyDownAddSubTaskInput = (e, id, subTasks) => {
     if (e.keyCode === 13) {
-      if (!subTaskAddingInputValue) {
-        setSubTaskAddingInputState(false);
-      } else {
-        changeIsExpended(id, false);
-        addSubTask(id, subTaskAddingInputValue, subTasks);
-        setSubTaskAddingInputState(false);
-        setSubTaskAddingInputValue('');
-      }
+      addSubTask(id, subTaskAddingInputValue, subTasks);
+      setSubTaskAddingInputValue('');
+      setSubTaskAddingInputState(false);
     }
   };
 
   const handleClickTitleEditingBlur = (id, item) => {
-    if (!titleInputValue) {
-      setTitleEditingState(false);
-      return;
-    }
     changeTaskTitle(id, titleInputValue, item);
     setTitleEditingState('');
     setTitleEditingState(false);
@@ -52,13 +38,9 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
 
   const handleKeyDownTitleEditing = (e, id, item) => {
     if (e.keyCode === 13) {
-      if (!titleInputValue) {
-        setTitleEditingState(false);
-      } else {
-        changeTaskTitle(id, titleInputValue, item);
-        setTitleEditingState('');
-        setTitleEditingState(false);
-      }
+      changeTaskTitle(id, titleInputValue, item);
+      setTitleInputValue('');
+      setTitleEditingState(false);
     }
   };
 
