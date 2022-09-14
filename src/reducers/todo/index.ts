@@ -10,6 +10,7 @@ interface Todo {
 
 const initialState = {
   items: [],
+  itemToMove: null,
 };
 
 const collect = (arr: Array<Todo>, result = []) => {
@@ -27,6 +28,10 @@ export default function todoReducer(
 ) {
   switch (type) {
     case 'ADD_TODO': {
+      if (!payload.title) {
+        return state;
+      }
+
       const newTodo: Todo = {
         id: uniqueId(),
         title: payload.title,
@@ -67,6 +72,10 @@ export default function todoReducer(
 
       return { items: [...state.items] };
     }
+    case 'MOVE_ITEM_PENDING': {
+      return state;
+    }
+
     default:
       return state;
   }

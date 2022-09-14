@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Container, Header, Title, Form } from './styles';
 import { AddTasksButton, TasksList, AddTasksInput } from './styles/Todo';
 import TodoItem from './TodoItem';
 
-const Todo = ({ tasksList, t }) => {
+const Todo = ({ t }) => {
   const [todoText, setTodoText] = useState('');
+  const tasksList = useSelector((state) => state.todo.items);
   const dispatch = useDispatch();
 
   const handleAdd = () => {

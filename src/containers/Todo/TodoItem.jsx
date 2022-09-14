@@ -61,11 +61,13 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
         <h4
           style={{ position: 'relative', display: `${title ? 'block' : 'none'}`, padding: '5px 0' }}
         >
-          <FontAwesomeIcon
-            onClick={handleExpandCollapse}
-            icon={expanded ? 'chevron-down' : 'chevron-right'}
-            style={{ marginRight: '5px' }}
-          />
+          {Boolean(subTasks.length) && (
+            <FontAwesomeIcon
+              onClick={handleExpandCollapse}
+              icon={expanded ? 'chevron-down' : 'chevron-right'}
+              style={{ marginRight: '5px' }}
+            />
+          )}
           <span onClick={handleEdit}>{title}</span>
           <span
             style={{
