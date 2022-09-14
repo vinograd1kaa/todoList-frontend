@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDispatch } from 'react-redux';
 import {
   SubTaskItem,
   SubTasksList,
@@ -10,35 +11,46 @@ import {
   AddSubTaskInput,
 } from './styles/Todo';
 
-const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
+const TodoItem = ({ items }) => {
+  const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState(false);
   const [titleInputValue, setTitleInputValue] = useState('');
 
   const handleClickAddSubTaskInputBlur = (id, subTasks) => {
-    addSubTask(id, subTaskAddingInputValue, subTasks);
+    dispatch({
+      type: 'TODO/ADD_SUB_TASK',
+      payload: { id, title: subTaskAddingInputValue, subTasks },
+    });
     setSubTaskAddingInputValue('');
     setSubTaskAddingInputState(false);
   };
 
   const handleKeyDownAddSubTaskInput = (e, id, subTasks) => {
     if (e.keyCode === 13) {
-      addSubTask(id, subTaskAddingInputValue, subTasks);
+      dispatch({
+        type: 'TODO/ADD_SUB_TASK',
+        payload: {
+          id,
+          title: subTaskAddingInputValue,
+          subTasks,
+        },
+      });
       setSubTaskAddingInputValue('');
       setSubTaskAddingInputState(false);
     }
   };
 
   const handleClickTitleEditingBlur = (id, item) => {
-    changeTaskTitle(id, titleInputValue, item);
+    dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue, item } });
     setTitleEditingState('');
     setTitleEditingState(false);
   };
 
   const handleKeyDownTitleEditing = (e, id, item) => {
     if (e.keyCode === 13) {
-      changeTaskTitle(id, titleInputValue, item);
+      dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue, item } });
       setTitleInputValue('');
       setTitleEditingState(false);
     }
@@ -49,7 +61,10 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
     setTitleEditingState(id);
   };
 
-  const handleClickArrowIcon = (id, isExpended) => changeIsExpended(id, isExpended);
+  const handleClickArrowIcon = (id, isExpended) => {
+    dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id, isExpended } });
+  };
+
   const handleClickPlusIcon = (id) => setSubTaskAddingInputState(id);
 
   return (
@@ -91,15 +106,7 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
           <SubTaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
             <FontAwesomeIcon icon="plus" />
           </SubTaskPlusIcon>
-          {item.isExpended && (
-            <TodoItem
-              key={item.id}
-              items={item.subTasks}
-              addSubTask={addSubTask}
-              changeTaskTitle={changeTaskTitle}
-              changeIsExpended={changeIsExpended}
-            />
-          )}
+          {item.isExpended && <TodoItem key={item.id} items={item.subTasks} />}
         </SubTaskItem>
       ))}
     </SubTasksList>

@@ -1,21 +1,16 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Header, Title, Form } from './styles';
 import { AddTasksButton, AddTasksInput, TaskListItem } from './styles/Todo';
 import TodoItem from './TodoItem';
 
-const Todo = ({
-  tasksList,
-  addTask,
-  changeSubTaskChecked,
-  addSubTask,
-  changeTaskTitle,
-  changeIsExpended,
-  t,
-}) => {
+const Todo = ({ t }) => {
+  const dispatch = useDispatch();
+  const tasksList = useSelector((state) => state.todo.items);
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
 
   const handleClickAddTaskBtn = () => {
-    addTask(addTaskInputValue);
+    dispatch({ type: 'TODO/ADD_TASK', payload: { title: addTaskInputValue } });
     setAddTaskInputValue('');
   };
 
@@ -36,13 +31,7 @@ const Todo = ({
         </Form>
       </Header>
       <TaskListItem>
-        <TodoItem
-          items={tasksList}
-          addSubTask={addSubTask}
-          changeTaskTitle={changeTaskTitle}
-          changeIsExpended={changeIsExpended}
-          changeSubTaskChecked={changeSubTaskChecked}
-        />
+        <TodoItem items={tasksList} />
       </TaskListItem>
     </Container>
   );
