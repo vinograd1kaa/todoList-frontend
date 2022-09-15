@@ -34,7 +34,7 @@ ReactDOM.render(
             <Switch>
               <Route path="/projects" component={Projects} />
               <Route path="/todo" component={Todo} />
-              <Forwarding fromURL="/some" toURL="/todo" />
+              <Forwarding fromURL="/" toURL="/todo" />
             </Switch>
           </Provider>
         </ThemeProvider>
