@@ -80,6 +80,31 @@ const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
 
   const handleClickPlusIcon = (id) => setSubTaskAddingInputState(id);
 
+  const renderMoveIcon = (item) => {
+    switch (true) {
+      case itemIdToMove === item.id:
+        return (
+          <ChangePosCrossIcon onClick={() => handleClickChangePos(item.id)}>
+            <FontAwesomeIcon icon="cross" />
+          </ChangePosCrossIcon>
+        );
+      case itemIdToMove &&
+        itemIdToMove !== item.id &&
+        !itemsIdNotToMove.find((obj) => obj === item.id):
+        return (
+          <ChangePosCrossIcon onClick={() => handleClickConfirmChangePos(item.id, item)}>
+            <FontAwesomeIcon icon="sticky-note" />
+          </ChangePosCrossIcon>
+        );
+      default:
+        return (
+          <ChangePosArrowIcon onClick={() => handleClickChangePos(item.id)}>
+            <FontAwesomeIcon icon="arrow-right" />
+          </ChangePosArrowIcon>
+        );
+    }
+  };
+
   return (
     <SubTasksList>
       {items.map((item) => (
@@ -117,23 +142,7 @@ const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
             />
           )}
 
-          {itemIdToMove === item.id ? (
-            <ChangePosCrossIcon onClick={() => handleClickChangePos(item.id)}>
-              <FontAwesomeIcon icon="cross" />
-            </ChangePosCrossIcon>
-          ) : (
-            <ChangePosArrowIcon onClick={() => handleClickChangePos(item.id)}>
-              <FontAwesomeIcon icon="arrow-right" />
-            </ChangePosArrowIcon>
-          )}
-
-          {itemIdToMove &&
-            itemIdToMove !== item.id &&
-            !itemsIdNotToMove.find((obj) => obj === item.id) && (
-              <ChangePosCrossIcon onClick={() => handleClickConfirmChangePos(item.id, item)}>
-                <FontAwesomeIcon icon="sticky-note" />
-              </ChangePosCrossIcon>
-            )}
+          {renderMoveIcon(item)}
 
           <SubTaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
             <FontAwesomeIcon icon="plus" />

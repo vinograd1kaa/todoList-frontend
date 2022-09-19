@@ -10,7 +10,7 @@ import {
 
 const initialState = {
   items: [],
-  itemIdToMove: false,
+  itemIdToMove: null,
   itemsIdNotToMove: false,
 };
 
@@ -22,7 +22,7 @@ function findTaskById(id, arr) {
       if (arr[i].id === id) {
         return arr[id];
       }
-      if ('subTasks' in arr[i]) {
+      if (arr[i].subTasks.length) {
         result = findTaskById(id, arr[i].subTasks);
         if (result) {
           return result;
@@ -43,19 +43,14 @@ function removeTask(id, arr) {
   });
 }
 
-function findSubtasksNotToMove(arr, itemToPush, oldItemsArr) {
-  const newItemsArr = oldItemsArr || [];
-  itemToPush && newItemsArr.push(itemToPush);
-
+function findSubtasksNotToMove(arr, itemToPush, oldItemsArr = []) {
+  oldItemsArr.push(itemToPush);
   arr.forEach((item) => {
-    if ('subTasks' in item) {
-      const result = findSubtasksNotToMove(item.subTasks, item.id, newItemsArr);
-      if (result) {
-        return result;
-      }
+    if (item) {
+      return findSubtasksNotToMove(item.subTasks, item.id, oldItemsArr);
     }
   });
-  return newItemsArr;
+  return oldItemsArr;
 }
 
 export default function todoReducer(state = initialState, { type, payload }) {
@@ -109,7 +104,6 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CONFIRM_CHANGE_POS:
-      state.itemIdToMove = false;
       const oldTask = findTaskById(payload.changePosItemId, state.items);
 
       findTaskById(payload.id, state.items).subTasks = [
@@ -127,14 +121,15 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
       return {
         ...state,
+        itemIdToMove: null,
         items: [...state.items],
       };
 
     case ITEM_ID_TO_MOVE:
       if (payload.id === state.itemIdToMove) {
-        state.itemIdToMove = false;
         return {
           ...state,
+          itemIdToMove: false,
         };
       }
       if (payload.id) {
@@ -142,10 +137,9 @@ export default function todoReducer(state = initialState, { type, payload }) {
         state.itemsIdNotToMove = findSubtasksNotToMove(findItem.subTasks);
       }
 
-      state.itemIdToMove = payload.id;
-
       return {
         ...state,
+        itemIdToMove: payload.id,
       };
 
     default:
