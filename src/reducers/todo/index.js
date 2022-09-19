@@ -105,7 +105,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
         ...payload.item.subTasks,
         {
           title: oldTask.title,
-          id: uniqueId(),
+          id: oldTask.id,
           isExpended: oldTask.isExpended,
           subTasks: oldTask.subTasks,
         },
