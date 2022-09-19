@@ -34,9 +34,7 @@ ReactDOM.render(
             <Switch>
               <Route path="/projects" component={Projects} />
               <Route path="/todo" component={Todo} />
-              <Route exact path="/">
-                <Redirect to="/todo" />
-              </Route>
+              <Redirect exact from="/" to="/todo" />
             </Switch>
           </Provider>
         </ThemeProvider>

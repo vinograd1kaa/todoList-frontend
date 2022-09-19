@@ -43,9 +43,7 @@ function removeTask(id, arr) {
 function findSubtasksNotToMove(arr, itemToPush, oldItemsArr = []) {
   oldItemsArr.push(itemToPush);
   arr.forEach((item) => {
-    if (item) {
-      return findSubtasksNotToMove(item.subTasks, item.id, oldItemsArr);
-    }
+    findSubtasksNotToMove(item.subTasks, item.id, oldItemsArr);
   });
   return oldItemsArr;
 }
@@ -118,7 +116,6 @@ export default function todoReducer(state = initialState, { type, payload }) {
       return {
         ...state,
         itemIdToMove: null,
-        items: [...state.items],
       };
 
     case ITEM_ID_TO_MOVE:
