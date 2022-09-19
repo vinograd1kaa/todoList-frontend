@@ -10,6 +10,8 @@
     "indent": 0,
     "func-names": 0,
     "no-multiple-empty-lines": 0,
+    "no-unused-expressions": 0,
+    "no-restricted-globals": 0,
     "template-curly-spacing": 0,
     "react/forbid-prop-types": 0,
     "react/prefer-stateless-function": 0,

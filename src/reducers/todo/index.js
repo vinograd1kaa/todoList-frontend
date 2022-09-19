@@ -36,25 +36,31 @@ export default function todoReducer(state = initialState, { type, payload }) {
           {
             title: payload.title,
             id: uniqueId(),
-            isExpended: false,
+            isExpended: true,
             subTasks: [],
           },
         ],
       };
 
     case ADD_SUB_TASK:
-      payload.item.subTasks.push({
-        title: payload.title,
-        id: uniqueId(),
-        isExpended: false,
-        subTasks: [],
-      });
+      if (!payload.title) return { ...state };
+      findTaskById(payload.id, state.items).subTasks = [
+        ...payload.subTasks,
+        {
+          title: payload.title,
+          id: uniqueId(),
+          isExpended: true,
+          subTasks: [],
+        },
+      ];
 
       return {
         ...state,
+        items: [...state.items],
       };
 
     case CHANGE_TASK_TITLE:
+      if (!payload.title) return { ...state };
       findTaskById(payload.id, state.items).title = payload.title;
 
       return {

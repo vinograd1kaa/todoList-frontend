@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDispatch } from 'react-redux';
 import {
   SubTaskItem,
   SubTasksList,
@@ -10,30 +11,49 @@ import {
   AddSubTaskInput,
 } from './styles/Todo';
 
-const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
-  const [subTaskEditingState, setSubTaskEditingState] = useState(false);
-  const [subTaskEditingInputValue, setSubTaskEditingInputValue] = useState('');
-  const [titleInputValue, setTitleInputValue] = useState('');
+const TodoItem = ({ items }) => {
+  const dispatch = useDispatch();
+  const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
+  const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState(false);
+  const [titleInputValue, setTitleInputValue] = useState('');
 
-  const handleClickAddSubTaskInputBlur = (id, item) => {
-    if (subTaskEditingInputValue === '') {
-      setSubTaskEditingState(false);
+  const handleClickAddSubTaskInputBlur = (id, subTasks) => {
+    dispatch({
+      type: 'TODO/ADD_SUB_TASK',
+      payload: { id, title: subTaskAddingInputValue, subTasks },
+    });
+    setSubTaskAddingInputValue('');
+    setSubTaskAddingInputState(false);
+  };
+
+  const handleKeyDownAddSubTaskInput = (e, id, subTasks) => {
+    if (e.keyCode === 13) {
+      dispatch({
+        type: 'TODO/ADD_SUB_TASK',
+        payload: {
+          id,
+          title: subTaskAddingInputValue,
+          subTasks,
+        },
+      });
+      setSubTaskAddingInputValue('');
+      setSubTaskAddingInputState(false);
     }
-
-    addSubTask(id, subTaskEditingInputValue, item);
-    setSubTaskEditingState(false);
-    setSubTaskEditingInputValue('');
   };
 
   const handleClickTitleEditingBlur = (id, item) => {
-    if (!titleInputValue) {
-      setTitleEditingState(false);
-      return;
-    }
-    changeTaskTitle(id, titleInputValue, item);
+    dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue, item } });
     setTitleEditingState('');
     setTitleEditingState(false);
+  };
+
+  const handleKeyDownTitleEditing = (e, id, item) => {
+    if (e.keyCode === 13) {
+      dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue, item } });
+      setTitleInputValue('');
+      setTitleEditingState(false);
+    }
   };
 
   const handleClickTitle = (title, id) => {
@@ -42,18 +62,16 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
   };
 
   const handleClickArrowIcon = (id, isExpended) => {
-    changeIsExpended(id, isExpended);
+    dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id, isExpended } });
   };
 
-  const handleClickPlusIcon = (id) => {
-    setSubTaskEditingState(id);
-  };
+  const handleClickPlusIcon = (id) => setSubTaskAddingInputState(id);
 
   return (
     <SubTasksList>
       {items.map((item) => (
-        <SubTaskItem>
-          {item.subTasks && (
+        <SubTaskItem key={item.id}>
+          {Boolean(item.subTasks.length) && (
             <SubTaskArrowIcon
               onClick={() => handleClickArrowIcon(item.id, item.isExpended)}
               isExpended={item.isExpended}
@@ -70,33 +88,25 @@ const TodoItem = ({ items, addSubTask, changeIsExpended, changeTaskTitle }) => {
               value={titleInputValue}
               onBlur={() => handleClickTitleEditingBlur(item.id, { ...item })}
               onChange={(e) => setTitleInputValue(e.target.value)}
-              /* eslint-disable-next-line jsx-a11y/no-autofocus */
+              onKeyDown={(e) => handleKeyDownTitleEditing(e, item.id, { ...item })}
               autoFocus
             />
           )}
 
-          {subTaskEditingState === item.id && (
+          {subTaskAddingInputState === item.id && (
             <AddSubTaskInput
               type="text"
-              value={subTaskEditingInputValue}
-              onBlur={() => handleClickAddSubTaskInputBlur(item.id, { ...item })}
-              onChange={(e) => setSubTaskEditingInputValue(e.target.value)}
-              /* eslint-disable-next-line jsx-a11y/no-autofocus */
+              value={subTaskAddingInputValue}
+              onBlur={() => handleClickAddSubTaskInputBlur(item.id, item.subTasks)}
+              onChange={(e) => setSubTaskAddingInputValue(e.target.value)}
+              onKeyDown={(e) => handleKeyDownAddSubTaskInput(e, item.id, item.subTasks)}
               autoFocus
             />
           )}
           <SubTaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
             <FontAwesomeIcon icon="plus" />
           </SubTaskPlusIcon>
-          {item.isExpended && (
-            <TodoItem
-              key={item.id + item.title}
-              items={item.subTasks}
-              addSubTask={addSubTask}
-              changeTaskTitle={changeTaskTitle}
-              changeIsExpended={changeIsExpended}
-            />
-          )}
+          {item.isExpended && <TodoItem key={item.id} items={item.subTasks} />}
         </SubTaskItem>
       ))}
     </SubTasksList>
