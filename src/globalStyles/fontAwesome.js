@@ -9,6 +9,9 @@ import {
   faCheck,
   faChevronDown,
   faChevronRight,
+  faShare,
+  faSave,
+  faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
@@ -23,4 +26,7 @@ library.add(
   faCheck,
   faChevronDown,
   faChevronRight,
+  faShare,
+  faSave,
+  faTimes,
 );

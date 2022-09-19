@@ -7,6 +7,7 @@ import TodoItem from './TodoItem';
 
 const Todo = ({ t }) => {
   const [todoText, setTodoText] = useState('');
+
   const tasksList = useSelector((state) => state.todo.items);
   const dispatch = useDispatch();
 
@@ -32,7 +33,7 @@ const Todo = ({ t }) => {
         </Form>
       </Header>
       <TasksList>
-        <TodoItem title="" id="1" subTasks={tasksList} expanded />
+        <TodoItem title="" id="" subTasks={tasksList} expanded />
       </TasksList>
     </Container>
   );

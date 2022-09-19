@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const TodoItem = ({ id, title, expanded, subTasks }) => {
+const TodoItem = ({ parentId, id, title, expanded, subTasks }) => {
   const [newTitle, setNewTitle] = useState(title);
   const [newSubItemTitle, setNewSubItemTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingSubItem, setIsAddingSubItem] = useState(false);
+  const todoIdToMove = useSelector((state) => state.todo.itemToMove);
+
   const dispatch = useDispatch();
+
+  const setTodoIdToMove = (itemId) => {
+    dispatch({ type: 'SET_ITEM_TO_MOVE', payload: { id: itemId, parentId } });
+  };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -47,6 +53,22 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
     }
   };
 
+  const handleMoveIconClick = () => {
+    if (!todoIdToMove) return setTodoIdToMove(id);
+
+    if (todoIdToMove === id) return setTodoIdToMove(null);
+
+    return dispatch({ type: 'MOVE_ITEM', payload: { id } });
+  };
+
+  const getMoveTodoIconType = () => {
+    if (!todoIdToMove) return 'share';
+
+    if (todoIdToMove === id) return 'times';
+
+    return 'save';
+  };
+
   return (
     <div key={id} style={{ paddingLeft: `${title ? '25px' : '0'}` }}>
       {isEditing ? (
@@ -81,6 +103,17 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
           >
             +
           </span>
+          <FontAwesomeIcon
+            onClick={handleMoveIconClick}
+            icon={getMoveTodoIconType()}
+            style={{
+              marginLeft: '50px',
+              position: 'absolute',
+              right: '40px',
+              fontSize: '14px',
+              cursor: 'pointer',
+            }}
+          />
         </h4>
       )}
       <ul>
@@ -94,7 +127,7 @@ const TodoItem = ({ id, title, expanded, subTasks }) => {
             onChange={({ target }) => setNewSubItemTitle(target.value)}
           />
         )}
-        {expanded && subTasks.map((task) => <TodoItem {...task} key={task.id} />)}
+        {expanded && subTasks.map((task) => <TodoItem {...task} key={task.id} parentId={id} />)}
       </ul>
     </div>
   );

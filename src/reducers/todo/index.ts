@@ -11,6 +11,7 @@ interface Todo {
 const initialState = {
   items: [],
   itemToMove: null,
+  itemToMoveParentId: null,
 };
 
 const collect = (arr: Array<Todo>, result = []) => {
@@ -72,8 +73,56 @@ export default function todoReducer(
 
       return { items: [...state.items] };
     }
-    case 'MOVE_ITEM_PENDING': {
-      return state;
+    case 'SET_ITEM_TO_MOVE': {
+      const todosFlat = collect(state.items);
+      todosFlat.forEach((item) => {
+        // @ts-ignore
+        // eslint-disable-next-line no-param-reassign
+        item.expanded = true;
+      });
+
+      return {
+        ...state,
+        items: [...state.items],
+        itemToMove: payload.id,
+        itemToMoveParentId: payload.parentId,
+      };
+    }
+
+    case 'MOVE_ITEM': {
+      const todosFlat = collect(state.items);
+      const item = todosFlat.find(({ id }) => id === state.itemToMove);
+      const oldParent = todosFlat.find(({ id }) => id === state.itemToMoveParentId);
+      const newParent = todosFlat.find(({ id }) => id === payload.id);
+      // eslint-disable-next-line no-debugger
+      if (oldParent) {
+        // @ts-ignore
+        oldParent.subTasks = oldParent.subTasks.filter(({ id }) => id !== state.itemToMove);
+      } else {
+        // @ts-ignore
+        // eslint-disable-next-line no-param-reassign
+        state.items = state.items.filter(({ id }) => id !== state.itemToMove);
+      }
+      // @ts-ignore
+      const itemSubtasksFlat = collect(item.subTasks);
+      // @ts-ignore
+      const isSubTask = itemSubtasksFlat.find(({ id }) => id === newParent.id);
+
+      if (isSubTask) {
+        return {
+          ...state,
+          itemToMove: null,
+          itemToMoveParentId: null,
+        };
+      }
+      // @ts-ignore
+      newParent.subTasks = [...newParent.subTasks, item];
+
+      return {
+        itemToMove: null,
+        itemToMoveParentId: null,
+        items: [...state.items],
+      };
     }
 
     default:
