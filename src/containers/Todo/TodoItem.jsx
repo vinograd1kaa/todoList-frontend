@@ -9,9 +9,11 @@ import {
   SubTaskPlusIcon,
   SubTaskTitleEditingInput,
   AddSubTaskInput,
+  ChangePosArrowIcon,
+  ChangePosCrossIcon,
 } from './styles/Todo';
 
-const TodoItem = ({ items }) => {
+const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
@@ -65,6 +67,17 @@ const TodoItem = ({ items }) => {
     dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id, isExpended } });
   };
 
+  const handleClickChangePos = (id) => {
+    dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id } });
+  };
+
+  const handleClickConfirmChangePos = (id, item) => {
+    dispatch({
+      type: 'TODO/CONFIRM_CHANGE_POS',
+      payload: { id, item, changePosItemId: itemIdToMove },
+    });
+  };
+
   const handleClickPlusIcon = (id) => setSubTaskAddingInputState(id);
 
   return (
@@ -103,10 +116,36 @@ const TodoItem = ({ items }) => {
               autoFocus
             />
           )}
+
+          {itemIdToMove === item.id ? (
+            <ChangePosCrossIcon onClick={() => handleClickChangePos(item.id)}>
+              <FontAwesomeIcon icon="cross" />
+            </ChangePosCrossIcon>
+          ) : (
+            <ChangePosArrowIcon onClick={() => handleClickChangePos(item.id)}>
+              <FontAwesomeIcon icon="arrow-right" />
+            </ChangePosArrowIcon>
+          )}
+
+          {itemIdToMove &&
+            itemIdToMove !== item.id &&
+            !itemsIdNotToMove.find((obj) => obj === item.id) && (
+              <ChangePosCrossIcon onClick={() => handleClickConfirmChangePos(item.id, item)}>
+                <FontAwesomeIcon icon="sticky-note" />
+              </ChangePosCrossIcon>
+            )}
+
           <SubTaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
             <FontAwesomeIcon icon="plus" />
           </SubTaskPlusIcon>
-          {item.isExpended && <TodoItem key={item.id} items={item.subTasks} />}
+          {(item.isExpended || itemIdToMove) && (
+            <TodoItem
+              key={item.id}
+              items={item.subTasks}
+              itemIdToMove={itemIdToMove}
+              itemsIdNotToMove={itemsIdNotToMove}
+            />
+          )}
         </SubTaskItem>
       ))}
     </SubTasksList>

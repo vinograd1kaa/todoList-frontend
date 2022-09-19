@@ -73,6 +73,20 @@ export const SubTaskArrowIcon = styled.span`
   transform: ${({ isExpended }) => (isExpended ? 'rotate(0)' : 'rotate(-90deg)')};
 }`;
 
+export const ChangePosArrowIcon = styled.span`
+  position: absolute;
+  right: 61px;
+  top: 3px;
+  cursor: pointer;
+}`;
+
+export const ChangePosCrossIcon = styled.span`
+  position: absolute;
+  right: 61px;
+  top: 3px;
+  cursor: pointer;
+}`;
+
 export const SubTaskTitle = styled.h4`
   cursor: pointer;
   width: 50%;
