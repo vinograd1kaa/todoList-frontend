@@ -15,18 +15,15 @@ const initialState = {
 };
 
 function findTaskById(id, arr) {
-  let result = arr.find((obj) => obj.id === id);
+  const result = arr.find((obj) => obj.id === id);
 
   if (!result) {
     for (let i = 0; i < arr.length; i++) {
       if (arr[i].id === id) {
         return arr[id];
       }
-      if (arr[i].subTasks.length) {
-        result = findTaskById(id, arr[i].subTasks);
-        if (result) {
-          return result;
-        }
+      if (findTaskById(id, arr[i].subTasks)) {
+        return findTaskById(id, arr[i].subTasks);
       }
     }
   }
@@ -112,7 +109,6 @@ export default function todoReducer(state = initialState, { type, payload }) {
           title: oldTask.title,
           id: uniqueId(),
           isExpended: oldTask.isExpended,
-          changePos: false,
           subTasks: oldTask.subTasks,
         },
       ];

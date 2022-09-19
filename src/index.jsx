@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { Router, Route, Switch } from 'react-router-dom';
 
 import { I18nextProvider } from 'react-i18next';
+import { Redirect } from 'react-router';
 import history from './services/history';
 import store from './store/configureStore';
 import Projects from './containers/Projects';
@@ -17,7 +18,6 @@ import 'typeface-roboto';
 import 'typeface-source-sans-pro';
 
 import './globalStyles/fontAwesome';
-import Forwarding from './containers/Forwarding/Forwarding';
 
 // Todo: use 'rem' for font-size, to change font-size for theme.screens.sm devices across the whole App by changing body font-size
 // Todo: finalize theme variables
@@ -34,7 +34,9 @@ ReactDOM.render(
             <Switch>
               <Route path="/projects" component={Projects} />
               <Route path="/todo" component={Todo} />
-              <Forwarding fromURL="/" toURL="/todo" />
+              <Route exact path="/">
+                <Redirect to="/todo" />
+              </Route>
             </Switch>
           </Provider>
         </ThemeProvider>
