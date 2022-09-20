@@ -49,6 +49,15 @@ function findSubtasksNotToMove(arr, itemToPush, oldItemsArr = []) {
   return oldItemsArr;
 }
 
+function findSubTasksIsChecked(arr, isChecked, itemToPush, oldItemsArr = []) {
+  oldItemsArr.push(itemToPush);
+  arr.forEach((item) => {
+    item.isChecked = !isChecked;
+    findSubTasksIsChecked(item.subTasks, isChecked, item.id, oldItemsArr);
+  });
+  return oldItemsArr;
+}
+
 export default function todoReducer(state = initialState, { type, payload }) {
   switch (type) {
     case ADD_TASK:
@@ -103,6 +112,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case CHANGE_IS_CHECKED:
       findTaskById(payload.id, state.items).isChecked = !payload.isChecked;
+      findSubTasksIsChecked(payload.subTasks, payload.isChecked);
 
       return {
         ...state,

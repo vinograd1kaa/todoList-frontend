@@ -68,8 +68,8 @@ const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
     dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id, isExpended } });
   };
 
-  const handleClickCircleIcon = (id, isChecked) => {
-    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked } });
+  const handleClickCircleIcon = (id, isChecked, subTasks) => {
+    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked, subTasks } });
   };
 
   const handleClickChangePos = (id) => {
@@ -147,7 +147,9 @@ const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
             />
           )}
 
-          <ItemCheckedCircle onClick={() => handleClickCircleIcon(item.id, item.isChecked)}>
+          <ItemCheckedCircle
+            onClick={() => handleClickCircleIcon(item.id, item.isChecked, item.subTasks)}
+          >
             {item.isChecked && <FontAwesomeIcon icon="check" />}
           </ItemCheckedCircle>
 
