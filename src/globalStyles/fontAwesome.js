@@ -9,6 +9,7 @@ import {
   faArrowRight,
   faCross,
   faStickyNote,
+  faCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
@@ -23,4 +24,5 @@ library.add(
   faArrowRight,
   faCross,
   faStickyNote,
+  faCheck,
 );

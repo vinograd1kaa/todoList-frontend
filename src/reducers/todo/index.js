@@ -6,6 +6,7 @@ import {
   CHANGE_IS_EXPENDED,
   CONFIRM_CHANGE_POS,
   ITEM_ID_TO_MOVE,
+  CHANGE_IS_CHECKED,
 } from '../../actions/Todo';
 
 const initialState = {
@@ -59,6 +60,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
             title: payload.title,
             id: uniqueId(),
             isExpended: true,
+            isChecked: false,
             subTasks: [],
           },
         ],
@@ -72,6 +74,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
           title: payload.title,
           id: uniqueId(),
           isExpended: true,
+          isChecked: false,
           subTasks: [],
         },
       ];
@@ -98,23 +101,22 @@ export default function todoReducer(state = initialState, { type, payload }) {
         items: [...state.items],
       };
 
-    case CONFIRM_CHANGE_POS:
-      const oldTask = findTaskById(payload.changePosItemId, state.items);
-
-      findTaskById(payload.id, state.items).subTasks = [
-        ...payload.item.subTasks,
-        {
-          title: oldTask.title,
-          id: oldTask.id,
-          isExpended: oldTask.isExpended,
-          subTasks: oldTask.subTasks,
-        },
-      ];
-
-      removeTask(payload.changePosItemId, state.items);
+    case CHANGE_IS_CHECKED:
+      findTaskById(payload.id, state.items).isChecked = !payload.isChecked;
 
       return {
         ...state,
+        items: [...state.items],
+      };
+
+    case CONFIRM_CHANGE_POS:
+      const oldTask = findTaskById(payload.changePosItemId, state.items);
+      removeTask(payload.changePosItemId, state.items);
+      findTaskById(payload.id, state.items).subTasks = [...payload.item.subTasks, { ...oldTask }];
+
+      return {
+        ...state,
+        items: [...state.items],
         itemIdToMove: null,
       };
 

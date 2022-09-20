@@ -11,6 +11,7 @@ import {
   AddSubTaskInput,
   ChangePosArrowIcon,
   ChangePosCrossIcon,
+  ItemCheckedCircle,
 } from './styles/Todo';
 
 const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
@@ -65,6 +66,10 @@ const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
 
   const handleClickArrowIcon = (id, isExpended) => {
     dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id, isExpended } });
+  };
+
+  const handleClickCircleIcon = (id, isChecked) => {
+    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked } });
   };
 
   const handleClickChangePos = (id) => {
@@ -141,6 +146,10 @@ const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
               autoFocus
             />
           )}
+
+          <ItemCheckedCircle onClick={() => handleClickCircleIcon(item.id, item.isChecked)}>
+            {item.isChecked && <FontAwesomeIcon icon="check" />}
+          </ItemCheckedCircle>
 
           {renderMoveIcon(item)}
 
