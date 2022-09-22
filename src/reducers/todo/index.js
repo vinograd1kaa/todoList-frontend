@@ -97,7 +97,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
     case CHANGE_IS_CHECKED:
       const findItemToChecked = stateItems.find((item) => item.id === payload.id);
       findItemToChecked.isChecked = !payload.isChecked;
-      collect(findItemToChecked.subTasks).map((item) => (item.isChecked = !payload.isChecked));
+      collect(findItemToChecked.subTasks).forEach((item) => (item.isChecked = !payload.isChecked));
 
       return {
         ...state,
@@ -106,11 +106,15 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case CONFIRM_CHANGE_POS:
       const oldTask = stateItems.find((item) => item.id === payload.changePosItemId);
+      stateItems.forEach((item, index) => {
+        if (item.id === payload.changePosItemId) {
+          stateItems.splice(index, 1);
+        }
+      });
       stateItems.find((item) => item.id === payload.id).subTasks = [
         ...payload.item.subTasks,
         { ...oldTask },
       ];
-
       return {
         ...state,
         items: [...state.items],
