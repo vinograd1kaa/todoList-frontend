@@ -32,17 +32,22 @@ function findSubtasksNotToMove(arr, itemToPush, oldItemsArr = []) {
   return oldItemsArr;
 }
 
-function collect(arr, item, newArr = []) {
+function collect({ arr, isChecked, newArr = [] }) {
   arr.forEach((task) => {
+    if (isChecked) task.isChecked = !task.isChecked;
     newArr.push(task);
     if (task.subTasks.length !== 0) {
-      collect(task.subTasks, task, newArr);
+      if (isChecked) {
+        collect({ arr: task.subTasks, isChecked: true, newArr });
+        return;
+      }
+      collect({ arr: task.subTasks, newArr });
     }
   });
   return newArr;
 }
 export default function todoReducer(state = initialState, { type, payload }) {
-  let stateItems = collect(state.items);
+  const stateItems = collect({ arr: state.items });
   switch (type) {
     case ADD_TASK:
       return {
@@ -95,7 +100,9 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_CHECKED:
-      stateItems.find((item) => item.id === payload.id).isChecked = !payload.isChecked;
+      const findItemToChecked = stateItems.find((item) => item.id === payload.id);
+      findItemToChecked.isChecked = !payload.isChecked;
+      collect({ arr: findItemToChecked.subTasks, isChecked: true });
 
       return {
         ...state,
@@ -104,7 +111,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case CONFIRM_CHANGE_POS:
       const oldTask = stateItems.find((item) => item.id === payload.changePosItemId);
-      stateItems = stateItems.filter((item) => item.id !== payload.changePosItemId);
+      stateItems.filter((item) => item.id !== payload.changePosItemId);
       stateItems.find((item) => item.id === payload.id).subTasks = [
         ...payload.item.subTasks,
         { ...oldTask },
@@ -112,7 +119,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
       return {
         ...state,
-        items: [...state.items],
+        items: [...stateItems],
         itemIdToMove: null,
       };
 
