@@ -11,18 +11,10 @@ import {
 
 const initialState = {
   items: [],
+  itemParentId: null,
   itemIdToMove: null,
   itemsIdNotToMove: false,
 };
-
-// function removeTask(id, arr) {
-//   arr.forEach((item, index) => {
-//     if (item.id === id) {
-//       arr.splice(index, 1);
-//     }
-//     removeTask(id, item.subTasks);
-//   });
-// }
 
 function findSubtasksNotToMove(arr, itemToPush, oldItemsArr = []) {
   oldItemsArr.push(itemToPush);
@@ -106,11 +98,15 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case CONFIRM_CHANGE_POS:
       const oldTask = stateItems.find((item) => item.id === payload.changePosItemId);
-      stateItems.forEach((item, index) => {
-        if (item.id === payload.changePosItemId) {
-          stateItems.splice(index, 1);
-        }
-      });
+      const parentTask = stateItems.find((item) => item.id === state.itemParentId);
+
+      if (parentTask) {
+        parentTask.subTasks = parentTask.subTasks.filter(
+          (item) => item.id !== payload.changePosItemId,
+        );
+      } else {
+        state.items = state.items.filter((item) => item.id !== payload.changePosItemId);
+      }
       stateItems.find((item) => item.id === payload.id).subTasks = [
         ...payload.item.subTasks,
         { ...oldTask },
@@ -129,6 +125,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
         };
       }
       if (payload.id) {
+        state.itemParentId = payload.parentId;
         const findItem = stateItems.find((item) => item.id === payload.id);
         state.itemsIdNotToMove = findSubtasksNotToMove(findItem.subTasks);
       }

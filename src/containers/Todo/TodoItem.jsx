@@ -14,7 +14,7 @@ import {
   ItemCheckedCircle,
 } from './styles/Todo';
 
-const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
+const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
@@ -73,7 +73,7 @@ const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
   };
 
   const handleClickChangePos = (id) => {
-    dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id } });
+    dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id, parentId } });
   };
 
   const handleClickConfirmChangePos = (id, item) => {
@@ -162,6 +162,7 @@ const TodoItem = ({ items, itemIdToMove, itemsIdNotToMove }) => {
             <TodoItem
               key={item.id}
               items={item.subTasks}
+              parentId={item.id}
               itemIdToMove={itemIdToMove}
               itemsIdNotToMove={itemsIdNotToMove}
             />
