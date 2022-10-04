@@ -14,7 +14,7 @@ import {
   ItemCheckedCircle,
 } from './styles/Todo';
 
-const TodoItem = ({ items, itemChecked, itemNotToMove, subItems, itemIdToMove }) => {
+const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMove }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
@@ -109,7 +109,9 @@ const TodoItem = ({ items, itemChecked, itemNotToMove, subItems, itemIdToMove })
     }
   };
 
-  const renderItems = subItems || Object.values(items).filter((item) => item.parentId === null);
+  const renderItems = itemParentId
+    ? Object.values(items).filter((obj) => obj.parentId === itemParentId)
+    : Object.values(items).filter((item) => item.parentId === null);
 
   return (
     <SubTasksList>
@@ -159,12 +161,9 @@ const TodoItem = ({ items, itemChecked, itemNotToMove, subItems, itemIdToMove })
           </SubTaskPlusIcon>
           {item.isExpended && (
             <TodoItem
-              key={item.id}
-              subItems={Object.values(items || { ...subItems }).filter(
-                (obj) => obj.parentId === item.id,
-              )}
               items={items}
               itemChecked={itemChecked || item.isChecked}
+              itemParentId={item.id}
               itemIdToMove={itemIdToMove}
               itemNotToMove={itemNotToMove || item.id === itemIdToMove}
             />

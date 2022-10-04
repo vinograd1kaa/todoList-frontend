@@ -15,8 +15,7 @@ const initialState = {
 };
 
 export default function todoReducer(state = initialState, { type, payload }) {
-  const state_items = Object.values(state.items);
-  const keyOfNewTask = state_items.length + 1;
+  const keyOfNewTask = Object.values(state.items).length + 1;
   switch (type) {
     case ADD_TASK:
       return {
@@ -34,7 +33,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
     case ADD_SUB_TASK:
       if (!payload.title) return { ...state };
-      state_items.find((item) => item.id === payload.id).isExpended = true;
+      state.items[payload.id].isExpended = true;
 
       return {
         ...state,
@@ -52,7 +51,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case CHANGE_TASK_TITLE:
       if (!payload.title) return { ...state };
-      state_items.find((item) => item.id === payload.id).title = payload.title;
+      state.items[payload.id].title = payload.title;
 
       return {
         ...state,
@@ -60,7 +59,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_EXPENDED:
-      state_items.find((item) => item.id === payload.id).isExpended = !payload.isExpended;
+      state.items[payload.id].isExpended = !payload.isExpended;
 
       return {
         ...state,
@@ -68,7 +67,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_CHECKED:
-      state_items.find((item) => item.id === payload.id).isChecked = !payload.isChecked;
+      state.items[payload.id].isChecked = !payload.isChecked;
 
       return {
         ...state,
@@ -76,8 +75,8 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CONFIRM_CHANGE_POS:
-      state_items.find((item) => item.id === payload.id).isExpended = true;
-      state_items.find((item) => item.id === payload.changePosItemId).parentId = payload.id;
+      state.items[payload.id].isExpended = true;
+      state.items[payload.changePosItemId].parentId = payload.id;
 
       return {
         ...state,
