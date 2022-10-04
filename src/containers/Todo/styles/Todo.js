@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const AddTasksInput = styled.input`
+export const TodoAddTasksInput = styled.input`
   margin: 0;
   border: none;
   border-radius: 0;
@@ -14,7 +14,7 @@ export const AddTasksInput = styled.input`
   }
 `;
 
-export const AddTasksButton = styled.button`
+export const TodoAddTasksButton = styled.button`
   padding: 11.3px;
   width: 25%;
   background: #d9d9d9;
@@ -49,22 +49,20 @@ export const TaskListItem = styled.div`
   background: #c5c3c3;
 `;
 
-export const SubTasksList = styled.ul`
+export const TasksList = styled.ul`
   background: burlywood;
 `;
 
-export const SubTaskItem = styled.li`
+export const TaskItem = styled.li`
   border: 1px solid black;
   border-left: none;
   border-right: none;
   border-bottom: none;
-  //padding-left: ${({ parentId }) => (parentId ? `${parentId * 25}px` : '25px')};
-  //padding-top: 5px;
   padding: 5px 0 0 25px;
   position: relative;
 `;
 
-export const SubTaskArrowIcon = styled.span`
+export const TaskArrowIcon = styled.span`
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
   border-top: 12px solid black;
@@ -75,50 +73,59 @@ export const SubTaskArrowIcon = styled.span`
   transform: ${({ isExpended }) => (isExpended ? 'rotate(0)' : 'rotate(-90deg)')};
 }`;
 
-export const ChangePosArrowIcon = styled.span`
+export const TaskChangePosArrowIcon = styled.span`
   position: absolute;
-  right: 91px;
+  right: 88px;
   top: 3px;
   cursor: pointer;
 }`;
 
-export const ChangePosCrossIcon = styled.span`
+export const TaskToggleIcon = styled.span`
   position: absolute;
-  right: 91px;
+  right: 88px;
   top: 3px;
   cursor: pointer;
 }`;
 
-export const SubTaskTitle = styled.h4`
+export const TaskTitle = styled.h4`
   cursor: pointer;
   width: 50%;
 }`;
 
-export const SubTaskPlusIcon = styled.span`
+export const TaskPlusIcon = styled.span`
   position: absolute;
-  right: 56px;
+  right: 62px;
   top: 3px;
   cursor: pointer;
 }`;
 
-export const SubTaskTitleEditingInput = styled.input`
+export const TaskTrashIcon = styled.span`
+  position: absolute;
+  right: 4px;
+  top: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #a33939;
+}`;
+
+export const TaskTitleEditingInput = styled.input`
   margin: 0;
   border-radius: 0;
 }`;
 
-export const AddSubTaskInput = styled.input`
+export const TaskInputAddSubTask = styled.input`
   margin: 0;
   border-radius: 0;
 }`;
 
-export const ItemCheckedCircle = styled.div`
+export const TaskCheckedCircle = styled.div`
   position: absolute;
   font-size: 20px;
   background: #fff;
-  height: 20px;
+  height: 19px;
   width: 20px;
   border: none;
-  right: 20px;
+  right: 30px;
   border-radius: 50%;
   top: 2px;
 `;

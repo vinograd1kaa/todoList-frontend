@@ -7,6 +7,7 @@ import {
   CONFIRM_CHANGE_POS,
   ITEM_ID_TO_MOVE,
   CHANGE_IS_CHECKED,
+  DELETE_TASK,
 } from '../../actions/Todo';
 
 const initialState = {
@@ -15,32 +16,34 @@ const initialState = {
 };
 
 export default function todoReducer(state = initialState, { type, payload }) {
-  const keyOfNewTask = Object.values(state.items).length + 1;
   switch (type) {
     case ADD_TASK:
+      const idOfItem = uniqueId();
       return {
         ...state,
         items: {
           ...state.items,
-          [keyOfNewTask]: {
+          [idOfItem]: {
             title: payload.title,
-            id: uniqueId(),
+            id: idOfItem,
             isExpended: false,
             isChecked: false,
             parentId: null,
           },
         },
       };
+
     case ADD_SUB_TASK:
       if (!payload.title) return { ...state };
       state.items[payload.id].isExpended = true;
+      const idOfSubItem = uniqueId();
 
       return {
         ...state,
         items: {
-          [keyOfNewTask]: {
+          [idOfSubItem]: {
             title: payload.title,
-            id: uniqueId(),
+            id: idOfSubItem,
             isExpended: false,
             isChecked: false,
             parentId: payload.id,
@@ -94,6 +97,14 @@ export default function todoReducer(state = initialState, { type, payload }) {
       return {
         ...state,
         itemIdToMove: payload.id,
+      };
+
+    case DELETE_TASK:
+      delete state.items[payload.id];
+
+      return {
+        ...state,
+        items: { ...state.items },
       };
 
     default:
