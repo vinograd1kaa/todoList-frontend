@@ -9,9 +9,12 @@ import {
   SubTaskPlusIcon,
   SubTaskTitleEditingInput,
   AddSubTaskInput,
+  ChangePosArrowIcon,
+  ChangePosCrossIcon,
+  ItemCheckedCircle,
 } from './styles/Todo';
 
-const TodoItem = ({ items }) => {
+const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
@@ -65,7 +68,47 @@ const TodoItem = ({ items }) => {
     dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id, isExpended } });
   };
 
+  const handleClickCircleIcon = (id, isChecked, subTasks) => {
+    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked, subTasks } });
+  };
+
+  const handleClickChangePos = (id) => {
+    dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id, parentId } });
+  };
+
+  const handleClickConfirmChangePos = (id, item) => {
+    dispatch({
+      type: 'TODO/CONFIRM_CHANGE_POS',
+      payload: { id, item, changePosItemId: itemIdToMove },
+    });
+  };
+
   const handleClickPlusIcon = (id) => setSubTaskAddingInputState(id);
+
+  const renderMoveIcon = (item) => {
+    switch (true) {
+      case itemIdToMove === item.id:
+        return (
+          <ChangePosCrossIcon onClick={() => handleClickChangePos(item.id)}>
+            <FontAwesomeIcon icon="cross" />
+          </ChangePosCrossIcon>
+        );
+      case itemIdToMove &&
+        itemIdToMove !== item.id &&
+        !itemsIdNotToMove.find((obj) => obj === item.id):
+        return (
+          <ChangePosCrossIcon onClick={() => handleClickConfirmChangePos(item.id, item)}>
+            <FontAwesomeIcon icon="sticky-note" />
+          </ChangePosCrossIcon>
+        );
+      default:
+        return (
+          <ChangePosArrowIcon onClick={() => handleClickChangePos(item.id)}>
+            <FontAwesomeIcon icon="arrow-right" />
+          </ChangePosArrowIcon>
+        );
+    }
+  };
 
   return (
     <SubTasksList>
@@ -103,10 +146,27 @@ const TodoItem = ({ items }) => {
               autoFocus
             />
           )}
+
+          <ItemCheckedCircle
+            onClick={() => handleClickCircleIcon(item.id, item.isChecked, item.subTasks)}
+          >
+            {item.isChecked && <FontAwesomeIcon icon="check" />}
+          </ItemCheckedCircle>
+
+          {renderMoveIcon(item)}
+
           <SubTaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
             <FontAwesomeIcon icon="plus" />
           </SubTaskPlusIcon>
-          {item.isExpended && <TodoItem key={item.id} items={item.subTasks} />}
+          {(item.isExpended || itemIdToMove) && (
+            <TodoItem
+              key={item.id}
+              items={item.subTasks}
+              parentId={item.id}
+              itemIdToMove={itemIdToMove}
+              itemsIdNotToMove={itemsIdNotToMove}
+            />
+          )}
         </SubTaskItem>
       ))}
     </SubTasksList>

@@ -73,6 +73,20 @@ export const SubTaskArrowIcon = styled.span`
   transform: ${({ isExpended }) => (isExpended ? 'rotate(0)' : 'rotate(-90deg)')};
 }`;
 
+export const ChangePosArrowIcon = styled.span`
+  position: absolute;
+  right: 91px;
+  top: 3px;
+  cursor: pointer;
+}`;
+
+export const ChangePosCrossIcon = styled.span`
+  position: absolute;
+  right: 91px;
+  top: 3px;
+  cursor: pointer;
+}`;
+
 export const SubTaskTitle = styled.h4`
   cursor: pointer;
   width: 50%;
@@ -80,7 +94,7 @@ export const SubTaskTitle = styled.h4`
 
 export const SubTaskPlusIcon = styled.span`
   position: absolute;
-  right: 26px;
+  right: 56px;
   top: 3px;
   cursor: pointer;
 }`;
@@ -94,3 +108,15 @@ export const AddSubTaskInput = styled.input`
   margin: 0;
   border-radius: 0;
 }`;
+
+export const ItemCheckedCircle = styled.div`
+  position: absolute;
+  font-size: 20px;
+  background: #fff;
+  height: 20px;
+  width: 20px;
+  border: none;
+  right: 20px;
+  border-radius: 50%;
+  top: 2px;
+`;

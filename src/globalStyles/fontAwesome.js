@@ -6,7 +6,23 @@ import {
   faMapMarkerAlt,
   faSearch,
   faPlus,
+  faArrowRight,
+  faCross,
+  faStickyNote,
+  faCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
-library.add(fab, faCheckSquare, faClock, faMapMarkerAlt, faCoffee, faSearch, faPlus);
+library.add(
+  fab,
+  faCheckSquare,
+  faClock,
+  faMapMarkerAlt,
+  faCoffee,
+  faSearch,
+  faPlus,
+  faArrowRight,
+  faCross,
+  faStickyNote,
+  faCheck,
+);

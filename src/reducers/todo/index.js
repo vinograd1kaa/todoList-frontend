@@ -1,32 +1,40 @@
 import { uniqueId } from 'lodash';
-import { ADD_SUB_TASK, ADD_TASK, CHANGE_TASK_TITLE, CHANGE_IS_EXPENDED } from '../../actions/Todo';
+import {
+  ADD_SUB_TASK,
+  ADD_TASK,
+  CHANGE_TASK_TITLE,
+  CHANGE_IS_EXPENDED,
+  CONFIRM_CHANGE_POS,
+  ITEM_ID_TO_MOVE,
+  CHANGE_IS_CHECKED,
+} from '../../actions/Todo';
 
 const initialState = {
   items: [],
+  itemParentId: null,
+  itemIdToMove: null,
+  itemsIdNotToMove: false,
 };
 
-function findTaskById(id, arr) {
-  let result = arr.find((obj) => obj.id === id);
-
-  if (!result) {
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < arr.length; i++) {
-      if (arr[i].id === id) {
-        return arr[id];
-      }
-      if ('subTasks' in arr[i]) {
-        result = findTaskById(id, arr[i].subTasks);
-        if (result) {
-          return result;
-        }
-      }
-    }
-  }
-
-  return result;
+function findSubtasksNotToMove(arr, itemToPush, oldItemsArr = []) {
+  oldItemsArr.push(itemToPush);
+  arr.forEach((item) => {
+    findSubtasksNotToMove(item.subTasks, item.id, oldItemsArr);
+  });
+  return oldItemsArr;
 }
 
+function collect(arr, newArr = []) {
+  arr.forEach((task) => {
+    newArr.push(task);
+    if (task.subTasks.length !== 0) {
+      collect(task.subTasks, newArr);
+    }
+  });
+  return newArr;
+}
 export default function todoReducer(state = initialState, { type, payload }) {
+  const stateItems = collect(state.items);
   switch (type) {
     case ADD_TASK:
       return {
@@ -37,6 +45,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
             title: payload.title,
             id: uniqueId(),
             isExpended: true,
+            isChecked: false,
             subTasks: [],
           },
         ],
@@ -44,12 +53,13 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case ADD_SUB_TASK:
       if (!payload.title) return { ...state };
-      findTaskById(payload.id, state.items).subTasks = [
+      stateItems.find((item) => item.id === payload.id).subTasks = [
         ...payload.subTasks,
         {
           title: payload.title,
           id: uniqueId(),
           isExpended: true,
+          isChecked: false,
           subTasks: [],
         },
       ];
@@ -61,7 +71,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case CHANGE_TASK_TITLE:
       if (!payload.title) return { ...state };
-      findTaskById(payload.id, state.items).title = payload.title;
+      stateItems.find((item) => item.id === payload.id).title = payload.title;
 
       return {
         ...state,
@@ -69,11 +79,60 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_EXPENDED:
-      findTaskById(payload.id, state.items).isExpended = !payload.isExpended;
+      stateItems.find((item) => item.id === payload.id).isExpended = !payload.isExpended;
 
       return {
         ...state,
         items: [...state.items],
+      };
+
+    case CHANGE_IS_CHECKED:
+      const findItemToChecked = stateItems.find((item) => item.id === payload.id);
+      findItemToChecked.isChecked = !payload.isChecked;
+      collect(findItemToChecked.subTasks).forEach((item) => (item.isChecked = !payload.isChecked));
+
+      return {
+        ...state,
+        items: [...state.items],
+      };
+
+    case CONFIRM_CHANGE_POS:
+      const oldTask = stateItems.find((item) => item.id === payload.changePosItemId);
+      const parentTask = stateItems.find((item) => item.id === state.itemParentId);
+
+      if (parentTask) {
+        parentTask.subTasks = parentTask.subTasks.filter(
+          (item) => item.id !== payload.changePosItemId,
+        );
+      } else {
+        state.items = state.items.filter((item) => item.id !== payload.changePosItemId);
+      }
+      stateItems.find((item) => item.id === payload.id).subTasks = [
+        ...payload.item.subTasks,
+        { ...oldTask },
+      ];
+      return {
+        ...state,
+        items: [...state.items],
+        itemIdToMove: null,
+      };
+
+    case ITEM_ID_TO_MOVE:
+      if (payload.id === state.itemIdToMove) {
+        return {
+          ...state,
+          itemIdToMove: false,
+        };
+      }
+      if (payload.id) {
+        state.itemParentId = payload.parentId;
+        const findItem = stateItems.find((item) => item.id === payload.id);
+        state.itemsIdNotToMove = findSubtasksNotToMove(findItem.subTasks);
+      }
+
+      return {
+        ...state,
+        itemIdToMove: payload.id,
       };
 
     default:
