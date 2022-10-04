@@ -14,30 +14,29 @@ import {
   ItemCheckedCircle,
 } from './styles/Todo';
 
-const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
+const TodoItem = ({ items, itemChecked, itemNotToMove, subItems, itemIdToMove }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState(false);
   const [titleInputValue, setTitleInputValue] = useState('');
 
-  const handleClickAddSubTaskInputBlur = (id, subTasks) => {
+  const handleClickAddSubTaskInputBlur = (id) => {
     dispatch({
       type: 'TODO/ADD_SUB_TASK',
-      payload: { id, title: subTaskAddingInputValue, subTasks },
+      payload: { id, title: subTaskAddingInputValue },
     });
     setSubTaskAddingInputValue('');
     setSubTaskAddingInputState(false);
   };
 
-  const handleKeyDownAddSubTaskInput = (e, id, subTasks) => {
+  const handleKeyDownAddSubTaskInput = (e, id) => {
     if (e.keyCode === 13) {
       dispatch({
         type: 'TODO/ADD_SUB_TASK',
         payload: {
           id,
           title: subTaskAddingInputValue,
-          subTasks,
         },
       });
       setSubTaskAddingInputValue('');
@@ -68,12 +67,12 @@ const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
     dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id, isExpended } });
   };
 
-  const handleClickCircleIcon = (id, isChecked, subTasks) => {
-    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked, subTasks } });
+  const handleClickCircleIcon = (id, isChecked) => {
+    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked } });
   };
 
   const handleClickChangePos = (id) => {
-    dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id, parentId } });
+    dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id } });
   };
 
   const handleClickConfirmChangePos = (id, item) => {
@@ -83,7 +82,9 @@ const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
     });
   };
 
-  const handleClickPlusIcon = (id) => setSubTaskAddingInputState(id);
+  const handleClickPlusIcon = (id) => {
+    setSubTaskAddingInputState(id);
+  };
 
   const renderMoveIcon = (item) => {
     switch (true) {
@@ -93,9 +94,7 @@ const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
             <FontAwesomeIcon icon="cross" />
           </ChangePosCrossIcon>
         );
-      case itemIdToMove &&
-        itemIdToMove !== item.id &&
-        !itemsIdNotToMove.find((obj) => obj === item.id):
+      case itemIdToMove && itemIdToMove !== item.id && !itemNotToMove:
         return (
           <ChangePosCrossIcon onClick={() => handleClickConfirmChangePos(item.id, item)}>
             <FontAwesomeIcon icon="sticky-note" />
@@ -110,11 +109,13 @@ const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
     }
   };
 
+  const renderItems = subItems || Object.values(items).filter((item) => item.parentId === null);
+
   return (
     <SubTasksList>
-      {items.map((item) => (
+      {renderItems.map((item) => (
         <SubTaskItem key={item.id}>
-          {Boolean(item.subTasks.length) && (
+          {Object.values(items).find((obj) => obj.parentId === item.id) && (
             <SubTaskArrowIcon
               onClick={() => handleClickArrowIcon(item.id, item.isExpended)}
               isExpended={item.isExpended}
@@ -140,17 +141,15 @@ const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
             <AddSubTaskInput
               type="text"
               value={subTaskAddingInputValue}
-              onBlur={() => handleClickAddSubTaskInputBlur(item.id, item.subTasks)}
+              onBlur={() => handleClickAddSubTaskInputBlur(item.id)}
               onChange={(e) => setSubTaskAddingInputValue(e.target.value)}
-              onKeyDown={(e) => handleKeyDownAddSubTaskInput(e, item.id, item.subTasks)}
+              onKeyDown={(e) => handleKeyDownAddSubTaskInput(e, item.id)}
               autoFocus
             />
           )}
 
-          <ItemCheckedCircle
-            onClick={() => handleClickCircleIcon(item.id, item.isChecked, item.subTasks)}
-          >
-            {item.isChecked && <FontAwesomeIcon icon="check" />}
+          <ItemCheckedCircle onClick={() => handleClickCircleIcon(item.id, item.isChecked)}>
+            {(item.isChecked || itemChecked) && <FontAwesomeIcon icon="check" />}
           </ItemCheckedCircle>
 
           {renderMoveIcon(item)}
@@ -158,13 +157,16 @@ const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
           <SubTaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
             <FontAwesomeIcon icon="plus" />
           </SubTaskPlusIcon>
-          {(item.isExpended || itemIdToMove) && (
+          {item.isExpended && (
             <TodoItem
               key={item.id}
-              items={item.subTasks}
-              parentId={item.id}
+              subItems={Object.values(items || { ...subItems }).filter(
+                (obj) => obj.parentId === item.id,
+              )}
+              items={items}
+              itemChecked={itemChecked || item.isChecked}
               itemIdToMove={itemIdToMove}
-              itemsIdNotToMove={itemsIdNotToMove}
+              itemNotToMove={itemNotToMove || item.id === itemIdToMove}
             />
           )}
         </SubTaskItem>

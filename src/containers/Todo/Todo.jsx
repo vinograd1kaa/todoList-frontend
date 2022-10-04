@@ -8,7 +8,6 @@ const Todo = ({ t }) => {
   const dispatch = useDispatch();
   const tasksList = useSelector((state) => state.todo.items);
   const itemIdToMove = useSelector((state) => state.todo.itemIdToMove);
-  const itemsIdNotToMove = useSelector((state) => state.todo.itemsIdNotToMove);
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
 
   const handleClickAddTaskBtn = () => {
@@ -33,11 +32,7 @@ const Todo = ({ t }) => {
         </Form>
       </Header>
       <TaskListItem>
-        <TodoItem
-          items={tasksList}
-          itemIdToMove={itemIdToMove}
-          itemsIdNotToMove={itemsIdNotToMove}
-        />
+        <TodoItem items={tasksList} itemIdToMove={itemIdToMove} />
       </TaskListItem>
     </Container>
   );

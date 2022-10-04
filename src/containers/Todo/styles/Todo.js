@@ -58,6 +58,8 @@ export const SubTaskItem = styled.li`
   border-left: none;
   border-right: none;
   border-bottom: none;
+  //padding-left: ${({ parentId }) => (parentId ? `${parentId * 25}px` : '25px')};
+  //padding-top: 5px;
   padding: 5px 0 0 25px;
   position: relative;
 `;
