@@ -1,4 +1,4 @@
-import { uniqueId } from 'lodash';
+import { omit, uniqueId } from 'lodash';
 import {
   ADD_SUB_TASK,
   ADD_TASK,
@@ -100,7 +100,22 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case DELETE_TASK:
-      delete state.items[payload.id];
+      const getSubTasksId = (id, obj) => {
+        let result = [id];
+        Object.values(obj).forEach((item) => {
+          if (item.parentId === id) {
+            result = result.concat(getSubTasksId(item.id, obj));
+          }
+        });
+        return result;
+      };
+
+      const removeTaskAndSubTasks = (parentId, obj) => {
+        const allIds = getSubTasksId(parentId, obj);
+        return omit(obj, allIds);
+      };
+
+      state.items = removeTaskAndSubTasks(payload.id, state.items);
 
       return {
         ...state,

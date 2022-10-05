@@ -168,7 +168,7 @@ const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMov
             <FontAwesomeIcon icon="plus" />
           </TaskPlusIcon>
 
-          <TaskTrashIcon onClick={() => handleClickTrashIcon(item.id)}>
+          <TaskTrashIcon onClick={() => handleClickTrashIcon(item.id, renderItems)}>
             <FontAwesomeIcon icon="trash" />
           </TaskTrashIcon>
 
