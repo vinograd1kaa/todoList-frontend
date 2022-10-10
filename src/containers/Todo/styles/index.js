@@ -7,6 +7,10 @@ export const Container = styled.div`
   position: relative;
 `;
 
+export const CalendarContainer = styled.div`
+  margin: 0 auto;
+`;
+
 export const Header = styled.div`
   background-color: #f44336;
   padding: 30px 40px;

@@ -118,14 +118,14 @@ const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMov
   };
 
   const renderItems = itemParentId
-    ? Object.values(items).filter((obj) => obj.parentId === itemParentId)
-    : Object.values(items).filter((item) => item.parentId === null);
+    ? items.filter((obj) => obj.parentId === itemParentId)
+    : items.filter((item) => item.parentId === null);
 
   return (
     <TasksList>
       {renderItems.map((item) => (
         <TaskItem key={item.id}>
-          {Object.values(items).find((obj) => obj.parentId === item.id) && (
+          {items.find((obj) => obj.parentId === item.id) && (
             <TaskArrowIcon
               onClick={() => handleClickArrowIcon(item.id, item.isExpended)}
               isExpended={item.isExpended || itemIdToMove}

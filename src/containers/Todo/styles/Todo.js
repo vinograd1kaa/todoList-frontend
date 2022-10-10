@@ -14,7 +14,7 @@ export const TodoAddTasksInput = styled.input`
   }
 `;
 
-export const TodoAddTasksButton = styled.button`
+export const TodoButton = styled.button`
   padding: 11.3px;
   width: 25%;
   background: #d9d9d9;
@@ -128,4 +128,14 @@ export const TaskCheckedCircle = styled.div`
   right: 30px;
   border-radius: 50%;
   top: 2px;
+`;
+
+export const TodoCalendarIcon = styled.span`
+  font-size: 35px;
+  cursor: pointer;
+  color: ${({ state }) => (state ? '#006edc' : '#fff')};
+`;
+
+export const TodoItemDate = styled.p`
+  color: #006edc;
 `;

@@ -8,16 +8,32 @@ import {
   ITEM_ID_TO_MOVE,
   CHANGE_IS_CHECKED,
   DELETE_TASK,
+  CHANGE_DATE,
 } from '../../actions/Todo';
 
 const initialState = {
   items: {},
   itemIdToMove: null,
+  date: { current: null, calendar: null },
 };
 
+function getSubTasksId(id, obj) {
+  let result = [id];
+  Object.values(obj).forEach((item) => {
+    if (item.parentId === id) {
+      result = result.concat(getSubTasksId(item.id, obj));
+    }
+  });
+  return result;
+}
+
 export default function todoReducer(state = initialState, { type, payload }) {
+  const b = new Date().toString().split(' ');
+  const dateLetters = b.map((el) => el);
+
   switch (type) {
     case ADD_TASK:
+      console.log(state.date);
       const idOfItem = uniqueId();
       return {
         ...state,
@@ -29,6 +45,11 @@ export default function todoReducer(state = initialState, { type, payload }) {
             isExpended: false,
             isChecked: false,
             parentId: null,
+            date: state.date.current || {
+              day: dateLetters[2],
+              month: dateLetters[1],
+              year: dateLetters[3],
+            },
           },
         },
       };
@@ -47,6 +68,11 @@ export default function todoReducer(state = initialState, { type, payload }) {
             isExpended: false,
             isChecked: false,
             parentId: payload.id,
+            date: state.items[payload.id].date || {
+              day: dateLetters[2],
+              month: dateLetters[1],
+              year: dateLetters[3],
+            },
           },
           ...state.items,
         },
@@ -78,8 +104,24 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CONFIRM_CHANGE_POS:
-      state.items[payload.id].isExpended = true;
-      state.items[payload.changePosItemId].parentId = payload.id;
+      const itemWhichChange = state.items[payload.changePosItemId];
+      const itemWhereChange = state.items[payload.id];
+
+      if (
+        itemWhichChange.date.day !== itemWhereChange.date.day ||
+        itemWhichChange.date.month !== itemWhereChange.date.month ||
+        itemWhichChange.date.year !== itemWhereChange.date.year
+      ) {
+        const changeTasksDate = (parentId, obj, itemWhereChangeDate) => {
+          const allIds = getSubTasksId(parentId, obj);
+          return allIds.map((id) => (obj[id].date = itemWhereChangeDate));
+        };
+
+        changeTasksDate(payload.changePosItemId, state.items, itemWhereChange.date);
+      }
+
+      itemWhereChange.isExpended = true;
+      itemWhichChange.parentId = payload.id;
 
       return {
         ...state,
@@ -100,26 +142,22 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case DELETE_TASK:
-      const getSubTasksId = (id, obj) => {
-        let result = [id];
-        Object.values(obj).forEach((item) => {
-          if (item.parentId === id) {
-            result = result.concat(getSubTasksId(item.id, obj));
-          }
-        });
-        return result;
-      };
-
-      const removeTaskAndSubTasks = (parentId, obj) => {
+      const removeTasks = (parentId, obj) => {
         const allIds = getSubTasksId(parentId, obj);
         return omit(obj, allIds);
       };
 
-      state.items = removeTaskAndSubTasks(payload.id, state.items);
+      state.items = removeTasks(payload.id, state.items);
 
       return {
         ...state,
         items: { ...state.items },
+      };
+
+    case CHANGE_DATE:
+      return {
+        ...state,
+        date: { current: payload.date, calendar: payload.calendarDate },
       };
 
     default:
