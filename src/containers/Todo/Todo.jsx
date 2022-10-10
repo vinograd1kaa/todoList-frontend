@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Header, Title, Form } from './styles';
-import { AddTasksButton, AddTasksInput, TaskListItem } from './styles/Todo';
+import { TodoAddTasksInput, TaskListItem, TodoAddTasksButton } from './styles/Todo';
 import TodoItem from './TodoItem';
 
 const Todo = ({ t }) => {
   const dispatch = useDispatch();
   const tasksList = useSelector((state) => state.todo.items);
   const itemIdToMove = useSelector((state) => state.todo.itemIdToMove);
-  const itemsIdNotToMove = useSelector((state) => state.todo.itemsIdNotToMove);
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
 
   const handleClickAddTaskBtn = () => {
@@ -21,23 +20,19 @@ const Todo = ({ t }) => {
       <Header>
         <Title>{t('Todo.pageTitle')}</Title>
         <Form>
-          <AddTasksInput
+          <TodoAddTasksInput
             type="text"
             placeholder={t('Todo.addTasksPlaceholder')}
             value={addTaskInputValue}
             onChange={(e) => setAddTaskInputValue(e.target.value)}
           />
-          <AddTasksButton disabled={!addTaskInputValue} onClick={handleClickAddTaskBtn}>
+          <TodoAddTasksButton disabled={!addTaskInputValue} onClick={handleClickAddTaskBtn}>
             {t('Todo.addTasksButton')}
-          </AddTasksButton>
+          </TodoAddTasksButton>
         </Form>
       </Header>
       <TaskListItem>
-        <TodoItem
-          items={tasksList}
-          itemIdToMove={itemIdToMove}
-          itemsIdNotToMove={itemsIdNotToMove}
-        />
+        <TodoItem items={tasksList} itemIdToMove={itemIdToMove} />
       </TaskListItem>
     </Container>
   );

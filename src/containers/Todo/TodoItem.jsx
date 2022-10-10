@@ -2,42 +2,42 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 import {
-  SubTaskItem,
-  SubTasksList,
-  SubTaskArrowIcon,
-  SubTaskTitle,
-  SubTaskPlusIcon,
-  SubTaskTitleEditingInput,
-  AddSubTaskInput,
-  ChangePosArrowIcon,
-  ChangePosCrossIcon,
-  ItemCheckedCircle,
+  TaskItem,
+  TasksList,
+  TaskArrowIcon,
+  TaskTitle,
+  TaskPlusIcon,
+  TaskTitleEditingInput,
+  TaskInputAddSubTask,
+  TaskChangePosArrowIcon,
+  TaskToggleIcon,
+  TaskCheckedCircle,
+  TaskTrashIcon,
 } from './styles/Todo';
 
-const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
+const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMove }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState(false);
   const [titleInputValue, setTitleInputValue] = useState('');
 
-  const handleClickAddSubTaskInputBlur = (id, subTasks) => {
+  const handleClickAddSubTaskInputBlur = (id) => {
     dispatch({
       type: 'TODO/ADD_SUB_TASK',
-      payload: { id, title: subTaskAddingInputValue, subTasks },
+      payload: { id, title: subTaskAddingInputValue },
     });
     setSubTaskAddingInputValue('');
     setSubTaskAddingInputState(false);
   };
 
-  const handleKeyDownAddSubTaskInput = (e, id, subTasks) => {
+  const handleKeyDownAddSubTaskInput = (e, id) => {
     if (e.keyCode === 13) {
       dispatch({
         type: 'TODO/ADD_SUB_TASK',
         payload: {
           id,
           title: subTaskAddingInputValue,
-          subTasks,
         },
       });
       setSubTaskAddingInputValue('');
@@ -45,15 +45,15 @@ const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
     }
   };
 
-  const handleClickTitleEditingBlur = (id, item) => {
-    dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue, item } });
+  const handleClickTitleEditingBlur = (id) => {
+    dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
     setTitleEditingState('');
     setTitleEditingState(false);
   };
 
-  const handleKeyDownTitleEditing = (e, id, item) => {
+  const handleKeyDownTitleEditing = (e, id) => {
     if (e.keyCode === 13) {
-      dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue, item } });
+      dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
       setTitleInputValue('');
       setTitleEditingState(false);
     }
@@ -68,108 +68,122 @@ const TodoItem = ({ items, parentId, itemIdToMove, itemsIdNotToMove }) => {
     dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id, isExpended } });
   };
 
-  const handleClickCircleIcon = (id, isChecked, subTasks) => {
-    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked, subTasks } });
+  const handleClickCircleIcon = (id, isChecked) => {
+    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked } });
   };
 
   const handleClickChangePos = (id) => {
-    dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id, parentId } });
+    dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id } });
   };
 
-  const handleClickConfirmChangePos = (id, item) => {
+  const handleClickConfirmChangePos = (id) => {
     dispatch({
       type: 'TODO/CONFIRM_CHANGE_POS',
-      payload: { id, item, changePosItemId: itemIdToMove },
+      payload: { id, changePosItemId: itemIdToMove },
     });
   };
 
-  const handleClickPlusIcon = (id) => setSubTaskAddingInputState(id);
+  const handleClickPlusIcon = (id) => {
+    setSubTaskAddingInputState(id);
+  };
+
+  const handleClickTrashIcon = (id) => {
+    dispatch({
+      type: 'TODO/DELETE_TASK',
+      payload: { id },
+    });
+  };
 
   const renderMoveIcon = (item) => {
     switch (true) {
       case itemIdToMove === item.id:
         return (
-          <ChangePosCrossIcon onClick={() => handleClickChangePos(item.id)}>
+          <TaskToggleIcon onClick={() => handleClickChangePos(item.id)}>
             <FontAwesomeIcon icon="cross" />
-          </ChangePosCrossIcon>
+          </TaskToggleIcon>
         );
-      case itemIdToMove &&
-        itemIdToMove !== item.id &&
-        !itemsIdNotToMove.find((obj) => obj === item.id):
+      case itemIdToMove && itemIdToMove !== item.id && !itemNotToMove:
         return (
-          <ChangePosCrossIcon onClick={() => handleClickConfirmChangePos(item.id, item)}>
+          <TaskToggleIcon onClick={() => handleClickConfirmChangePos(item.id)}>
             <FontAwesomeIcon icon="sticky-note" />
-          </ChangePosCrossIcon>
+          </TaskToggleIcon>
         );
       default:
         return (
-          <ChangePosArrowIcon onClick={() => handleClickChangePos(item.id)}>
+          <TaskChangePosArrowIcon onClick={() => handleClickChangePos(item.id)}>
             <FontAwesomeIcon icon="arrow-right" />
-          </ChangePosArrowIcon>
+          </TaskChangePosArrowIcon>
         );
     }
   };
 
+  const renderItems = itemParentId
+    ? Object.values(items).filter((obj) => obj.parentId === itemParentId)
+    : Object.values(items).filter((item) => item.parentId === null);
+
   return (
-    <SubTasksList>
-      {items.map((item) => (
-        <SubTaskItem key={item.id}>
-          {Boolean(item.subTasks.length) && (
-            <SubTaskArrowIcon
+    <TasksList>
+      {renderItems.map((item) => (
+        <TaskItem key={item.id}>
+          {Object.values(items).find((obj) => obj.parentId === item.id) && (
+            <TaskArrowIcon
               onClick={() => handleClickArrowIcon(item.id, item.isExpended)}
-              isExpended={item.isExpended}
+              isExpended={item.isExpended || itemIdToMove}
             />
           )}
 
           {titleEditingState !== item.id ? (
-            <SubTaskTitle onClick={() => handleClickTitle(item.title, item.id)}>
+            <TaskTitle onClick={() => handleClickTitle(item.title, item.id)}>
               {item.title}
-            </SubTaskTitle>
+            </TaskTitle>
           ) : (
-            <SubTaskTitleEditingInput
+            <TaskTitleEditingInput
               type="text"
               value={titleInputValue}
-              onBlur={() => handleClickTitleEditingBlur(item.id, { ...item })}
+              onBlur={() => handleClickTitleEditingBlur(item.id)}
               onChange={(e) => setTitleInputValue(e.target.value)}
-              onKeyDown={(e) => handleKeyDownTitleEditing(e, item.id, { ...item })}
+              onKeyDown={(e) => handleKeyDownTitleEditing(e, item.id)}
               autoFocus
             />
           )}
 
           {subTaskAddingInputState === item.id && (
-            <AddSubTaskInput
+            <TaskInputAddSubTask
               type="text"
               value={subTaskAddingInputValue}
-              onBlur={() => handleClickAddSubTaskInputBlur(item.id, item.subTasks)}
+              onBlur={() => handleClickAddSubTaskInputBlur(item.id)}
               onChange={(e) => setSubTaskAddingInputValue(e.target.value)}
-              onKeyDown={(e) => handleKeyDownAddSubTaskInput(e, item.id, item.subTasks)}
+              onKeyDown={(e) => handleKeyDownAddSubTaskInput(e, item.id)}
               autoFocus
             />
           )}
 
-          <ItemCheckedCircle
-            onClick={() => handleClickCircleIcon(item.id, item.isChecked, item.subTasks)}
-          >
-            {item.isChecked && <FontAwesomeIcon icon="check" />}
-          </ItemCheckedCircle>
+          <TaskCheckedCircle onClick={() => handleClickCircleIcon(item.id, item.isChecked)}>
+            {(item.isChecked || itemChecked) && <FontAwesomeIcon icon="check" />}
+          </TaskCheckedCircle>
 
           {renderMoveIcon(item)}
 
-          <SubTaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
+          <TaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
             <FontAwesomeIcon icon="plus" />
-          </SubTaskPlusIcon>
+          </TaskPlusIcon>
+
+          <TaskTrashIcon onClick={() => handleClickTrashIcon(item.id, renderItems)}>
+            <FontAwesomeIcon icon="trash" />
+          </TaskTrashIcon>
+
           {(item.isExpended || itemIdToMove) && (
             <TodoItem
-              key={item.id}
-              items={item.subTasks}
-              parentId={item.id}
+              items={items}
+              itemChecked={itemChecked || item.isChecked}
+              itemParentId={item.id}
               itemIdToMove={itemIdToMove}
-              itemsIdNotToMove={itemsIdNotToMove}
+              itemNotToMove={itemNotToMove || item.id === itemIdToMove}
             />
           )}
-        </SubTaskItem>
+        </TaskItem>
       ))}
-    </SubTasksList>
+    </TasksList>
   );
 };
 

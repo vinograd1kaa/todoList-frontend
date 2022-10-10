@@ -10,6 +10,7 @@ import {
   faCross,
   faStickyNote,
   faCheck,
+  faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
@@ -25,4 +26,5 @@ library.add(
   faCross,
   faStickyNote,
   faCheck,
+  faTrash,
 );
