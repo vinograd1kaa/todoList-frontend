@@ -75,14 +75,14 @@ export const TaskArrowIcon = styled.span`
 
 export const TaskChangePosArrowIcon = styled.span`
   position: absolute;
-  right: 88px;
+  right: 100px;
   top: 3px;
   cursor: pointer;
 }`;
 
 export const TaskToggleIcon = styled.span`
   position: absolute;
-  right: 88px;
+  right: 100px;
   top: 3px;
   cursor: pointer;
 }`;
@@ -94,7 +94,7 @@ export const TaskTitle = styled.h4`
 
 export const TaskPlusIcon = styled.span`
   position: absolute;
-  right: 62px;
+  right: 74px;
   top: 3px;
   cursor: pointer;
 }`;
@@ -125,14 +125,17 @@ export const TaskCheckedCircle = styled.div`
   height: 19px;
   width: 20px;
   border: none;
-  right: 30px;
+  right: 47px;
   border-radius: 50%;
   top: 2px;
 `;
 
 export const TodoCalendarIcon = styled.span`
-  font-size: 35px;
+  font-size: 18px;
   cursor: pointer;
+  position: absolute;
+  right: 25px;
+  top: 2px;
   color: ${({ state }) => (state ? '#006edc' : '#fff')};
 `;
 

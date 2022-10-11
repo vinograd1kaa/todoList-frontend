@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Container, Header, Title, Form } from './styles';
-import {
-  TodoAddTasksInput,
-  TaskListItem,
-  TodoButton,
-  TodoCalendarIcon,
-  TodoItemDate,
-} from './styles/Todo';
+import { TodoAddTasksInput, TaskListItem, TodoButton, TodoItemDate } from './styles/Todo';
 import TodoItem from './TodoItem';
 import Calendar from './Calendar/Calendar';
 
@@ -16,11 +9,13 @@ const Todo = ({ t }) => {
   const dispatch = useDispatch();
 
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
-  const [calendarState, setCalendarState] = useState(false);
+  // const [calendarState, setCalendarState] = useState(false);
 
   const items = useSelector((state) => state.todo.items);
   const itemIdToMove = useSelector((state) => state.todo.itemIdToMove);
+  const calendarItem = useSelector((state) => state.todo.calendarItem);
   const date = useSelector((state) => state.todo.date.current);
+
   const calendarDate = useSelector((state) => state.todo.date.calendar);
 
   const handleClickAddTaskBtn = () => {
@@ -53,9 +48,6 @@ const Todo = ({ t }) => {
   return (
     <Container>
       <Header>
-        <TodoCalendarIcon onClick={() => setCalendarState(!calendarState)} state={calendarState}>
-          <FontAwesomeIcon icon="calendar-alt" />
-        </TodoCalendarIcon>
         <Title>{t('Todo.pageTitle')}</Title>
         <Form>
           <TodoAddTasksInput
@@ -69,11 +61,16 @@ const Todo = ({ t }) => {
           </TodoButton>
         </Form>
       </Header>
-      {calendarState && <Calendar calendarDate={calendarDate} />}
+      {calendarItem && <Calendar calendarDate={calendarDate} />}
       {sortedItems.map((arr) => (
         <TaskListItem>
           <TodoItemDate>{checkDate(arr[0].date)}</TodoItemDate>
-          <TodoItem items={arr} itemIdToMove={itemIdToMove} date={date} />
+          <TodoItem
+            items={arr}
+            itemIdToMove={itemIdToMove}
+            date={date}
+            calendarItem={calendarItem}
+          />
         </TaskListItem>
       ))}
     </Container>

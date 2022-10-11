@@ -13,9 +13,17 @@ import {
   TaskToggleIcon,
   TaskCheckedCircle,
   TaskTrashIcon,
+  TodoCalendarIcon,
 } from './styles/Todo';
 
-const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMove }) => {
+const TodoItem = ({
+  items,
+  itemParentId,
+  itemChecked,
+  itemNotToMove,
+  itemIdToMove,
+  calendarItem,
+}) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
@@ -94,6 +102,13 @@ const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMov
     });
   };
 
+  const handleClickCalendar = (id) => {
+    dispatch({
+      type: 'TODO/CALENDAR_TASK',
+      payload: { id },
+    });
+  };
+
   const renderMoveIcon = (item) => {
     switch (true) {
       case itemIdToMove === item.id:
@@ -158,6 +173,13 @@ const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMov
             />
           )}
 
+          <TodoCalendarIcon
+            onClick={() => handleClickCalendar(item.id)}
+            state={item.id === calendarItem}
+          >
+            <FontAwesomeIcon icon="calendar-alt" />
+          </TodoCalendarIcon>
+
           <TaskCheckedCircle onClick={() => handleClickCircleIcon(item.id, item.isChecked)}>
             {(item.isChecked || itemChecked) && <FontAwesomeIcon icon="check" />}
           </TaskCheckedCircle>
@@ -179,6 +201,7 @@ const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMov
               itemParentId={item.id}
               itemIdToMove={itemIdToMove}
               itemNotToMove={itemNotToMove || item.id === itemIdToMove}
+              calendarItem={calendarItem}
             />
           )}
         </TaskItem>
