@@ -25,7 +25,7 @@ const Calendar = ({ calendarDate }) => {
 
   return (
     <CalendarContainer>
-      <ReactCalendar onClickDay={handleClickDay} onChange={onChange} value={value} />
+      <ReactCalendar onChange={onChange} onClickDay={handleClickDay} value={value} />
     </CalendarContainer>
   );
 };

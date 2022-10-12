@@ -7,7 +7,6 @@ import TodoItem from './TodoItem';
 const Todo = ({ t }) => {
   const dispatch = useDispatch();
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
-
   const items = useSelector((state) => state.todo.items);
   const itemIdToMove = useSelector((state) => state.todo.itemIdToMove);
   const calendarItem = useSelector((state) => state.todo.calendarItem);
@@ -38,6 +37,7 @@ const Todo = ({ t }) => {
       itemDate.year === dateLetters[3]
     )
       return 'Today';
+
     return `${itemDate.day} ${itemDate.month} ${itemDate.year}`;
   };
 

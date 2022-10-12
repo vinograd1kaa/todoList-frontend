@@ -32,6 +32,11 @@ function getSubTasksId(id, obj) {
 export default function todoReducer(state = initialState, { type, payload }) {
   const b = new Date().toString().split(' ');
   const dateLetters = b.map((el) => el);
+  const todayDate = {
+    day: dateLetters[2],
+    month: dateLetters[1],
+    year: dateLetters[3],
+  };
 
   switch (type) {
     case ADD_TASK:
@@ -46,11 +51,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
             isExpended: false,
             isChecked: false,
             parentId: null,
-            date: {
-              day: dateLetters[2],
-              month: dateLetters[1],
-              year: dateLetters[3],
-            },
+            date: todayDate,
           },
         },
       };
@@ -155,22 +156,16 @@ export default function todoReducer(state = initialState, { type, payload }) {
         items: { ...state.items },
       };
 
-    case CHANGE_DATE:
-      const changeTasksDate = (parentId, obj) => {
-        const allIds = getSubTasksId(parentId, obj);
-        return allIds.map((id) => (obj[id].date = payload.date));
-      };
-
-      state.items[state.calendarItem].parentId = null;
-      changeTasksDate(state.calendarItem, state.items);
-
-      return {
-        ...state,
-        date: { current: payload.date, calendar: payload.calendarDate },
-      };
-
     case CALENDAR_TASK:
       if (payload.id === state.calendarItem) {
+        const changeTasksDate = (parentId, obj) => {
+          const allIds = getSubTasksId(parentId, obj);
+          return allIds.map((id) => (obj[id].date = state.date.current));
+        };
+
+        state.items[state.calendarItem].parentId = null;
+        changeTasksDate(state.calendarItem, state.items);
+
         return {
           ...state,
           calendarItem: null,
@@ -179,7 +174,14 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
       return {
         ...state,
+        date: { current: state.date.current || todayDate, calendar: null },
         calendarItem: payload.id,
+      };
+
+    case CHANGE_DATE:
+      return {
+        ...state,
+        date: { current: payload.date, calendar: payload.calendarDate },
       };
 
     default:
