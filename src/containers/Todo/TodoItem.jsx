@@ -15,6 +15,7 @@ import {
   TaskTrashIcon,
   TodoCalendarIcon,
 } from './styles/Todo';
+import Calendar from './Calendar/Calendar';
 
 const TodoItem = ({
   items,
@@ -23,6 +24,7 @@ const TodoItem = ({
   itemNotToMove,
   itemIdToMove,
   calendarItem,
+  calendarDate,
 }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
@@ -194,6 +196,8 @@ const TodoItem = ({
             <FontAwesomeIcon icon="trash" />
           </TaskTrashIcon>
 
+          {calendarItem === item.id && <Calendar calendarDate={calendarDate} />}
+
           {(item.isExpended || itemIdToMove) && (
             <TodoItem
               items={items}
@@ -202,6 +206,7 @@ const TodoItem = ({
               itemIdToMove={itemIdToMove}
               itemNotToMove={itemNotToMove || item.id === itemIdToMove}
               calendarItem={calendarItem}
+              calendarDate={calendarDate}
             />
           )}
         </TaskItem>

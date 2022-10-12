@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Header, Title, Form } from './styles';
+import { Container, Header, Title, Form, Prompt } from './styles';
 import { TodoAddTasksInput, TaskListItem, TodoButton, TodoItemDate } from './styles/Todo';
 import TodoItem from './TodoItem';
-import Calendar from './Calendar/Calendar';
 
 const Todo = ({ t }) => {
   const dispatch = useDispatch();
-
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
-  // const [calendarState, setCalendarState] = useState(false);
 
   const items = useSelector((state) => state.todo.items);
   const itemIdToMove = useSelector((state) => state.todo.itemIdToMove);
   const calendarItem = useSelector((state) => state.todo.calendarItem);
   const date = useSelector((state) => state.todo.date.current);
-
   const calendarDate = useSelector((state) => state.todo.date.calendar);
 
   const handleClickAddTaskBtn = () => {
@@ -48,6 +44,7 @@ const Todo = ({ t }) => {
   return (
     <Container>
       <Header>
+        <Prompt>{t('Todo.prompt')}</Prompt>
         <Title>{t('Todo.pageTitle')}</Title>
         <Form>
           <TodoAddTasksInput
@@ -61,7 +58,6 @@ const Todo = ({ t }) => {
           </TodoButton>
         </Form>
       </Header>
-      {calendarItem && <Calendar calendarDate={calendarDate} />}
       {sortedItems.map((arr) => (
         <TaskListItem>
           <TodoItemDate>{checkDate(arr[0].date)}</TodoItemDate>
@@ -70,6 +66,7 @@ const Todo = ({ t }) => {
             itemIdToMove={itemIdToMove}
             date={date}
             calendarItem={calendarItem}
+            calendarDate={calendarDate}
           />
         </TaskListItem>
       ))}
