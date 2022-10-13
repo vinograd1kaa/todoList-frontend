@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Header, Title, Form, Prompt } from './styles';
+import { Container, Header, Title, Form } from './styles';
 import { TodoAddTasksInput, TaskListItem, TodoButton, TodoItemDate } from './styles/Todo';
 import TodoItem from './TodoItem';
 
 const Todo = ({ t }) => {
   const dispatch = useDispatch();
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
+
   const items = useSelector((state) => state.todo.items);
   const itemIdToMove = useSelector((state) => state.todo.itemIdToMove);
   const calendarItem = useSelector((state) => state.todo.calendarItem);
@@ -19,12 +20,14 @@ const Todo = ({ t }) => {
   };
 
   const sortedItems = Object.values(
-    Object.values(items).reduce((acc, obj) => {
-      const val = Object.values(obj.date).join('');
-      if (!acc[val]) acc[val] = [];
-      acc[val].push(obj);
-      return acc;
-    }, {}),
+    Object.values(items)
+      .sort((a, b) => b.date.year - a.date.year || b.date.day - a.date.day)
+      .reduce((acc, obj) => {
+        const val = Object.values(obj.date).join('');
+        if (!acc[val]) acc[val] = [];
+        acc[val].push(obj);
+        return acc;
+      }, {}),
   );
 
   const checkDate = (itemDate) => {
@@ -44,7 +47,6 @@ const Todo = ({ t }) => {
   return (
     <Container>
       <Header>
-        <Prompt>{t('Todo.prompt')}</Prompt>
         <Title>{t('Todo.pageTitle')}</Title>
         <Form>
           <TodoAddTasksInput

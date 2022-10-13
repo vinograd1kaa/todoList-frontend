@@ -163,8 +163,18 @@ export default function todoReducer(state = initialState, { type, payload }) {
           return allIds.map((id) => (obj[id].date = state.date.current));
         };
 
-        state.items[state.calendarItem].parentId = null;
         changeTasksDate(state.calendarItem, state.items);
+
+        const parentTask = state.items[state.items[payload.id].parentId];
+        const currentTask = state.items[payload.id];
+        if (
+          parentTask &&
+          (parentTask.date.day !== currentTask.date.day ||
+            parentTask.date.month !== currentTask.date.month ||
+            parentTask.date.year !== currentTask.date.year)
+        ) {
+          state.items[state.calendarItem].parentId = null;
+        }
 
         return {
           ...state,

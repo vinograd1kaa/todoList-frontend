@@ -14,8 +14,7 @@
     "Todo": {
       "pageTitle": "My Todo List",
       "addTasksPlaceholder": "Title...",
-      "addTasksButton": "Add",
-      "prompt": "use double click to select a date in the calendar"
+      "addTasksButton": "Add"
     },
     "Footer": {
       "copyright": "© 2020 | SKILLDAR | All Rights Reserved",

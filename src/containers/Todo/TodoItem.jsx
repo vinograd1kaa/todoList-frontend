@@ -15,7 +15,7 @@ import {
   TaskTrashIcon,
   TodoCalendarIcon,
 } from './styles/Todo';
-import Calendar from './Calendar/Calendar';
+import Calendar from '../../components/Calendar/index';
 
 const TodoItem = ({
   items,
@@ -25,6 +25,7 @@ const TodoItem = ({
   itemIdToMove,
   calendarItem,
   calendarDate,
+  date,
 }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
@@ -108,6 +109,29 @@ const TodoItem = ({
     dispatch({
       type: 'TODO/CALENDAR_TASK',
       payload: { id },
+    });
+  };
+
+  const handleClickCalendarDay = (value) => {
+    const dateLetters = value
+      .toString()
+      .split(' ')
+      .map((el) => el);
+
+    if (
+      date.day === dateLetters[2] &&
+      date.month === dateLetters[1] &&
+      date.year === dateLetters[3]
+    ) {
+      return;
+    }
+
+    dispatch({
+      type: 'TODO/CHANGE_DATE',
+      payload: {
+        date: { day: dateLetters[2], month: dateLetters[1], year: dateLetters[3] },
+        calendarDate: value,
+      },
     });
   };
 
@@ -196,7 +220,12 @@ const TodoItem = ({
             <FontAwesomeIcon icon="trash" />
           </TaskTrashIcon>
 
-          {calendarItem === item.id && <Calendar calendarDate={calendarDate} />}
+          {calendarItem === item.id && (
+            <Calendar
+              handleClickCalendarDay={(value) => handleClickCalendarDay(value)}
+              calendarDate={calendarDate}
+            />
+          )}
 
           {(item.isExpended || itemIdToMove) && (
             <TodoItem
@@ -207,6 +236,7 @@ const TodoItem = ({
               itemNotToMove={itemNotToMove || item.id === itemIdToMove}
               calendarItem={calendarItem}
               calendarDate={calendarDate}
+              date={date}
             />
           )}
         </TaskItem>
