@@ -108,7 +108,7 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
     dispatch({
       type: 'TODO/CHANGE_DATE',
       payload: {
-        date: time - (time % 100000),
+        date: time,
       },
     });
   };

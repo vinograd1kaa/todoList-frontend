@@ -19,8 +19,11 @@ const Todo = ({ t }) => {
   const checkDate = (arrDate) => {
     const string = new Date(arrDate).toString().split(' ');
     const arrDateLetters = string.map((el) => el);
-    const currentTime = new Date().getTime() - (new Date().getTime() % 100000);
-    if (arrDate === currentTime) return 'Today';
+
+    const currentTime = (new Date().getTime() - (new Date().getTime() % 1000)) / 100000;
+    const arrDateCurrentTime =
+      (new Date(arrDate).getTime() - (new Date(arrDate).getTime() % 1000)) / 100000;
+    if (arrDateCurrentTime === currentTime) return 'Today';
 
     return `${arrDateLetters[0]} ${arrDateLetters[1]} ${arrDateLetters[2]} ${arrDateLetters[3]}`;
   };
@@ -29,7 +32,7 @@ const Todo = ({ t }) => {
     Object.values(items)
       .sort((a, b) => b.date - a.date)
       .reduce((b, a) => {
-        const val = a.date;
+        const val = (new Date(a.date).getTime() - (new Date(a.date).getTime() % 1000)) / 100000;
         if (!b[val]) b[val] = [];
         b[val].push(a);
         return b;

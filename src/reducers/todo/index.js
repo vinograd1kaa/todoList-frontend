@@ -45,7 +45,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
             isChecked: false,
             parentId: null,
             isCalendarOpen: false,
-            date: new Date().getTime() - (new Date().getTime() % 100000),
+            date: new Date().getTime(),
           },
         },
       };
@@ -65,7 +65,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
             isChecked: false,
             parentId: payload.id,
             isCalendarOpen: false,
-            date: new Date().getTime() - (new Date().getTime() % 100000),
+            date: new Date().getTime(),
           },
           ...state.items,
         },
