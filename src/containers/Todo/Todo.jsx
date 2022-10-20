@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Container, Header, Title, Form } from './styles';
 import { TodoAddTasksInput, TaskListItem, TodoButton, TodoItemDate } from './styles/Todo';
 import TodoItem from './TodoItem';
@@ -9,40 +10,31 @@ const Todo = ({ t }) => {
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
 
   const items = useSelector((state) => state.todo.items);
-  const itemIdToMove = useSelector((state) => state.todo.itemIdToMove);
-  const calendarItem = useSelector((state) => state.todo.calendarItem);
-  const date = useSelector((state) => state.todo.date.current);
-  const calendarDate = useSelector((state) => state.todo.date.calendar);
 
   const handleClickAddTaskBtn = () => {
     dispatch({ type: 'TODO/ADD_TASK', payload: { title: addTaskInputValue } });
     setAddTaskInputValue('');
   };
 
+  const checkDate = (arrDate) => {
+    const string = new Date(arrDate).toString().split(' ');
+    const arrDateLetters = string.map((el) => el);
+    const currentTime = new Date().getTime() - (new Date().getTime() % 100000);
+    if (arrDate === currentTime) return 'Today';
+
+    return `${arrDateLetters[0]} ${arrDateLetters[1]} ${arrDateLetters[2]} ${arrDateLetters[3]}`;
+  };
+
   const sortedItems = Object.values(
     Object.values(items)
-      .sort((a, b) => b.date.year - a.date.year || b.date.day - a.date.day)
-      .reduce((acc, obj) => {
-        const val = Object.values(obj.date).join('');
-        if (!acc[val]) acc[val] = [];
-        acc[val].push(obj);
-        return acc;
+      .sort((a, b) => b.date - a.date)
+      .reduce((b, a) => {
+        const val = a.date;
+        if (!b[val]) b[val] = [];
+        b[val].push(a);
+        return b;
       }, {}),
   );
-
-  const checkDate = (itemDate) => {
-    const b = new Date().toString().split(' ');
-    const dateLetters = b.map((el) => el);
-
-    if (
-      itemDate.day === dateLetters[2] &&
-      itemDate.month === dateLetters[1] &&
-      itemDate.year === dateLetters[3]
-    )
-      return 'Today';
-
-    return `${itemDate.day} ${itemDate.month} ${itemDate.year}`;
-  };
 
   return (
     <Container>
@@ -59,17 +51,14 @@ const Todo = ({ t }) => {
             {t('Todo.addTasksButton')}
           </TodoButton>
         </Form>
+        <Link to="/settings">
+          <TodoButton>Settings</TodoButton>
+        </Link>
       </Header>
       {sortedItems.map((arr) => (
         <TaskListItem>
           <TodoItemDate>{checkDate(arr[0].date)}</TodoItemDate>
-          <TodoItem
-            items={arr}
-            itemIdToMove={itemIdToMove}
-            date={date}
-            calendarItem={calendarItem}
-            calendarDate={calendarDate}
-          />
+          <TodoItem id={false} items={arr} isExpanded />
         </TaskListItem>
       ))}
     </Container>

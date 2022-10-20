@@ -9,14 +9,15 @@ import {
   CHANGE_IS_CHECKED,
   DELETE_TASK,
   CHANGE_DATE,
-  CALENDAR_TASK,
+  CHANGE_IS_CALENDAR_OPEN,
 } from '../../actions/Todo';
 
 const initialState = {
   items: {},
   itemIdToMove: null,
   calendarItem: null,
-  date: { current: null, calendar: null },
+  date: null,
+  dateSettings: null,
 };
 
 function getSubTasksId(id, obj) {
@@ -30,14 +31,6 @@ function getSubTasksId(id, obj) {
 }
 
 export default function todoReducer(state = initialState, { type, payload }) {
-  const b = new Date().toString().split(' ');
-  const dateLetters = b.map((el) => el);
-  const todayDate = {
-    day: dateLetters[2],
-    month: dateLetters[1],
-    year: dateLetters[3],
-  };
-
   switch (type) {
     case ADD_TASK:
       const idOfItem = uniqueId();
@@ -48,17 +41,18 @@ export default function todoReducer(state = initialState, { type, payload }) {
           [idOfItem]: {
             title: payload.title,
             id: idOfItem,
-            isExpended: false,
+            isExpanded: false,
             isChecked: false,
             parentId: null,
-            date: todayDate,
+            isCalendarOpen: false,
+            date: new Date().getTime() - (new Date().getTime() % 100000),
           },
         },
       };
 
     case ADD_SUB_TASK:
       if (!payload.title) return { ...state };
-      state.items[payload.id].isExpended = true;
+      state.items[payload.id].isExpanded = true;
       const idOfSubItem = uniqueId();
 
       return {
@@ -67,14 +61,11 @@ export default function todoReducer(state = initialState, { type, payload }) {
           [idOfSubItem]: {
             title: payload.title,
             id: idOfSubItem,
-            isExpended: false,
+            isExpanded: false,
             isChecked: false,
             parentId: payload.id,
-            date: state.items[payload.id].date || {
-              day: dateLetters[2],
-              month: dateLetters[1],
-              year: dateLetters[3],
-            },
+            isCalendarOpen: false,
+            date: new Date().getTime() - (new Date().getTime() % 100000),
           },
           ...state.items,
         },
@@ -90,7 +81,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_EXPENDED:
-      state.items[payload.id].isExpended = !payload.isExpended;
+      state.items[payload.id].isExpanded = !state.items[payload.id].isExpanded;
 
       return {
         ...state,
@@ -98,7 +89,13 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_CHECKED:
-      state.items[payload.id].isChecked = !payload.isChecked;
+      const isCheckedToChange = !state.items[payload.id].isChecked;
+      const changeIsCheckedTasks = (parentId, obj) => {
+        const allIds = getSubTasksId(parentId, obj);
+        return allIds.map((id) => (obj[id].isChecked = isCheckedToChange));
+      };
+
+      changeIsCheckedTasks(payload.id, state.items);
 
       return {
         ...state,
@@ -109,24 +106,14 @@ export default function todoReducer(state = initialState, { type, payload }) {
       const itemWhichChange = state.items[payload.changePosItemId];
       const itemWhereChange = state.items[payload.id];
 
-      if (
-        itemWhichChange.date.day !== itemWhereChange.date.day ||
-        itemWhichChange.date.month !== itemWhereChange.date.month ||
-        itemWhichChange.date.year !== itemWhereChange.date.year
-      ) {
-        const moveTasksWithDate = (parentId, obj, itemWhereChangeDate) => {
-          const allIds = getSubTasksId(parentId, obj);
-          return allIds.map((id) => (obj[id].date = itemWhereChangeDate));
-        };
+      itemWhereChange.isExpanded = true;
 
-        moveTasksWithDate(payload.changePosItemId, state.items, itemWhereChange.date);
-      }
-
-      itemWhereChange.isExpended = true;
       itemWhichChange.parentId = payload.id;
+      itemWhichChange.date = itemWhereChange.date;
 
       return {
         ...state,
+        items: { ...state.items },
         itemIdToMove: null,
       };
 
@@ -156,42 +143,38 @@ export default function todoReducer(state = initialState, { type, payload }) {
         items: { ...state.items },
       };
 
-    case CALENDAR_TASK:
-      if (payload.id === state.calendarItem) {
+    case CHANGE_IS_CALENDAR_OPEN:
+      const currentTask = state.items[payload.id];
+      if (currentTask.isCalendarOpen) {
         const changeTasksDate = (parentId, obj) => {
           const allIds = getSubTasksId(parentId, obj);
-          return allIds.map((id) => (obj[id].date = state.date.current));
+          return allIds.map((id) => (obj[id].date = state.date));
         };
 
-        changeTasksDate(state.calendarItem, state.items);
+        changeTasksDate(payload.id, state.items);
 
-        const parentTask = state.items[state.items[payload.id].parentId];
-        const currentTask = state.items[payload.id];
-        if (
-          parentTask &&
-          (parentTask.date.day !== currentTask.date.day ||
-            parentTask.date.month !== currentTask.date.month ||
-            parentTask.date.year !== currentTask.date.year)
-        ) {
-          state.items[state.calendarItem].parentId = null;
-        }
+        if (state.items[state.items[payload.id].parentId]) state.items[payload.id].parentId = null;
+        currentTask.isCalendarOpen = !currentTask.isCalendarOpen;
 
         return {
           ...state,
-          calendarItem: null,
+          items: { ...state.items },
         };
       }
 
+      currentTask.isCalendarOpen = !currentTask.isCalendarOpen;
+
       return {
         ...state,
-        date: { current: state.date.current || todayDate, calendar: null },
-        calendarItem: payload.id,
+        items: { ...state.items },
+        date: state.date,
       };
 
     case CHANGE_DATE:
+      console.log(payload.date);
       return {
         ...state,
-        date: { current: payload.date, calendar: payload.calendarDate },
+        date: payload.date,
       };
 
     default:

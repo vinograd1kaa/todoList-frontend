@@ -36,7 +36,7 @@ export const TodoButton = styled.button`
   }
 `;
 
-export const TaskListItem = styled.div`
+export const TaskListItem = styled.ul`
   position: relative;
   padding: 12px 8px 12px 48px;
   font-size: 18px;
@@ -49,11 +49,8 @@ export const TaskListItem = styled.div`
   background: #c5c3c3;
 `;
 
-export const TasksList = styled.ul`
+export const TaskItem = styled.div`
   background: burlywood;
-`;
-
-export const TaskItem = styled.li`
   border: 1px solid black;
   border-left: none;
   border-right: none;
