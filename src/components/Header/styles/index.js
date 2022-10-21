@@ -2,18 +2,19 @@ import styled from 'styled-components';
 import LogoImage from './Logo';
 
 export const Container = styled.div`
-  padding: 23px 35px;
+  padding: 16px 35px;
   background: #26262e;
   text-align: left;
+  margin: 0 auto;
+  display: flex;
 
   @media (max-width: ${({ theme }) => theme.screens.sm}) {
     padding: 23px 15px;
   }
 `;
+
 export const LogoContainer = styled.div`
   display: flex;
-  align-items: center;
-  cursor: pointer;
 `;
 
 export const Logo = styled(LogoImage)`

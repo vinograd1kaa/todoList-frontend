@@ -16,7 +16,16 @@ import {
 } from './styles/Todo';
 import Calendar from '../../components/Calendar/index';
 
-const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, parentId }) => {
+const TodoItem = ({
+  items,
+  id,
+  title,
+  isCalendarOpen,
+  isExpanded,
+  isChecked,
+  parentId,
+  idNotToMove,
+}) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
@@ -121,7 +130,7 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
             <FontAwesomeIcon icon="cross" />
           </TaskToggleIcon>
         );
-      case idToMove && idToMove !== id:
+      case idToMove && idToMove !== id && !idNotToMove:
         return (
           <TaskToggleIcon onClick={handleClickConfirmChangePos}>
             <FontAwesomeIcon icon="sticky-note" />
@@ -145,7 +154,7 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
     <TaskItem key={id} style={{ paddingLeft: `${title ? '25px' : '0'}` }}>
       {id && (
         <>
-          <TaskArrowIcon onClick={handleClickArrowIcon} isExpanded={isExpanded || idToMove} />
+          <TaskArrowIcon onClick={handleClickArrowIcon} isExpanded={idToMove || isExpanded} />
           {titleEditingState !== id ? (
             <TaskTitle onClick={handleClickTitle}>{title}</TaskTitle>
           ) : (
@@ -189,7 +198,13 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
       <ul>
         {isExpanded &&
           renderItems.map((task) => (
-            <TodoItem key={task.id} {...task} items={items} parentId={task.id} />
+            <TodoItem
+              key={task.id}
+              {...task}
+              items={items}
+              parentId={task.id}
+              idNotToMove={idNotToMove || id === idToMove}
+            />
           ))}
       </ul>
     </TaskItem>

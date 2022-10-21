@@ -2,12 +2,12 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   font-family: Comic Sans MS, Comic Sans, cursive;
-  width: 600px;
+  width: 680px;
   margin: 0 auto;
   position: relative;
 `;
 
-export const Header = styled.div`
+export const TodoBlock = styled.div`
   background-color: #f44336;
   padding: 30px 40px;
   color: white;

@@ -67,7 +67,7 @@ export const TaskArrowIcon = styled.span`
   left: 4px;
   top: 4px;
   cursor: pointer;
-  transform: ${({ isExpended }) => (isExpended ? 'rotate(0)' : 'rotate(-90deg)')};
+  transform: ${({ isExpanded }) => (isExpanded ? 'rotate(0)' : 'rotate(-90deg)')};
 }`;
 
 export const TaskChangePosArrowIcon = styled.span`
