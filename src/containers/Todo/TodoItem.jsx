@@ -16,16 +16,7 @@ import {
 } from './styles/Todo';
 import Calendar from '../../components/Calendar/index';
 
-const TodoItem = ({
-  items,
-  id,
-  title,
-  isCalendarOpen,
-  isExpanded,
-  isChecked,
-  parentId,
-  idNotToMove,
-}) => {
+const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, parentId }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
@@ -122,6 +113,19 @@ const TodoItem = ({
     });
   };
 
+  function findItemWhatsMove(arr, Id) {
+    if (!Id) return;
+    const findItem = arr.find((item) => Id === item.id);
+    if (findItem.parentId) {
+      const findParentItem = arr.find((item) => item.id === findItem.parentId);
+      if (findParentItem.id === idToMove) {
+        return findParentItem;
+      }
+      return findItemWhatsMove(arr, findParentItem.id);
+    }
+    return false;
+  }
+
   const renderMoveIcon = () => {
     switch (true) {
       case idToMove === id:
@@ -130,7 +134,7 @@ const TodoItem = ({
             <FontAwesomeIcon icon="cross" />
           </TaskToggleIcon>
         );
-      case idToMove && idToMove !== id && !idNotToMove:
+      case idToMove && idToMove !== id && !findItemWhatsMove(items, id):
         return (
           <TaskToggleIcon onClick={handleClickConfirmChangePos}>
             <FontAwesomeIcon icon="sticky-note" />
@@ -198,13 +202,7 @@ const TodoItem = ({
       <ul>
         {isExpanded &&
           renderItems.map((task) => (
-            <TodoItem
-              key={task.id}
-              {...task}
-              items={items}
-              parentId={task.id}
-              idNotToMove={idNotToMove || id === idToMove}
-            />
+            <TodoItem key={task.id} {...task} items={items} parentId={task.id} />
           ))}
       </ul>
     </TaskItem>

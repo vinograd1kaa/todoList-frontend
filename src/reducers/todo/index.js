@@ -94,10 +94,9 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_CHECKED:
-      const isCheckedToChange = !state.items[payload.id].isChecked;
       const changeIsCheckedTasks = (parentId, obj) => {
         const allIds = getSubTasksId(parentId, obj);
-        return allIds.map((id) => (obj[id].isChecked = isCheckedToChange));
+        return allIds.map((id) => (obj[id].isChecked = !state.items[payload.id].isChecked));
       };
 
       changeIsCheckedTasks(payload.id, state.items);
