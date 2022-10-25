@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, TodoBlock, Title, Form } from './styles';
 import { TodoAddTasksInput, TaskListItem, TodoButton, TodoItemDate } from './styles/Todo';
@@ -10,9 +10,18 @@ const Todo = ({ t }) => {
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
 
   const items = useSelector((state) => state.todo.items);
+  const sortButtons = useSelector((state) => state.todoSettings.sortButtons);
+  const dateSettings = useSelector((state) => state.todoSettings.dateSettings);
 
-  const calculateCurrentTime = (time = new Date().getTime()) =>
-    (new Date(time).getTime() - (new Date(time).getTime() % 1000000)) / 1000000;
+  useEffect(() => {
+    const localStorageButton = localStorage.getItem('activeButton') || 0;
+    const findSortBy = sortButtons[localStorageButton].sortBy;
+
+    dispatch({
+      type: 'TODO_SETTINGS/SETTINGS_DATE',
+      payload: { id: localStorageButton, sortBy: findSortBy },
+    });
+  }, [dispatch, items, sortButtons]);
 
   const handleClickAddTaskBtn = () => {
     dispatch({ type: 'TODO/ADD_TASK', payload: { title: addTaskInputValue } });
@@ -23,17 +32,35 @@ const Todo = ({ t }) => {
     const dateString = new Date(arrDate).toString().split(' ');
     const arrDateLetters = dateString.map((el) => el);
 
-    if (calculateCurrentTime(arrDate) === calculateCurrentTime()) {
+    const currentDateString = new Date().toString().split(' ');
+    const currentDateLetters = currentDateString.map((el) => el);
+
+    if (
+      arrDateLetters[1] === currentDateLetters[1] &&
+      arrDateLetters[2] === currentDateLetters[2] &&
+      arrDateLetters[3] === currentDateLetters[3]
+    ) {
       return 'Today';
     }
-    return `${arrDateLetters[0]} ${arrDateLetters[1]} ${arrDateLetters[2]} ${arrDateLetters[3]}`;
+    const date = {
+      day: arrDateLetters[2],
+      month: arrDateLetters[1],
+      year: arrDateLetters[3],
+      dayOfWeek: arrDateLetters[0],
+    };
+
+    return Object.values(
+      Object.fromEntries(
+        Object.entries(dateSettings.sortBy).map(([k, v]) => [k, v === true ? date[k] : v]),
+      ),
+    ).map((item) => (item && item.length !== 1 ? `${item}${dateSettings.sortBy.divide}` : ''));
   };
 
   const sortedItems = Object.values(
     Object.values(items)
       .sort((a, b) => b.date - a.date)
       .reduce((b, a) => {
-        const val = calculateCurrentTime(a.date);
+        const val = (new Date(a.date).getTime() - (new Date(a.date).getTime() % 1000000)) / 1000000;
         if (!b[val]) b[val] = [];
         b[val].push(a);
         return b;

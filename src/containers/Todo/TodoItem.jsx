@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -15,6 +15,7 @@ import {
   TodoCalendarIcon,
 } from './styles/Todo';
 import Calendar from '../../components/Calendar/index';
+import { getSubTasksId } from '../../utils/todo';
 
 const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, parentId }) => {
   const dispatch = useDispatch();
@@ -72,7 +73,7 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
   };
 
   const handleClickCircleIcon = () => {
-    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id } });
+    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked } });
   };
 
   const handleClickChangePos = () => {
@@ -109,22 +110,11 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
       type: 'TODO/CHANGE_DATE',
       payload: {
         date: time,
+        currentTime: new Date().getTime(),
+        id,
       },
     });
   };
-
-  function findItemWhatsMove(arr, Id) {
-    if (!Id) return;
-    const findItem = arr.find((item) => Id === item.id);
-    if (findItem.parentId) {
-      const findParentItem = arr.find((item) => item.id === findItem.parentId);
-      if (findParentItem.id === idToMove) {
-        return findParentItem;
-      }
-      return findItemWhatsMove(arr, findParentItem.id);
-    }
-    return false;
-  }
 
   const renderMoveIcon = () => {
     switch (true) {
@@ -134,7 +124,7 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
             <FontAwesomeIcon icon="cross" />
           </TaskToggleIcon>
         );
-      case idToMove && idToMove !== id && !findItemWhatsMove(items, id):
+      case idToMove && idToMove !== id && !getSubTasksId(items, idToMove).includes(id):
         return (
           <TaskToggleIcon onClick={handleClickConfirmChangePos}>
             <FontAwesomeIcon icon="sticky-note" />
@@ -153,6 +143,19 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
     items && parentId
       ? items.filter((obj) => obj.parentId === parentId)
       : items.filter((item) => item.parentId === null);
+
+  const rootEl = useRef(null);
+
+  useEffect(() => {
+    const onClick = (e) => {
+      // eslint-disable-next-line
+      if (rootEl.current && !rootEl.current.contains(e.target) && e.target.tagName !== ('path' || 'svg')) {
+        handleClickCalendar();
+      }
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [rootEl]);
 
   return (
     <TaskItem key={id} style={{ paddingLeft: `${title ? '25px' : '0'}` }}>
@@ -195,7 +198,10 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
             <FontAwesomeIcon icon="trash" />
           </TaskTrashIcon>
           {isCalendarOpen && (
-            <Calendar handleClickCalendarDay={(time) => handleClickCalendarDay(time)} />
+            <Calendar
+              rootEl={rootEl}
+              handleClickCalendarDay={(time) => handleClickCalendarDay(time)}
+            />
           )}
         </>
       )}

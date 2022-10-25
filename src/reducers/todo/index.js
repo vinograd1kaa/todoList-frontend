@@ -11,27 +11,17 @@ import {
   CHANGE_DATE,
   CHANGE_IS_CALENDAR_OPEN,
 } from '../../actions/Todo';
+import { getSubTasksId } from '../../utils/todo';
 
 const initialState = {
   items: {},
   itemIdToMove: null,
-  calendarItem: null,
   date: null,
   dateSettings: null,
 };
 
-function getSubTasksId(id, obj) {
-  let result = [id];
-  Object.values(obj).forEach((item) => {
-    if (item.parentId === id) {
-      result = result.concat(getSubTasksId(item.id, obj));
-    }
-  });
-  return result;
-}
-
 const changeTasksDate = (parentId, obj, dateToChange) => {
-  const allIds = getSubTasksId(parentId, obj);
+  const allIds = getSubTasksId(Object.values(obj), parentId);
   return allIds.map((id) => (obj[id].date = dateToChange));
 };
 
@@ -95,8 +85,8 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case CHANGE_IS_CHECKED:
       const changeIsCheckedTasks = (parentId, obj) => {
-        const allIds = getSubTasksId(parentId, obj);
-        return allIds.map((id) => (obj[id].isChecked = !state.items[payload.id].isChecked));
+        const allIds = getSubTasksId(Object.values(obj), parentId);
+        return allIds.map((id) => (obj[id].isChecked = !payload.isChecked));
       };
 
       changeIsCheckedTasks(payload.id, state.items);
@@ -123,7 +113,6 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case ITEM_ID_TO_MOVE:
       if (payload.id === state.itemIdToMove) {
-        Object.values(state.items).map((item) => (item.isExpanded = false));
         return {
           ...state,
           itemIdToMove: false,
@@ -140,12 +129,11 @@ export default function todoReducer(state = initialState, { type, payload }) {
 
     case DELETE_TASK:
       const removeTasks = (parentId, obj) => {
-        const allIds = getSubTasksId(parentId, obj);
+        const allIds = getSubTasksId(Object.values(obj), parentId);
         return omit(obj, allIds);
       };
 
       state.items = removeTasks(payload.id, state.items);
-
       return {
         ...state,
         items: { ...state.items },

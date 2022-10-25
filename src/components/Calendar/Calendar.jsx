@@ -4,11 +4,11 @@ import 'react-calendar/dist/Calendar.css';
 import { CalendarContainer } from './styles/index';
 import '../../globalStyles/react-calendar.css';
 
-const Calendar = ({ handleClickCalendarDay }) => {
+const Calendar = ({ handleClickCalendarDay, rootEl }) => {
   const [value, onChange] = useState(new Date());
 
   return (
-    <CalendarContainer>
+    <CalendarContainer ref={rootEl}>
       <ReactCalendar
         onChange={onChange}
         className="my-calendar"
