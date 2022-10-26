@@ -16,6 +16,7 @@ import { getSubTasksId } from '../../utils/todo';
 const initialState = {
   items: {},
   itemIdToMove: null,
+  itemIdCalendarOpen: null,
   date: null,
   dateSettings: null,
 };
@@ -140,28 +141,26 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_CALENDAR_OPEN:
-      const currentTask = state.items[payload.id];
-      if (currentTask.isCalendarOpen) {
+      if (payload.id === state.itemIdCalendarOpen) {
         changeTasksDate(payload.id, state.items, state.date);
 
         if (state.items[state.items[payload.id].parentId]) state.items[payload.id].parentId = null;
-        currentTask.isCalendarOpen = !currentTask.isCalendarOpen;
-
         return {
           ...state,
           items: { ...state.items },
+          itemIdCalendarOpen: null,
         };
       }
-
-      currentTask.isCalendarOpen = !currentTask.isCalendarOpen;
 
       return {
         ...state,
         items: { ...state.items },
         date: state.date,
+        itemIdCalendarOpen: payload.id,
       };
 
     case CHANGE_DATE:
+      console.log(payload.date);
       return {
         ...state,
         date: payload.date,

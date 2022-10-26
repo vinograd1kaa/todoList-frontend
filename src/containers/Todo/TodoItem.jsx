@@ -17,7 +17,7 @@ import {
 import Calendar from '../../components/Calendar/index';
 import { getSubTasksId } from '../../utils/todo';
 
-const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, parentId }) => {
+const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
@@ -25,6 +25,7 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
   const [titleInputValue, setTitleInputValue] = useState('');
 
   const idToMove = useSelector((state) => state.todo.itemIdToMove);
+  const idCalendarOpen = useSelector((state) => state.todo.itemIdCalendarOpen);
 
   const handleClickAddSubTaskInputBlur = () => {
     dispatch({
@@ -184,7 +185,7 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
               autoFocus
             />
           )}
-          <TodoCalendarIcon onClick={handleClickCalendar} state={isCalendarOpen}>
+          <TodoCalendarIcon onClick={handleClickCalendar} state={idCalendarOpen === id}>
             <FontAwesomeIcon icon="calendar-alt" />
           </TodoCalendarIcon>
           <TaskCheckedCircle onClick={handleClickCircleIcon}>
@@ -197,9 +198,10 @@ const TodoItem = ({ items, id, title, isCalendarOpen, isExpanded, isChecked, par
           <TaskTrashIcon onClick={handleClickTrashIcon}>
             <FontAwesomeIcon icon="trash" />
           </TaskTrashIcon>
-          {isCalendarOpen && (
+          {idCalendarOpen === id && (
             <Calendar
               rootEl={rootEl}
+              taskDate={date}
               handleClickCalendarDay={(time) => handleClickCalendarDay(time)}
             />
           )}

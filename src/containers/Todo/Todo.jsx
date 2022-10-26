@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 import { Container, TodoBlock, Title, Form } from './styles';
 import { TodoAddTasksInput, TaskListItem, TodoButton, TodoItemDate } from './styles/Todo';
 import TodoItem from './TodoItem';
@@ -59,11 +60,11 @@ const Todo = ({ t }) => {
   const sortedItems = Object.values(
     Object.values(items)
       .sort((a, b) => b.date - a.date)
-      .reduce((b, a) => {
-        const val = (new Date(a.date).getTime() - (new Date(a.date).getTime() % 1000000)) / 1000000;
-        if (!b[val]) b[val] = [];
-        b[val].push(a);
-        return b;
+      .reduce((acc, obj) => {
+        const val = moment(obj.date).format('DMYYYY');
+        if (!acc[val]) acc[val] = [];
+        acc[val].push(obj);
+        return acc;
       }, {}),
   );
 
