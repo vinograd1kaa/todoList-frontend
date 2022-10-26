@@ -30,38 +30,20 @@ const Todo = ({ t }) => {
   };
 
   const checkDate = (arrDate) => {
-    const dateString = new Date(arrDate).toString().split(' ');
-    const arrDateLetters = dateString.map((el) => el);
-
-    const currentDateString = new Date().toString().split(' ');
-    const currentDateLetters = currentDateString.map((el) => el);
-
-    if (
-      arrDateLetters[1] === currentDateLetters[1] &&
-      arrDateLetters[2] === currentDateLetters[2] &&
-      arrDateLetters[3] === currentDateLetters[3]
-    ) {
+    if (moment(arrDate.current).format('DMYYYY') === moment(new Date()).format('DMYYYY')) {
       return 'Today';
     }
-    const date = {
-      day: arrDateLetters[2],
-      month: arrDateLetters[1],
-      year: arrDateLetters[3],
-      dayOfWeek: arrDateLetters[0],
-    };
 
-    return Object.values(
-      Object.fromEntries(
-        Object.entries(dateSettings.sortBy).map(([k, v]) => [k, v === true ? date[k] : v]),
-      ),
-    ).map((item) => (item && item.length !== 1 ? `${item}${dateSettings.sortBy.divide}` : ''));
+    return `${dateSettings.sortBy.time ? `${arrDate.time} ` : ''}${moment(arrDate.current).format(
+      dateSettings.sortBy.date,
+    )}`;
   };
 
   const sortedItems = Object.values(
     Object.values(items)
-      .sort((a, b) => b.date - a.date)
+      .sort((a, b) => b.date.current - a.date.current)
       .reduce((acc, obj) => {
-        const val = moment(obj.date).format('DMYYYY');
+        const val = moment(obj.date.current).format('DMYYYY');
         if (!acc[val]) acc[val] = [];
         acc[val].push(obj);
         return acc;
@@ -87,7 +69,7 @@ const Todo = ({ t }) => {
           </Form>
         </TodoBlock>
         {sortedItems.map((arr) => (
-          <TaskListItem key={arr[0].date}>
+          <TaskListItem key={arr[0].date.current}>
             <TodoItemDate>{checkDate(arr[0].date)}</TodoItemDate>
             <TodoItem id={false} items={arr} isExpanded />
           </TaskListItem>

@@ -23,6 +23,7 @@ const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) =
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState(false);
   const [titleInputValue, setTitleInputValue] = useState('');
+  const rootEl = useRef(null);
 
   const idToMove = useSelector((state) => state.todo.itemIdToMove);
   const idCalendarOpen = useSelector((state) => state.todo.itemIdCalendarOpen);
@@ -117,6 +118,17 @@ const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) =
     });
   };
 
+  useEffect(() => {
+    const onClick = (e) => {
+      // eslint-disable-next-line
+      if (rootEl.current && !rootEl.current.contains(e.target) && e.target.tagName !== 'path' && e.target.tagName !== 'svg') {
+        handleClickCalendar();
+      }
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [rootEl]);
+
   const renderMoveIcon = () => {
     switch (true) {
       case idToMove === id:
@@ -144,19 +156,6 @@ const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) =
     items && parentId
       ? items.filter((obj) => obj.parentId === parentId)
       : items.filter((item) => item.parentId === null);
-
-  const rootEl = useRef(null);
-
-  useEffect(() => {
-    const onClick = (e) => {
-      // eslint-disable-next-line
-      if (rootEl.current && !rootEl.current.contains(e.target) && e.target.tagName !== ('path' || 'svg')) {
-        handleClickCalendar();
-      }
-    };
-    document.addEventListener('click', onClick);
-    return () => document.removeEventListener('click', onClick);
-  }, [rootEl]);
 
   return (
     <TaskItem key={id} style={{ paddingLeft: `${title ? '25px' : '0'}` }}>

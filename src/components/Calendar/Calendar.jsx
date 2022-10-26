@@ -5,7 +5,7 @@ import { CalendarContainer } from './styles/index';
 import '../../globalStyles/react-calendar.css';
 
 const Calendar = ({ handleClickCalendarDay, rootEl, taskDate }) => {
-  const [value, onChange] = useState(new Date(taskDate) || new Date());
+  const [value, onChange] = useState(new Date(taskDate.current) || new Date());
 
   return (
     <CalendarContainer ref={rootEl}>

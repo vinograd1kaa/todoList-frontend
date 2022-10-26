@@ -7,34 +7,27 @@ const initialState = {
     1: {
       id: uniqueId(),
       title: 'All',
-      sortBy: {
-        day: true,
-        month: true,
-        year: true,
-        time: true,
-        dayOfWeek: true,
-        divide: ' ',
-      },
+      sortBy: { date: 'DD MMM YYYY', time: true },
     },
     2: {
       id: uniqueId(),
-      title: '11 oct 2022',
-      sortBy: { day: true, month: true, year: true, divide: ' ' },
+      title: '11 10 2022',
+      sortBy: { date: 'DD MM YYYY' },
     },
     3: {
       id: uniqueId(),
       title: '20:11 11.10.2022',
-      sortBy: { time: true, day: true, month: true, year: true, divide: '.' },
+      sortBy: { date: 'DD.MM.YYYY', time: true },
     },
     4: {
       id: uniqueId(),
       title: '11-10-2022',
-      sortBy: { day: true, month: true, year: true, divide: '-' },
+      sortBy: { date: 'DD-MM-YYYY' },
     },
     5: {
       id: uniqueId(),
       title: '11 oct Thu',
-      sortBy: { day: true, month: true, dayOfWeek: true, divide: ' ' },
+      sortBy: { date: 'Do MMM dddd' },
     },
   },
 };

@@ -1,4 +1,5 @@
 import { omit, uniqueId } from 'lodash';
+import moment from 'moment';
 import {
   ADD_SUB_TASK,
   ADD_TASK,
@@ -23,7 +24,7 @@ const initialState = {
 
 const changeTasksDate = (parentId, obj, dateToChange) => {
   const allIds = getSubTasksId(Object.values(obj), parentId);
-  return allIds.map((id) => (obj[id].date = dateToChange));
+  return allIds.map((id) => (obj[id].date.current = dateToChange));
 };
 
 export default function todoReducer(state = initialState, { type, payload }) {
@@ -41,7 +42,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
             isChecked: false,
             parentId: null,
             isCalendarOpen: false,
-            date: new Date().getTime(),
+            date: { current: new Date().getTime(), time: moment().format('h:mm:ss') },
           },
         },
       };
@@ -61,7 +62,10 @@ export default function todoReducer(state = initialState, { type, payload }) {
             isChecked: false,
             parentId: payload.id,
             isCalendarOpen: false,
-            date: state.items[payload.id].date || new Date().getTime(),
+            date: state.items[payload.id].date || {
+              current: new Date().getTime(),
+              time: moment().format('h:mm:ss'),
+            },
           },
           ...state.items,
         },
@@ -104,7 +108,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
       itemWhereChange.isExpanded = true;
       itemWhichChange.parentId = payload.id;
 
-      changeTasksDate(payload.changePosItemId, state.items, itemWhereChange.date);
+      changeTasksDate(payload.changePosItemId, state.items, itemWhereChange.date.current);
 
       return {
         ...state,
@@ -143,8 +147,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
     case CHANGE_IS_CALENDAR_OPEN:
       if (payload.id === state.itemIdCalendarOpen) {
         changeTasksDate(payload.id, state.items, state.date);
-
-        if (state.items[state.items[payload.id].parentId]) state.items[payload.id].parentId = null;
+        state.items[payload.id].parentId = null;
         return {
           ...state,
           items: { ...state.items },
@@ -160,7 +163,6 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_DATE:
-      console.log(payload.date);
       return {
         ...state,
         date: payload.date,
