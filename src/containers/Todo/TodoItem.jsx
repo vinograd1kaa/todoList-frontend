@@ -127,7 +127,7 @@ const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) =
     };
     document.addEventListener('click', onClick);
     return () => document.removeEventListener('click', onClick);
-  }, [rootEl]);
+  }, [rootEl, idCalendarOpen === id]);
 
   const renderMoveIcon = () => {
     switch (true) {

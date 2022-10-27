@@ -6,7 +6,7 @@ import '../../globalStyles/react-calendar.css';
 
 const Calendar = ({ handleClickCalendarDay, rootEl, taskDate }) => {
   const [value, onChange] = useState(new Date(taskDate.current) || new Date());
-
+  // localStorage.clear();
   return (
     <CalendarContainer ref={rootEl}>
       <ReactCalendar

@@ -15,7 +15,7 @@ const Todo = ({ t }) => {
   const dateSettings = useSelector((state) => state.todoSettings.dateSettings);
 
   useEffect(() => {
-    const localStorageButton = localStorage.getItem('activeButton') || 0;
+    const localStorageButton = localStorage.getItem('activeButton') || 1;
     const findSortBy = sortButtons[localStorageButton].sortBy;
 
     dispatch({
