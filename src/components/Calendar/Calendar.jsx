@@ -4,11 +4,11 @@ import 'react-calendar/dist/Calendar.css';
 import { CalendarContainer } from './styles/index';
 import '../../globalStyles/react-calendar.css';
 
-const Calendar = ({ handleClickCalendarDay, rootEl, taskDate }) => {
+const Calendar = ({ handleClickCalendarDay, handleBlurClick, rootEl, taskDate }) => {
   const [value, onChange] = useState(new Date(taskDate.current) || new Date());
-  // localStorage.clear();
+
   return (
-    <CalendarContainer ref={rootEl}>
+    <CalendarContainer ref={rootEl} onClick={(e) => handleBlurClick(e)}>
       <ReactCalendar
         onChange={onChange}
         className="my-calendar"

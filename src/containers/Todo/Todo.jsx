@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { Container, TodoBlock, Title, Form } from './styles';
@@ -9,6 +9,7 @@ import Header from '../../components/Header';
 const Todo = ({ t }) => {
   const dispatch = useDispatch();
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
+  const rootEl = useRef(null);
 
   const items = useSelector((state) => state.todo.items);
   const sortButtons = useSelector((state) => state.todoSettings.sortButtons);
@@ -23,6 +24,20 @@ const Todo = ({ t }) => {
       payload: { id: localStorageButton, sortBy: findSortBy },
     });
   }, [dispatch, items, sortButtons]);
+
+  useEffect(() => {
+    const onClick = (e) => {
+      // eslint-disable-next-line
+      if (rootEl.current && !rootEl.current.contains(e.target) && e.target.tagName !== 'path' && e.target.tagName !== 'svg') {
+        dispatch({
+          type: 'TODO/CHANGE_IS_CALENDAR_OPEN',
+          payload: { id: null },
+        });
+      }
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [rootEl]);
 
   const handleClickAddTaskBtn = () => {
     dispatch({ type: 'TODO/ADD_TASK', payload: { title: addTaskInputValue } });
@@ -71,7 +86,7 @@ const Todo = ({ t }) => {
         {sortedItems.map((arr) => (
           <TaskListItem key={arr[0].date.current}>
             <TodoItemDate>{checkDate(arr[0].date)}</TodoItemDate>
-            <TodoItem id={false} items={arr} isExpanded />
+            <TodoItem id={false} rootEl={rootEl} items={arr} isExpanded />
           </TaskListItem>
         ))}
       </Container>

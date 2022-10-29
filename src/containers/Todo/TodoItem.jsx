@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -17,13 +17,13 @@ import {
 import Calendar from '../../components/Calendar/index';
 import { getSubTasksId } from '../../utils/todo';
 
-const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) => {
+const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId, rootEl }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState(false);
   const [titleInputValue, setTitleInputValue] = useState('');
-  const rootEl = useRef(null);
+  const [currentCalendarDay, setCurrentCalendarDay] = useState('');
 
   const idToMove = useSelector((state) => state.todo.itemIdToMove);
   const idCalendarOpen = useSelector((state) => state.todo.itemIdCalendarOpen);
@@ -118,17 +118,6 @@ const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) =
     });
   };
 
-  useEffect(() => {
-    const onClick = (e) => {
-      // eslint-disable-next-line
-      if (rootEl.current && !rootEl.current.contains(e.target) && e.target.tagName !== 'path' && e.target.tagName !== 'svg') {
-        handleClickCalendar();
-      }
-    };
-    document.addEventListener('click', onClick);
-    return () => document.removeEventListener('click', onClick);
-  }, [rootEl, idCalendarOpen === id]);
-
   const renderMoveIcon = () => {
     switch (true) {
       case idToMove === id:
@@ -156,6 +145,14 @@ const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) =
     items && parentId
       ? items.filter((obj) => obj.parentId === parentId)
       : items.filter((item) => item.parentId === null);
+
+  const handleBlurClick = (e) => {
+    if (currentCalendarDay === e.target.innerText) {
+      handleClickCalendar();
+      setCurrentCalendarDay(null);
+    }
+    setCurrentCalendarDay(e.target.innerText);
+  };
 
   return (
     <TaskItem key={id} style={{ paddingLeft: `${title ? '25px' : '0'}` }}>
@@ -202,6 +199,7 @@ const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) =
               rootEl={rootEl}
               taskDate={date}
               handleClickCalendarDay={(time) => handleClickCalendarDay(time)}
+              handleBlurClick={(e) => handleBlurClick(e)}
             />
           )}
         </>
@@ -209,7 +207,7 @@ const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId }) =
       <ul>
         {isExpanded &&
           renderItems.map((task) => (
-            <TodoItem key={task.id} {...task} items={items} parentId={task.id} />
+            <TodoItem key={task.id} {...task} items={items} parentId={task.id} rootEl={rootEl} />
           ))}
       </ul>
     </TaskItem>
