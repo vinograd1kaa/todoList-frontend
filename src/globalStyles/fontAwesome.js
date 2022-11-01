@@ -11,6 +11,7 @@ import {
   faStickyNote,
   faCheck,
   faTrash,
+  faCalendarAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
@@ -27,4 +28,5 @@ library.add(
   faStickyNote,
   faCheck,
   faTrash,
+  faCalendarAlt,
 );

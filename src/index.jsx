@@ -18,6 +18,7 @@ import 'typeface-roboto';
 import 'typeface-source-sans-pro';
 
 import './globalStyles/fontAwesome';
+import TodoSettings from './containers/TodoSettings';
 
 // Todo: use 'rem' for font-size, to change font-size for theme.screens.sm devices across the whole App by changing body font-size
 // Todo: finalize theme variables
@@ -34,6 +35,7 @@ ReactDOM.render(
             <Switch>
               <Route path="/projects" component={Projects} />
               <Route path="/todo" component={Todo} />
+              <Route path="/settings" component={TodoSettings} />
               <Redirect exact from="/" to="/todo" />
             </Switch>
           </Provider>

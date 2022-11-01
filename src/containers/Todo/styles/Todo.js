@@ -14,7 +14,7 @@ export const TodoAddTasksInput = styled.input`
   }
 `;
 
-export const TodoAddTasksButton = styled.button`
+export const TodoButton = styled.button`
   padding: 11.3px;
   width: 25%;
   background: #d9d9d9;
@@ -36,7 +36,7 @@ export const TodoAddTasksButton = styled.button`
   }
 `;
 
-export const TaskListItem = styled.div`
+export const TaskListItem = styled.ul`
   position: relative;
   padding: 12px 8px 12px 48px;
   font-size: 18px;
@@ -49,11 +49,8 @@ export const TaskListItem = styled.div`
   background: #c5c3c3;
 `;
 
-export const TasksList = styled.ul`
+export const TaskItem = styled.div`
   background: burlywood;
-`;
-
-export const TaskItem = styled.li`
   border: 1px solid black;
   border-left: none;
   border-right: none;
@@ -70,19 +67,19 @@ export const TaskArrowIcon = styled.span`
   left: 4px;
   top: 4px;
   cursor: pointer;
-  transform: ${({ isExpended }) => (isExpended ? 'rotate(0)' : 'rotate(-90deg)')};
+  transform: ${({ isExpanded }) => (isExpanded ? 'rotate(0)' : 'rotate(-90deg)')};
 }`;
 
 export const TaskChangePosArrowIcon = styled.span`
   position: absolute;
-  right: 88px;
+  right: 100px;
   top: 3px;
   cursor: pointer;
 }`;
 
 export const TaskToggleIcon = styled.span`
   position: absolute;
-  right: 88px;
+  right: 100px;
   top: 3px;
   cursor: pointer;
 }`;
@@ -94,7 +91,7 @@ export const TaskTitle = styled.h4`
 
 export const TaskPlusIcon = styled.span`
   position: absolute;
-  right: 62px;
+  right: 74px;
   top: 3px;
   cursor: pointer;
 }`;
@@ -125,7 +122,20 @@ export const TaskCheckedCircle = styled.div`
   height: 19px;
   width: 20px;
   border: none;
-  right: 30px;
+  right: 47px;
   border-radius: 50%;
   top: 2px;
+`;
+
+export const TodoCalendarIcon = styled.span`
+  font-size: 18px;
+  cursor: pointer;
+  position: absolute;
+  right: 25px;
+  top: 2px;
+  color: ${({ state }) => (state ? '#006edc' : '#fff')};
+`;
+
+export const TodoItemDate = styled.p`
+  color: #006edc;
 `;

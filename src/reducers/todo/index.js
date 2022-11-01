@@ -1,4 +1,5 @@
 import { omit, uniqueId } from 'lodash';
+import moment from 'moment';
 import {
   ADD_SUB_TASK,
   ADD_TASK,
@@ -8,11 +9,22 @@ import {
   ITEM_ID_TO_MOVE,
   CHANGE_IS_CHECKED,
   DELETE_TASK,
+  CHANGE_DATE,
+  CHANGE_IS_CALENDAR_OPEN,
 } from '../../actions/Todo';
+import { getSubTasksId } from '../../utils/todo';
 
 const initialState = {
   items: {},
   itemIdToMove: null,
+  itemIdCalendarOpen: null,
+  date: null,
+  dateSettings: null,
+};
+
+const changeTasksDate = (parentId, obj, dateToChange) => {
+  const allIds = getSubTasksId(Object.values(obj), parentId);
+  return allIds.map((id) => (obj[id].date.current = dateToChange));
 };
 
 export default function todoReducer(state = initialState, { type, payload }) {
@@ -26,16 +38,18 @@ export default function todoReducer(state = initialState, { type, payload }) {
           [idOfItem]: {
             title: payload.title,
             id: idOfItem,
-            isExpended: false,
+            isExpanded: false,
             isChecked: false,
             parentId: null,
+            isCalendarOpen: false,
+            date: { current: new Date().getTime(), time: moment().format('h:mm:ss') },
           },
         },
       };
 
     case ADD_SUB_TASK:
       if (!payload.title) return { ...state };
-      state.items[payload.id].isExpended = true;
+      state.items[payload.id].isExpanded = true;
       const idOfSubItem = uniqueId();
 
       return {
@@ -44,9 +58,14 @@ export default function todoReducer(state = initialState, { type, payload }) {
           [idOfSubItem]: {
             title: payload.title,
             id: idOfSubItem,
-            isExpended: false,
+            isExpanded: false,
             isChecked: false,
             parentId: payload.id,
+            isCalendarOpen: false,
+            date: state.items[payload.id].date || {
+              current: new Date().getTime(),
+              time: moment().format('h:mm:ss'),
+            },
           },
           ...state.items,
         },
@@ -62,7 +81,7 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_EXPENDED:
-      state.items[payload.id].isExpended = !payload.isExpended;
+      state.items[payload.id].isExpanded = !state.items[payload.id].isExpanded;
 
       return {
         ...state,
@@ -70,7 +89,12 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CHANGE_IS_CHECKED:
-      state.items[payload.id].isChecked = !payload.isChecked;
+      const changeIsCheckedTasks = (parentId, obj) => {
+        const allIds = getSubTasksId(Object.values(obj), parentId);
+        return allIds.map((id) => (obj[id].isChecked = !payload.isChecked));
+      };
+
+      changeIsCheckedTasks(payload.id, state.items);
 
       return {
         ...state,
@@ -78,11 +102,17 @@ export default function todoReducer(state = initialState, { type, payload }) {
       };
 
     case CONFIRM_CHANGE_POS:
-      state.items[payload.id].isExpended = true;
-      state.items[payload.changePosItemId].parentId = payload.id;
+      const itemWhichChange = state.items[payload.changePosItemId];
+      const itemWhereChange = state.items[payload.id];
+
+      itemWhereChange.isExpanded = true;
+      itemWhichChange.parentId = payload.id;
+
+      changeTasksDate(payload.changePosItemId, state.items, itemWhereChange.date.current);
 
       return {
         ...state,
+        items: { ...state.items },
         itemIdToMove: null,
       };
 
@@ -94,32 +124,48 @@ export default function todoReducer(state = initialState, { type, payload }) {
         };
       }
 
-      return {
-        ...state,
-        itemIdToMove: payload.id,
-      };
-
-    case DELETE_TASK:
-      const getSubTasksId = (id, obj) => {
-        let result = [id];
-        Object.values(obj).forEach((item) => {
-          if (item.parentId === id) {
-            result = result.concat(getSubTasksId(item.id, obj));
-          }
-        });
-        return result;
-      };
-
-      const removeTaskAndSubTasks = (parentId, obj) => {
-        const allIds = getSubTasksId(parentId, obj);
-        return omit(obj, allIds);
-      };
-
-      state.items = removeTaskAndSubTasks(payload.id, state.items);
+      Object.values(state.items).map((item) => (item.isExpanded = true));
 
       return {
         ...state,
         items: { ...state.items },
+        itemIdToMove: payload.id,
+      };
+
+    case DELETE_TASK:
+      const removeTasks = (parentId, obj) => {
+        const allIds = getSubTasksId(Object.values(obj), parentId);
+        return omit(obj, allIds);
+      };
+
+      state.items = removeTasks(payload.id, state.items);
+      return {
+        ...state,
+        items: { ...state.items },
+      };
+
+    case CHANGE_IS_CALENDAR_OPEN:
+      if (payload.id === state.itemIdCalendarOpen) {
+        changeTasksDate(payload.id, state.items, state.date);
+        state.items[payload.id].parentId = null;
+        return {
+          ...state,
+          items: { ...state.items },
+          itemIdCalendarOpen: null,
+        };
+      }
+
+      return {
+        ...state,
+        items: { ...state.items },
+        date: state.date,
+        itemIdCalendarOpen: payload.id,
+      };
+
+    case CHANGE_DATE:
+      return {
+        ...state,
+        date: payload.date,
       };
 
     default:

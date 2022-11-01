@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   TaskItem,
-  TasksList,
   TaskArrowIcon,
   TaskTitle,
   TaskPlusIcon,
@@ -13,16 +12,23 @@ import {
   TaskToggleIcon,
   TaskCheckedCircle,
   TaskTrashIcon,
+  TodoCalendarIcon,
 } from './styles/Todo';
+import Calendar from '../../components/Calendar/index';
+import { getSubTasksId } from '../../utils/todo';
 
-const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMove }) => {
+const TodoItem = ({ items, id, title, date, isExpanded, isChecked, parentId, rootEl }) => {
   const dispatch = useDispatch();
   const [subTaskAddingInputState, setSubTaskAddingInputState] = useState(false);
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState(false);
   const [titleInputValue, setTitleInputValue] = useState('');
+  const [currentCalendarDay, setCurrentCalendarDay] = useState('');
 
-  const handleClickAddSubTaskInputBlur = (id) => {
+  const idToMove = useSelector((state) => state.todo.itemIdToMove);
+  const idCalendarOpen = useSelector((state) => state.todo.itemIdCalendarOpen);
+
+  const handleClickAddSubTaskInputBlur = () => {
     dispatch({
       type: 'TODO/ADD_SUB_TASK',
       payload: { id, title: subTaskAddingInputValue },
@@ -31,7 +37,7 @@ const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMov
     setSubTaskAddingInputState(false);
   };
 
-  const handleKeyDownAddSubTaskInput = (e, id) => {
+  const handleKeyDownAddSubTaskInput = (e) => {
     if (e.keyCode === 13) {
       dispatch({
         type: 'TODO/ADD_SUB_TASK',
@@ -45,13 +51,13 @@ const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMov
     }
   };
 
-  const handleClickTitleEditingBlur = (id) => {
+  const handleClickTitleEditingBlur = () => {
     dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
     setTitleEditingState('');
     setTitleEditingState(false);
   };
 
-  const handleKeyDownTitleEditing = (e, id) => {
+  const handleKeyDownTitleEditing = (e) => {
     if (e.keyCode === 13) {
       dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
       setTitleInputValue('');
@@ -59,131 +65,152 @@ const TodoItem = ({ items, itemParentId, itemChecked, itemNotToMove, itemIdToMov
     }
   };
 
-  const handleClickTitle = (title, id) => {
+  const handleClickTitle = () => {
     setTitleInputValue(title);
     setTitleEditingState(id);
   };
 
-  const handleClickArrowIcon = (id, isExpended) => {
-    dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id, isExpended } });
+  const handleClickArrowIcon = () => {
+    dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id } });
   };
 
-  const handleClickCircleIcon = (id, isChecked) => {
+  const handleClickCircleIcon = () => {
     dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked } });
   };
 
-  const handleClickChangePos = (id) => {
+  const handleClickChangePos = () => {
     dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id } });
   };
 
-  const handleClickConfirmChangePos = (id) => {
+  const handleClickConfirmChangePos = () => {
     dispatch({
       type: 'TODO/CONFIRM_CHANGE_POS',
-      payload: { id, changePosItemId: itemIdToMove },
+      payload: { id, changePosItemId: idToMove },
     });
   };
 
-  const handleClickPlusIcon = (id) => {
+  const handleClickPlusIcon = () => {
     setSubTaskAddingInputState(id);
   };
 
-  const handleClickTrashIcon = (id) => {
+  const handleClickTrashIcon = () => {
     dispatch({
       type: 'TODO/DELETE_TASK',
       payload: { id },
     });
   };
 
-  const renderMoveIcon = (item) => {
+  const handleClickCalendar = () => {
+    dispatch({
+      type: 'TODO/CHANGE_IS_CALENDAR_OPEN',
+      payload: { id },
+    });
+  };
+
+  const handleClickCalendarDay = (time) => {
+    dispatch({
+      type: 'TODO/CHANGE_DATE',
+      payload: {
+        date: time,
+        currentTime: new Date().getTime(),
+        id,
+      },
+    });
+  };
+
+  const renderMoveIcon = () => {
     switch (true) {
-      case itemIdToMove === item.id:
+      case idToMove === id:
         return (
-          <TaskToggleIcon onClick={() => handleClickChangePos(item.id)}>
+          <TaskToggleIcon onClick={handleClickChangePos}>
             <FontAwesomeIcon icon="cross" />
           </TaskToggleIcon>
         );
-      case itemIdToMove && itemIdToMove !== item.id && !itemNotToMove:
+      case idToMove && idToMove !== id && !getSubTasksId(items, idToMove).includes(id):
         return (
-          <TaskToggleIcon onClick={() => handleClickConfirmChangePos(item.id)}>
+          <TaskToggleIcon onClick={handleClickConfirmChangePos}>
             <FontAwesomeIcon icon="sticky-note" />
           </TaskToggleIcon>
         );
       default:
         return (
-          <TaskChangePosArrowIcon onClick={() => handleClickChangePos(item.id)}>
+          <TaskChangePosArrowIcon onClick={handleClickChangePos}>
             <FontAwesomeIcon icon="arrow-right" />
           </TaskChangePosArrowIcon>
         );
     }
   };
 
-  const renderItems = itemParentId
-    ? Object.values(items).filter((obj) => obj.parentId === itemParentId)
-    : Object.values(items).filter((item) => item.parentId === null);
+  const renderItems =
+    items && parentId
+      ? items.filter((obj) => obj.parentId === parentId)
+      : items.filter((item) => item.parentId === null);
+
+  const handleBlurClick = (e) => {
+    if (currentCalendarDay === e.target.innerText) {
+      handleClickCalendar();
+      setCurrentCalendarDay(null);
+    }
+    setCurrentCalendarDay(e.target.innerText);
+  };
 
   return (
-    <TasksList>
-      {renderItems.map((item) => (
-        <TaskItem key={item.id}>
-          {Object.values(items).find((obj) => obj.parentId === item.id) && (
-            <TaskArrowIcon
-              onClick={() => handleClickArrowIcon(item.id, item.isExpended)}
-              isExpended={item.isExpended || itemIdToMove}
-            />
-          )}
-
-          {titleEditingState !== item.id ? (
-            <TaskTitle onClick={() => handleClickTitle(item.title, item.id)}>
-              {item.title}
-            </TaskTitle>
+    <TaskItem key={id} style={{ paddingLeft: `${title ? '25px' : '0'}` }}>
+      {id && (
+        <>
+          <TaskArrowIcon onClick={handleClickArrowIcon} isExpanded={idToMove || isExpanded} />
+          {titleEditingState !== id ? (
+            <TaskTitle onClick={handleClickTitle}>{title}</TaskTitle>
           ) : (
             <TaskTitleEditingInput
               type="text"
               value={titleInputValue}
-              onBlur={() => handleClickTitleEditingBlur(item.id)}
+              onBlur={handleClickTitleEditingBlur}
               onChange={(e) => setTitleInputValue(e.target.value)}
-              onKeyDown={(e) => handleKeyDownTitleEditing(e, item.id)}
+              onKeyDown={(e) => handleKeyDownTitleEditing(e)}
               autoFocus
             />
           )}
-
-          {subTaskAddingInputState === item.id && (
+          {subTaskAddingInputState === id && (
             <TaskInputAddSubTask
               type="text"
               value={subTaskAddingInputValue}
-              onBlur={() => handleClickAddSubTaskInputBlur(item.id)}
+              onBlur={handleClickAddSubTaskInputBlur}
               onChange={(e) => setSubTaskAddingInputValue(e.target.value)}
-              onKeyDown={(e) => handleKeyDownAddSubTaskInput(e, item.id)}
+              onKeyDown={(e) => handleKeyDownAddSubTaskInput(e)}
               autoFocus
             />
           )}
-
-          <TaskCheckedCircle onClick={() => handleClickCircleIcon(item.id, item.isChecked)}>
-            {(item.isChecked || itemChecked) && <FontAwesomeIcon icon="check" />}
+          <TodoCalendarIcon onClick={handleClickCalendar} state={idCalendarOpen === id}>
+            <FontAwesomeIcon icon="calendar-alt" />
+          </TodoCalendarIcon>
+          <TaskCheckedCircle onClick={handleClickCircleIcon}>
+            {isChecked && <FontAwesomeIcon icon="check" />}
           </TaskCheckedCircle>
-
-          {renderMoveIcon(item)}
-
-          <TaskPlusIcon onClick={() => handleClickPlusIcon(item.id)}>
+          {renderMoveIcon()}
+          <TaskPlusIcon onClick={handleClickPlusIcon}>
             <FontAwesomeIcon icon="plus" />
           </TaskPlusIcon>
-
-          <TaskTrashIcon onClick={() => handleClickTrashIcon(item.id, renderItems)}>
+          <TaskTrashIcon onClick={handleClickTrashIcon}>
             <FontAwesomeIcon icon="trash" />
           </TaskTrashIcon>
-
-          {(item.isExpended || itemIdToMove) && (
-            <TodoItem
-              items={items}
-              itemChecked={itemChecked || item.isChecked}
-              itemParentId={item.id}
-              itemIdToMove={itemIdToMove}
-              itemNotToMove={itemNotToMove || item.id === itemIdToMove}
+          {idCalendarOpen === id && (
+            <Calendar
+              rootEl={rootEl}
+              taskDate={date}
+              handleClickCalendarDay={(time) => handleClickCalendarDay(time)}
+              handleBlurClick={(e) => handleBlurClick(e)}
             />
           )}
-        </TaskItem>
-      ))}
-    </TasksList>
+        </>
+      )}
+      <ul>
+        {isExpanded &&
+          renderItems.map((task) => (
+            <TodoItem key={task.id} {...task} items={items} parentId={task.id} rootEl={rootEl} />
+          ))}
+      </ul>
+    </TaskItem>
   );
 };
 
