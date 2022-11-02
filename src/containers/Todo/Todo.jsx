@@ -12,18 +12,7 @@ const Todo = ({ t }) => {
   const rootEl = useRef(null);
 
   const items = useSelector((state) => state.todo.items);
-  const sortButtons = useSelector((state) => state.todoSettings.sortButtons);
   const dateSettings = useSelector((state) => state.todoSettings.dateSettings);
-
-  useEffect(() => {
-    const localStorageButton = localStorage.getItem('activeButton') || 1;
-    const findSortBy = sortButtons[localStorageButton].sortBy;
-
-    dispatch({
-      type: 'TODO_SETTINGS/SETTINGS_DATE',
-      payload: { id: localStorageButton, sortBy: findSortBy },
-    });
-  }, [dispatch, items, sortButtons]);
 
   useEffect(() => {
     const onClick = (e) => {
