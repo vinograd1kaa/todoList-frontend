@@ -1,35 +1,9 @@
-import { uniqueId } from 'lodash';
 import { SETTINGS_DATE } from '../../actions/TodoSettings';
+import { dateButtons } from '../../utils/todoSettings';
 
 const initialState = {
-  dateSettings: { activeButton: 0, sortBy: null },
-  sortButtons: {
-    1: {
-      id: uniqueId(),
-      title: 'All',
-      sortBy: { date: 'DD MMM YYYY', time: true },
-    },
-    2: {
-      id: uniqueId(),
-      title: '11 10 2022',
-      sortBy: { date: 'DD MM YYYY' },
-    },
-    3: {
-      id: uniqueId(),
-      title: '20:11 11.10.2022',
-      sortBy: { date: 'DD.MM.YYYY', time: true },
-    },
-    4: {
-      id: uniqueId(),
-      title: '11-10-2022',
-      sortBy: { date: 'DD-MM-YYYY' },
-    },
-    5: {
-      id: uniqueId(),
-      title: '11 oct Thu',
-      sortBy: { date: 'Do MMM dddd' },
-    },
-  },
+  dateSettings: { activeButton: '1', sortBy: null },
+  sortButtons: dateButtons,
 };
 
 export default function todoSettingsReducer(state = initialState, { type, payload }) {
