@@ -9,8 +9,6 @@ const initialState = {
 export default function todoSettingsReducer(state = initialState, { type, payload }) {
   switch (type) {
     case SETTINGS_DATE:
-      localStorage.setItem('activeButton', payload.id);
-
       return {
         ...state,
         dateSettings: { activeButton: payload.id, sortBy: payload.sortBy },

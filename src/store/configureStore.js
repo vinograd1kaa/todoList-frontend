@@ -3,6 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 import reducers from '../reducers';
 import rootSaga from '../sagas';
 import { dateButtons } from '../utils/todoSettings';
+import { fetchTodoWorker } from '../sagas/todo';
 
 const localStorageButton = localStorage.getItem('activeButton') || '1';
 const findSortBy = dateButtons[localStorageButton].sortBy;
@@ -32,6 +33,7 @@ const initStore = () => {
     composeEnhancers(applyMiddleware(sagaMiddleware)),
   );
   sagaMiddleware.run(rootSaga);
+  sagaMiddleware.run(fetchTodoWorker);
 
   return store;
 };

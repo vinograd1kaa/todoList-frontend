@@ -9,7 +9,6 @@ import { Redirect } from 'react-router';
 import history from './services/history';
 import store from './store/configureStore';
 import Projects from './containers/Projects';
-import Todo from './containers/Todo';
 
 import i18n from './i18n';
 import theme from './theme';
@@ -18,7 +17,9 @@ import 'typeface-roboto';
 import 'typeface-source-sans-pro';
 
 import './globalStyles/fontAwesome';
-import TodoSettings from './containers/TodoSettings';
+import Todo from './containers/TodoList/Todo';
+import TodoSettings from './containers/TodoList/TodoSettings';
+import FullTodo from './containers/TodoList/FullTodo/FullTodo';
 
 // Todo: use 'rem' for font-size, to change font-size for theme.screens.sm devices across the whole App by changing body font-size
 // Todo: finalize theme variables
@@ -34,7 +35,8 @@ ReactDOM.render(
             <GlobalStyles />
             <Switch>
               <Route path="/projects" component={Projects} />
-              <Route path="/todo" component={Todo} />
+              <Route path="/todo" component={Todo} exact />
+              <Route path="/todo/:id" component={FullTodo} />
               <Route path="/settings" component={TodoSettings} />
               <Redirect exact from="/" to="/todo" />
             </Switch>
