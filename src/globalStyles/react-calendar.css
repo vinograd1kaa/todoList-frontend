@@ -13,3 +13,9 @@
   height: 6px;
   margin-bottom: 1em;
 }
+
+.my-calendar .react-calendar__navigation button {
+  min-width: 47px;
+  background: none;
+  height: 27px;
+}
