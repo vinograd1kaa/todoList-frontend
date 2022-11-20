@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import LogoImage from './Logo';
 
-export const Container = styled.div`
+export const Container = styled('div')`
   padding: 16px 35px;
   background: #26262e;
   text-align: left;
@@ -13,7 +13,7 @@ export const Container = styled.div`
   }
 `;
 
-export const LogoContainer = styled.div`
+export const LogoContainer = styled('div')`
   display: flex;
 `;
 
@@ -23,7 +23,7 @@ export const Logo = styled(LogoImage)`
   height: 24px;
 `;
 
-export const RedCircle = styled.div`
+export const RedCircle = styled('div')`
   width: 18px;
   height: 18px;
   margin-right: 7px;

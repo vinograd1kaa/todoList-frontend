@@ -21,11 +21,6 @@ import Todo from './containers/TodoList/Todo';
 import TodoSettings from './containers/TodoList/TodoSettings';
 import FullTodo from './containers/TodoList/FullTodo/FullTodo';
 
-// Todo: use 'rem' for font-size, to change font-size for theme.screens.sm devices across the whole App by changing body font-size
-// Todo: finalize theme variables
-// Todo: add propTypes
-// Replace loader with pretty one
-
 ReactDOM.render(
   <React.StrictMode>
     <Router history={history}>
@@ -38,7 +33,6 @@ ReactDOM.render(
               <Route path="/todo" component={Todo} exact />
               <Route path="/todo/:id" component={FullTodo} />
               <Route path="/settings" component={TodoSettings} />
-              <Redirect exact from="/" to="/todo" />
             </Switch>
           </Provider>
         </ThemeProvider>

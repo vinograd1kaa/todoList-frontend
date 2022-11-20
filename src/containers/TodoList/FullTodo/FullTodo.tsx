@@ -5,19 +5,21 @@ import moment from 'moment';
 import { Container, FullTodoBlock, FullTodoItem, Line, FullTodoItemWrap } from './index';
 import Header from '../../../components/Header';
 import { getSubTasksId } from '../../../utils/todo';
+import { selectTodoItems } from '../../../reducers/todo/selectors';
+import { selectDateSortBy } from '../../../reducers/todoSettings/selectors';
 
-const FullTodo = () => {
-  const { id } = useParams();
-  const items = useSelector((state) => state.todo.items);
-  const dateSettings = useSelector((state) => state.todoSettings.dateSettings);
+const FullTodo: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const items = useSelector(selectTodoItems);
+  const dateSettingsSortBy = useSelector(selectDateSortBy);
 
   const item = items[id];
-  if (!item) return 'Nothing found...';
+  if (!item) return <>This item does not exist...</>;
 
   const subTasksId = getSubTasksId(Object.values(items), id).filter((taskId) => taskId !== id);
 
-  const itemDate = dateSettings.sortBy
-    ? moment(item.date.current).format(dateSettings.sortBy.date)
+  const itemDate = dateSettingsSortBy
+    ? moment(item.date.current).format(dateSettingsSortBy.date)
     : '  Today';
 
   return (
