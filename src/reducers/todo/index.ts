@@ -24,7 +24,8 @@ const initialState: TodoReducerState = {
 
 const changeTasksDate = (parentId: string, items: TodoItems, dateToChange: number) => {
   const allIds = getSubTasksId(Object.values(items), parentId);
-  return allIds.map((id) => (items[id].date.current = dateToChange));
+  console.log(allIds);
+  return allIds.map((id) => items[id]).map((item) => (item.date.current = dateToChange));
 };
 
 const findTask = (items: TodoItems, id: string) => {
@@ -147,6 +148,7 @@ export default function todoReducer(state = initialState, { type, payload }: Tod
       };
 
     case CHANGE_IS_CALENDAR_OPEN:
+      console.log(payload);
       if (payload.id === state.itemIdCalendarOpen) {
         changeTasksDate(payload.id, state.items, payload.date);
         findTask(state.items, payload.id).parentId = null;
