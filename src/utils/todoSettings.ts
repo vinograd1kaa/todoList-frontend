@@ -1,6 +1,7 @@
 import { uniqueId } from 'lodash';
+import { DateButtons } from '../reducers/todoSettings/types';
 
-export const dateButtons = {
+export const dateButtons: DateButtons = {
   1: {
     id: uniqueId(),
     title: 'All',

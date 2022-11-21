@@ -1,15 +1,15 @@
 import styled from 'styled-components';
 
-export const ButtonsContainer = styled.div`
+export const ButtonsContainer = styled('div')`
   width: 100%;
   display: flex;
 `;
 
-export const ButtonWrap = styled.div`
+export const ButtonWrap = styled('div')`
   margin: 0 auto;
 `;
 
-export const LinkButton = styled.button`
+export const LinkButton = styled('button')`
   margin: 0 auto;
   text-decoration: none;
   position: relative;

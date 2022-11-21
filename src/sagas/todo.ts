@@ -1,7 +1,14 @@
 import { put, takeEvery } from 'redux-saga/effects';
 import { ASYNC_SETTINGS_DATE, SETTINGS_DATE } from '../actions/TodoSettings';
 
-export default function* fetchTodo(action) {
+type FetchTodoTypeAction = {
+  payload: {
+    id: string;
+    sortBy: string;
+  };
+};
+
+export default function* fetchTodo(action: FetchTodoTypeAction) {
   localStorage.setItem('activeButton', action.payload.id);
 
   yield put({
@@ -14,5 +21,6 @@ export default function* fetchTodo(action) {
 }
 
 export function* fetchTodoWorker() {
+  // @ts-ignore
   yield takeEvery(ASYNC_SETTINGS_DATE, fetchTodo);
 }

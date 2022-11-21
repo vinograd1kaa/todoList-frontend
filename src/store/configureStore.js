@@ -1,6 +1,6 @@
 import { applyMiddleware, createStore, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import reducers from '../reducers';
+import { rootReducer } from '../reducers/index';
 import rootSaga from '../sagas';
 import { dateButtons } from '../utils/todoSettings';
 import { fetchTodoWorker } from '../sagas/todo';
@@ -11,7 +11,7 @@ const findSortBy = dateButtons[localStorageButton].sortBy;
 const preloadedState = {
   todoSettings: {
     dateSettings: { activeButton: localStorageButton, sortBy: findSortBy },
-    sortButtons: dateButtons,
+    dateSortButtons: dateButtons,
   },
 };
 
@@ -28,7 +28,7 @@ const initStore = () => {
       : compose;
 
   const store = createStore(
-    reducers,
+    rootReducer,
     preloadedState,
     composeEnhancers(applyMiddleware(sagaMiddleware)),
   );

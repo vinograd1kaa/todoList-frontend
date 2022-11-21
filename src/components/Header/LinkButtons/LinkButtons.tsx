@@ -8,7 +8,7 @@ const LinkButtons = () => {
     <ButtonsContainer>
       {links.map((item) => (
         <ButtonWrap key={item}>
-          <Link to={{ pathname: `/${item}` }}>
+          <Link to={`/${item}`}>
             <LinkButton type="submit">{item}</LinkButton>
           </Link>
         </ButtonWrap>
