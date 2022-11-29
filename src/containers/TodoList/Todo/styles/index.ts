@@ -5,6 +5,9 @@ export const Container = styled('div')`
   width: 680px;
   margin: 0 auto;
   position: relative;
+  @media (max-width: 690px) {
+    width: 100%;
+  }
 `;
 
 export const TodoBlock = styled('div')`

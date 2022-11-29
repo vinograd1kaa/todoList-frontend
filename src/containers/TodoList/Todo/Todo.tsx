@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
+import { WithTranslation } from 'react-i18next';
 import { Container, TodoBlock, Title, Form } from './styles';
 import { TodoAddTasksInput, TaskListItem, TodoButton, TodoItemDate } from './styles/Todo';
 import TodoItem from './TodoItem';
 import Header from '../../../components/Header';
 import { selectDateSortBy } from '../../../reducers/todoSettings/selectors';
 import { selectTodoItems } from '../../../reducers/todo/selectors';
-import { TodoDate } from '../../../reducers/todo/types';
+import { TodoDate, TodoTypeItem } from '../../../reducers/todo/types';
 
-const Todo: React.FC<any> = ({ t }) => {
+const Todo: React.FC<WithTranslation> = ({ t }) => {
   const dispatch = useDispatch();
   const [addTaskInputValue, setAddTaskInputValue] = useState('');
   const rootEl = useRef<HTMLDivElement>(null);
@@ -19,8 +20,13 @@ const Todo: React.FC<any> = ({ t }) => {
 
   useEffect(() => {
     const onClick = (e: any) => {
-      // eslint-disable-next-line
-      if (rootEl.current && !rootEl.current.contains(e.target) && e.target.tagName !== 'path' && e.target.tagName !== 'svg') {
+      if (
+        rootEl.current &&
+        !rootEl.current.contains(e.target) &&
+        e.target.tagName !== 'path' &&
+        e.target.tagName !== 'svg' &&
+        !e.target.className.includes('react-calendar')
+      ) {
         dispatch({
           type: 'TODO/CHANGE_IS_CALENDAR_OPEN',
           payload: { id: null },
@@ -50,7 +56,7 @@ const Todo: React.FC<any> = ({ t }) => {
     setAddTaskInputValue(event.target.value);
   };
 
-  const sortedItems: any = Object.values(
+  const sortedItems: TodoTypeItem[][] = Object.values(
     // @ts-ignore
     Object.values(items)
       .sort((a: any, b: any) => b.date.current - a.date.current)
@@ -80,7 +86,7 @@ const Todo: React.FC<any> = ({ t }) => {
             </TodoButton>
           </Form>
         </TodoBlock>
-        {sortedItems.map((arr: any) => (
+        {sortedItems.map((arr: TodoTypeItem[]) => (
           <TaskListItem key={arr[0].date.current}>
             <TodoItemDate>{checkDate(arr[0].date)}</TodoItemDate>
             <TodoItem

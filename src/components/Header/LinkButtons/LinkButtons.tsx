@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ButtonsContainer, ButtonWrap, LinkButton } from './index';
+import { ButtonsContainer, ButtonWrap, LinkButton } from './styles';
 
-const LinkButtons = () => {
+const LinkButtons: React.FC = () => {
   const links = ['projects', 'todo', 'settings'];
+
   return (
     <ButtonsContainer>
       {links.map((item) => (

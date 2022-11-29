@@ -9,7 +9,6 @@ import {
   ITEM_ID_TO_MOVE,
   CHANGE_IS_CHECKED,
   DELETE_TASK,
-  CHANGE_DATE,
   CHANGE_IS_CALENDAR_OPEN,
 } from '../../actions/Todo';
 import { getSubTasksId } from '../../utils/todo';
@@ -19,13 +18,6 @@ const initialState: TodoReducerState = {
   items: {},
   itemIdToMove: null,
   itemIdCalendarOpen: null,
-  date: null,
-};
-
-const changeTasksDate = (parentId: string, items: TodoItems, dateToChange: number) => {
-  const allIds = getSubTasksId(Object.values(items), parentId);
-  console.log(allIds);
-  return allIds.map((id) => items[id]).map((item) => (item.date.current = dateToChange));
 };
 
 const findTask = (items: TodoItems, id: string) => {
@@ -105,17 +97,27 @@ export default function todoReducer(state = initialState, { type, payload }: Tod
       };
 
     case CONFIRM_CHANGE_POS:
-      const itemWhichChange = findTask(state.items, payload.changePosItemId);
-      const itemWhereChange = findTask(state.items, payload.id);
+      let newDateObj = { ...state.items };
+      const allIdsDateToChange = getSubTasksId(Object.values(state.items), payload.changePosItemId);
 
-      itemWhereChange.isExpanded = true;
-      itemWhichChange.parentId = payload.id;
-
-      changeTasksDate(payload.changePosItemId, state.items, itemWhereChange.date.current);
+      allIdsDateToChange.forEach((id) => {
+        newDateObj = {
+          ...newDateObj,
+          [id]: {
+            ...newDateObj[id],
+            parentId: payload.changePosItemId === id ? payload.id : newDateObj[id].parentId,
+            isExpanded: payload.id === id,
+            date: {
+              current: findTask(state.items, payload.id).date.current,
+              time: newDateObj[id].date.time,
+            },
+          },
+        };
+      });
 
       return {
         ...state,
-        items: { ...state.items },
+        items: { ...newDateObj },
         itemIdToMove: null,
       };
 
@@ -142,19 +144,32 @@ export default function todoReducer(state = initialState, { type, payload }: Tod
       };
 
       state.items = removeTasks(payload.id, state.items);
+
       return {
         ...state,
         items: { ...state.items },
       };
 
     case CHANGE_IS_CALENDAR_OPEN:
-      console.log(payload);
       if (payload.id === state.itemIdCalendarOpen) {
-        changeTasksDate(payload.id, state.items, payload.date);
-        findTask(state.items, payload.id).parentId = null;
+        const allIds = getSubTasksId(Object.values(state.items), payload.id);
+        let newObj1 = { ...state.items };
+
+        allIds.forEach((id) => {
+          // @ts-ignore
+          newObj1 = {
+            ...newObj1,
+            [id]: {
+              ...newObj1[id],
+              parentId: payload.id === id ? null : newObj1[id].parentId,
+              date: { current: payload.date || new Date().getTime(), time: newObj1[id].date.time },
+            },
+          };
+        });
+
         return {
           ...state,
-          items: { ...state.items },
+          items: { ...newObj1 },
           itemIdCalendarOpen: null,
         };
       }
@@ -162,14 +177,7 @@ export default function todoReducer(state = initialState, { type, payload }: Tod
       return {
         ...state,
         items: { ...state.items },
-        date: state.date,
         itemIdCalendarOpen: payload.id,
-      };
-
-    case CHANGE_DATE:
-      return {
-        ...state,
-        date: payload.date,
       };
 
     default:

@@ -18,7 +18,6 @@ export interface TodoReducerState {
   items: TodoItems;
   itemIdToMove: null | string;
   itemIdCalendarOpen: null | string;
-  date: null | number;
 }
 
 export interface TodoReducerPayload {

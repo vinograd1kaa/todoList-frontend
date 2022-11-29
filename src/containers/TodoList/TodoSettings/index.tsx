@@ -2,7 +2,7 @@ import React from 'react';
 import DateButtons from './DateButtons/DateButtons';
 import Header from '../../../components/Header';
 
-const TodoSettings = () => {
+const TodoSettings: React.FC = () => {
   return (
     <div>
       <Header />
