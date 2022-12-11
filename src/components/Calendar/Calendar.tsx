@@ -1,32 +1,26 @@
-import React, { useState } from 'react';
+import React, { RefObject, useState } from 'react';
 import { Calendar as ReactCalendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { CalendarContainer } from './styles';
 import '../../globalStyles/react-calendar.css';
+import { TodoDate } from '../../reducers/todo/types';
 
 type CalendarProps = {
-  // handleBlurClick: (e: any) => void;
   handleClickCalendarDay: (time: number) => void;
   rootEl: any;
-  // taskDate: any;
+  taskDate: TodoDate;
 };
 
-const Calendar: React.FC<CalendarProps> = ({
-  handleClickCalendarDay,
-  // handleBlurClick,
-  rootEl,
-  // taskDate,
-}) => {
-  const [value, onChange] = useState<any>(new Date());
+const Calendar: React.FC<CalendarProps> = ({ handleClickCalendarDay, rootEl, taskDate }) => {
+  const [value, onChange] = useState<Date>(new Date(taskDate.current) || new Date());
 
   return (
-    // <CalendarContainer ref={rootEl} onClick={(e) => handleBlurClick(e)}>
     <CalendarContainer ref={rootEl}>
       <ReactCalendar
-        onChange={onChange}
         className="my-calendar"
-        onClickDay={() => handleClickCalendarDay(value.getTime())}
+        onChange={onChange}
         value={value}
+        onClickDay={(time) => handleClickCalendarDay(time.getTime())}
       />
     </CalendarContainer>
   );

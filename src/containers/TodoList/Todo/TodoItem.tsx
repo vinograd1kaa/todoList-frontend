@@ -47,7 +47,7 @@ const TodoItem: React.FC<TodoItemParams> = ({
   const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
   const [titleEditingState, setTitleEditingState] = useState<string | false>(false);
   const [titleInputValue, setTitleInputValue] = useState<string>('');
-  const [currentCalendarDay, setCurrentCalendarDay] = useState<string | null>('');
+  const [currentCalendarDay, setCurrentCalendarDay] = useState<number>();
   const idToMove = useSelector(selectTodoItemIdToMove);
   const idCalendarOpen = useSelector(selectTodoIdCalendarOpen);
 
@@ -130,22 +130,14 @@ const TodoItem: React.FC<TodoItemParams> = ({
   };
 
   const handleClickCalendarDay = (time: number) => {
-    dispatch({
-      type: 'TODO/CHANGE_IS_CALENDAR_OPEN',
-      payload: {
-        date: time,
-        id,
-      },
-    });
+    if (currentCalendarDay === time) {
+      dispatch({
+        type: 'TODO/CHANGE_IS_CALENDAR_OPEN',
+        payload: { id, date: time },
+      });
+    }
+    setCurrentCalendarDay(time);
   };
-
-  // const handleBlurClick = (e: { target: { innerText: React.SetStateAction<string | null> } }) => {
-  //   if (currentCalendarDay === e.target.innerText) {
-  //     handleClickCalendar();
-  //     setCurrentCalendarDay(null);
-  //   }
-  //   setCurrentCalendarDay(e.target.innerText);
-  // };
 
   const renderMoveIcon = () => {
     switch (true) {
@@ -229,9 +221,8 @@ const TodoItem: React.FC<TodoItemParams> = ({
           {idCalendarOpen === id && (
             <Calendar
               rootEl={rootEl}
-              // taskDate={date}
-              handleClickCalendarDay={(time) => handleClickCalendarDay(time)}
-              // handleBlurClick={(e) => handleBlurClick(e)}
+              taskDate={date}
+              handleClickCalendarDay={handleClickCalendarDay}
             />
           )}
         </>

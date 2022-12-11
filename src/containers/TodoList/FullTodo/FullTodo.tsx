@@ -2,20 +2,22 @@ import React from 'react';
 import { useParams } from 'react-router';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { Container, FullTodoBlock, FullTodoItem, Line, FullTodoItemWrap } from './index';
+import { WithTranslation } from 'react-i18next';
+import { Container, FullTodoBlock, FullTodoItem, Line, FullTodoItemWrap } from './styles';
 import Header from '../../../components/Header';
+import EmptyFullTodo from './EmptyFullTodo';
 import { getSubTasksId } from '../../../utils/todo';
 import { selectTodoItems } from '../../../reducers/todo/selectors';
 import { selectDateSortBy } from '../../../reducers/todoSettings/selectors';
 
-const FullTodo: React.FC = () => {
+const FullTodo: React.FC<WithTranslation> = () => {
   const { id } = useParams<{ id: string }>();
   const items = useSelector(selectTodoItems);
   const dateSettingsSortBy = useSelector(selectDateSortBy);
 
   const item = items[id];
-  if (!item) return <>This item does not exist...</>;
-
+  if (!item) return <EmptyFullTodo />;
+  // @ts-ignore
   const subTasksId = getSubTasksId(Object.values(items), id).filter((taskId) => taskId !== id);
 
   const itemDate = dateSettingsSortBy

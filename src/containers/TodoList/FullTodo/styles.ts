@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled('div')`
   font-family: Comic Sans MS, Comic Sans, cursive;
-  width: 450px;
+  width: 400px;
   margin: 0 auto;
   position: relative;
 `;

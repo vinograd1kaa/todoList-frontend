@@ -47,6 +47,10 @@ export const TaskListItem = styled('ul')`
   -ms-user-select: none;
   user-select: none;
   background: #c5c3c3;
+
+  @media (max-width: 690px) {
+    padding: 12px 28px 12px 28px;
+  } ;
 `;
 
 export const TaskItem = styled('div')`
@@ -142,7 +146,7 @@ export const TaskInfoCircle = styled('span')`
   position: absolute;
   right: 135px;
   top: 2px;
-  color: grey;
+  color: #fff;
 `;
 
 export const TodoItemDate = styled('p')`

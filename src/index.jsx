@@ -2,10 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ThemeProvider } from 'styled-components';
 import { Provider } from 'react-redux';
-import { Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { I18nextProvider } from 'react-i18next';
-import { Redirect } from 'react-router';
 import history from './services/history';
 import store from './store/configureStore';
 import Projects from './containers/Projects';
@@ -28,12 +27,12 @@ ReactDOM.render(
         <ThemeProvider theme={theme}>
           <Provider store={store}>
             <GlobalStyles />
-            <Switch>
-              <Route path="/projects" component={Projects} />
-              <Route path="/todo" component={Todo} exact />
-              <Route path="/todo/:id" component={FullTodo} />
-              <Route path="/settings" component={TodoSettings} />
-            </Switch>
+            <Routes>
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/todo" element={<Todo />} replace exact />
+              <Route path="/todo/:id" element={<FullTodo />} />
+              <Route path="/settings" element={<TodoSettings />} />
+            </Routes>
           </Provider>
         </ThemeProvider>
       </I18nextProvider>

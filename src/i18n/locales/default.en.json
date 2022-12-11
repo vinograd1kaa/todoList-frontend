@@ -14,7 +14,8 @@
     "Todo": {
       "pageTitle": "My Todo List",
       "addTasksPlaceholder": "Title...",
-      "addTasksButton": "Add"
+      "addTasksButton": "Add",
+      "emptyFullTodo": "This item does not exist..."
     },
     "Footer": {
       "copyright": "© 2020 | SKILLDAR | All Rights Reserved",
