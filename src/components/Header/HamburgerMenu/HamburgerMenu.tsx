@@ -1,11 +1,25 @@
 import React, { useState } from 'react';
 import Hamburger from 'hamburger-react';
 import { Link } from 'react-router-dom';
-import { Container, Content, Item, ItemWrapper, Line, Button } from './styles';
+import {
+  Container,
+  Content,
+  Item,
+  ItemWrapper,
+  Line,
+  Button,
+  UserInfoWrapper,
+  UserInfo,
+  LogoutBtn,
+} from './styles';
 import { Logo, RedCircle } from '../styles';
 
-const HamburgerMenu: React.FC = () => {
-  const links = ['projects', 'todo', 'settings'];
+type HamburgerMenuParams = {
+  links: string[];
+  nameIsAuth: string;
+};
+
+const HamburgerMenu: React.FC<HamburgerMenuParams> = ({ nameIsAuth, links }) => {
   const [open, setOpen] = useState(false);
 
   const handleClickHamburger = () => {
@@ -17,6 +31,10 @@ const HamburgerMenu: React.FC = () => {
       <Button onClick={handleClickHamburger}>
         <Hamburger />
       </Button>
+      <UserInfoWrapper>
+        <UserInfo>{nameIsAuth}</UserInfo>
+        {!nameIsAuth.includes('registered') && <LogoutBtn>Logout</LogoutBtn>}
+      </UserInfoWrapper>
       <Content open={open}>
         <Logo center="true" />
         <Line />

@@ -6,6 +6,7 @@ export type TodoDate = {
 export type TodoTypeItem = {
   title: string;
   id: string;
+  _id: string;
   isExpanded: boolean;
   isChecked: boolean;
   parentId: null | string;
@@ -23,10 +24,13 @@ export interface TodoReducerState {
 export interface TodoReducerPayload {
   type: string;
   payload: {
+    posts: TodoTypeItem[];
     id: string;
+    idOfSubItem: string;
     title: string;
     date: number;
     isChecked: boolean;
+    isExpanded: boolean;
     changePosItemId: string;
   };
 }

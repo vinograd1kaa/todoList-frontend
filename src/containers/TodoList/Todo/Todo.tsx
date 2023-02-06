@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { WithTranslation } from 'react-i18next';
-import { Container, TodoBlock, Title, Form } from './styles';
+import { Container, TodoBlock, Form } from './styles';
 import { TodoAddTasksInput, TaskListItem, TodoButton, TodoItemDate } from './styles/Todo';
 import TodoItem from './TodoItem';
 import Header from '../../../components/Header';
 import { selectDateSortBy } from '../../../reducers/todoSettings/selectors';
 import { selectTodoItems } from '../../../reducers/todo/selectors';
 import { TodoDate, TodoTypeItem } from '../../../reducers/todo/types';
+import { selectIsAuth, getIdIsAuth } from '../../../reducers/auth';
 
 const Todo: React.FC<WithTranslation> = ({ t }) => {
   const dispatch = useDispatch();
@@ -16,7 +17,19 @@ const Todo: React.FC<WithTranslation> = ({ t }) => {
   const rootEl = useRef<HTMLDivElement>(null);
 
   const items = useSelector(selectTodoItems);
+  const isAuth = useSelector(selectIsAuth);
+  const idAuthUser = useSelector(getIdIsAuth);
   const dateSettingsSortBy = useSelector(selectDateSortBy);
+
+  // @ts-ignore
+  React.useEffect(async () => {
+    if (isAuth) {
+      dispatch({
+        type: 'TODO/ASYNC_GET_POSTS',
+        payload: { idAuthUser },
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const onClick = (e: any) => {
@@ -37,8 +50,16 @@ const Todo: React.FC<WithTranslation> = ({ t }) => {
     return () => document.removeEventListener('click', onClick);
   }, [rootEl]);
 
-  const handleClickAddTaskBtn = () => {
-    dispatch({ type: 'TODO/ADD_TASK', payload: { title: addTaskInputValue } });
+  const handleClickAddTaskBtn = async () => {
+    const fields = {
+      title: addTaskInputValue,
+      isChecked: false,
+      isExpanded: false,
+      parentId: null,
+      date: { current: new Date().getTime(), time: moment().format('h:mm:ss') },
+    };
+
+    dispatch({ type: 'TODO/ASYNC_ADD_TASK', payload: { title: addTaskInputValue, fields } });
     setAddTaskInputValue('');
   };
 
@@ -73,7 +94,6 @@ const Todo: React.FC<WithTranslation> = ({ t }) => {
       <Header />
       <Container>
         <TodoBlock>
-          <Title>{t('Todo.pageTitle')}</Title>
           <Form>
             <TodoAddTasksInput
               type="text"

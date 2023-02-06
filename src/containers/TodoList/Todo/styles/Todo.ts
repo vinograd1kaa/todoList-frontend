@@ -32,7 +32,7 @@ export const TodoButton = styled('button')`
   }
 
   &:active {
-    background: #32784e;
+    background: #337ab7;
   }
 `;
 

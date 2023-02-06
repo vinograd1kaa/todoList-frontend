@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 import { withTranslation } from 'react-i18next';
 import { GET_PROJECTS_PENDING } from '../../actions/Projects';
-import { projectsSelector, isLoadingSelector } from '../../selectors/projects';
-import Projects from './Projects';
+import { Projects } from './Projects';
+import { isLoadingSelector, projectsSelector } from '../../reducers/projects';
 
 const mapStateToProps = (state) => ({
   projects: projectsSelector(state),

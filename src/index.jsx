@@ -16,9 +16,9 @@ import 'typeface-roboto';
 import 'typeface-source-sans-pro';
 
 import './globalStyles/fontAwesome';
-import Todo from './containers/TodoList/Todo';
-import TodoSettings from './containers/TodoList/TodoSettings';
-import FullTodo from './containers/TodoList/FullTodo/FullTodo';
+import './globalStyles/font-family.css';
+
+import { TodoList, TodoSettings, FullTodo, Auth, Register, Login } from './containers';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -29,7 +29,10 @@ ReactDOM.render(
             <GlobalStyles />
             <Routes>
               <Route path="/projects" element={<Projects />} />
-              <Route path="/todo" element={<Todo />} replace exact />
+              <Route path="/todo" element={<TodoList />} replace exact />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login/:email" element={<Login />} />
               <Route path="/todo/:id" element={<FullTodo />} />
               <Route path="/settings" element={<TodoSettings />} />
             </Routes>

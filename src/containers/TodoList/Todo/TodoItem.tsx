@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import moment from 'moment/moment';
 import {
   TaskItem,
   TaskArrowIcon,
@@ -18,7 +19,11 @@ import {
 } from './styles/Todo';
 import Calendar from '../../../components/Calendar';
 import { getSubTasksId } from '../../../utils/todo';
-import { selectTodoIdCalendarOpen, selectTodoItemIdToMove } from '../../../reducers/todo/selectors';
+import {
+  selectTodoIdCalendarOpen,
+  selectTodoItemIdToMove,
+  selectTodoItems,
+} from '../../../reducers/todo/selectors';
 import { TodoTypeItem, TodoDate } from '../../../reducers/todo/types';
 
 type TodoItemParams = {
@@ -51,38 +56,54 @@ const TodoItem: React.FC<TodoItemParams> = ({
   const idToMove = useSelector(selectTodoItemIdToMove);
   const idCalendarOpen = useSelector(selectTodoIdCalendarOpen);
 
-  const handleClickAddSubTaskInputBlur = () => {
+  const stateItems = useSelector(selectTodoItems);
+
+  const handleClickAddSubTaskInputBlur = async () => {
+    const fields = {
+      title: subTaskAddingInputValue,
+      isChecked: false,
+      isExpanded: true,
+      parentId: id,
+      date: stateItems[id].date,
+    };
+
     dispatch({
-      type: 'TODO/ADD_SUB_TASK',
-      payload: { id, title: subTaskAddingInputValue },
+      type: 'TODO/ASYNC_ADD_SUB_TASK',
+      payload: { id, title: subTaskAddingInputValue, fields },
     });
+
     setSubTaskAddingInputValue('');
     setSubTaskAddingInputState(false);
   };
 
-  const handleKeyDownAddSubTaskInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDownAddSubTaskInput = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.keyCode === 13) {
+      const fields = {
+        title: subTaskAddingInputState,
+        isChecked: false,
+        isExpanded: true,
+        parentId: id,
+        date: stateItems[id].date,
+      };
+
       dispatch({
-        type: 'TODO/ADD_SUB_TASK',
-        payload: {
-          id,
-          title: subTaskAddingInputValue,
-        },
+        type: 'TODO/ASYNC_ADD_SUB_TASK',
+        payload: { id, title: subTaskAddingInputValue, fields },
       });
+
       setSubTaskAddingInputValue('');
       setSubTaskAddingInputState(false);
     }
   };
 
-  const handleClickTitleEditingBlur = () => {
-    dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
+  const handleClickTitleEditingBlur = async () => {
+    dispatch({ type: 'TODO/ASYNC_CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
     setTitleEditingState(false);
   };
 
-  const handleKeyDownTitleEditing = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDownTitleEditing = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.keyCode === 13) {
-      dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
-      setTitleInputValue('');
+      dispatch({ type: 'TODO/ASYNC_CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
       setTitleEditingState(false);
     }
   };
@@ -92,22 +113,25 @@ const TodoItem: React.FC<TodoItemParams> = ({
     setTitleEditingState(id);
   };
 
-  const handleClickArrowIcon = () => {
-    dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id } });
+  const handleClickArrowIcon = async () => {
+    dispatch({ type: 'TODO/ASYNC_CHANGE_IS_EXPANDED', payload: { id, isExpanded } });
   };
 
-  const handleClickCircleIcon = () => {
-    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked } });
+  const handleClickCircleIcon = async () => {
+    dispatch({
+      type: 'TODO/ASYNC_CHANGE_IS_CHECKED',
+      payload: { id, items: stateItems, isChecked },
+    });
   };
 
   const handleClickChangePos = () => {
     dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id } });
   };
 
-  const handleClickConfirmChangePos = () => {
+  const handleClickConfirmChangePos = async () => {
     dispatch({
-      type: 'TODO/CONFIRM_CHANGE_POS',
-      payload: { id, changePosItemId: idToMove },
+      type: 'TODO/ASYNC_CONFIRM_CHANGE_POS',
+      payload: { id, items: stateItems, changePosItemId: idToMove },
     });
   };
 
@@ -115,10 +139,10 @@ const TodoItem: React.FC<TodoItemParams> = ({
     setSubTaskAddingInputState(id);
   };
 
-  const handleClickTrashIcon = () => {
+  const handleClickTrashIcon = async () => {
     dispatch({
-      type: 'TODO/DELETE_TASK',
-      payload: { id },
+      type: 'TODO/ASYNC_DELETE_TASK',
+      payload: { id, items: stateItems },
     });
   };
 
@@ -129,11 +153,11 @@ const TodoItem: React.FC<TodoItemParams> = ({
     });
   };
 
-  const handleClickCalendarDay = (time: number) => {
+  const handleClickCalendarDay = async (time: number) => {
     if (currentCalendarDay === time) {
       dispatch({
-        type: 'TODO/CHANGE_IS_CALENDAR_OPEN',
-        payload: { id, date: time },
+        type: 'TODO/ASYNC_CHANGE_IS_CALENDAR_OPEN',
+        payload: { id, items: stateItems, date: time },
       });
     }
     setCurrentCalendarDay(time);

@@ -10,7 +10,7 @@ import { getSubTasksId } from '../../../utils/todo';
 import { selectTodoItems } from '../../../reducers/todo/selectors';
 import { selectDateSortBy } from '../../../reducers/todoSettings/selectors';
 
-const FullTodo: React.FC<WithTranslation> = () => {
+export const FullTodo: React.FC<WithTranslation> = () => {
   const { id } = useParams<{ id: string }>();
   const items = useSelector(selectTodoItems);
   const dateSettingsSortBy = useSelector(selectDateSortBy);
@@ -53,5 +53,3 @@ const FullTodo: React.FC<WithTranslation> = () => {
     </>
   );
 };
-
-export default FullTodo;

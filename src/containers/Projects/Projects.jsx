@@ -15,7 +15,7 @@ import {
   LoaderWrapper,
 } from './styles/Projects';
 
-class Projects extends Component {
+export class Projects extends Component {
   state = {
     search: '',
   };
@@ -83,5 +83,3 @@ Projects.propTypes = {
   getProjects: PropTypes.func.isRequired,
   t: PropTypes.func.isRequired,
 };
-
-export default Projects;

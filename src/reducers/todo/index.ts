@@ -1,10 +1,11 @@
-import { omit, uniqueId } from 'lodash';
+import { omit } from 'lodash';
 import moment from 'moment';
 import {
+  GET_POSTS,
   ADD_SUB_TASK,
   ADD_TASK,
   CHANGE_TASK_TITLE,
-  CHANGE_IS_EXPENDED,
+  CHANGE_IS_EXPANDED,
   CONFIRM_CHANGE_POS,
   ITEM_ID_TO_MOVE,
   CHANGE_IS_CHECKED,
@@ -20,21 +21,34 @@ const initialState: TodoReducerState = {
   itemIdCalendarOpen: null,
 };
 
-const findTask = (items: TodoItems, id: string) => {
+export const findTask = (items: TodoItems, id: string) => {
   return items[id];
 };
 
 export default function todoReducer(state = initialState, { type, payload }: TodoReducerPayload) {
   switch (type) {
+    case GET_POSTS:
+      const getItems = Object.values(payload.posts).reduce((acc, item) => {
+        acc = {
+          ...acc,
+          [item._id]: { ...item, id: item._id },
+        };
+        return acc;
+      }, {});
+
+      return {
+        ...state,
+        items: getItems,
+      };
+
     case ADD_TASK:
-      const idOfItem = uniqueId();
       return {
         ...state,
         items: {
           ...state.items,
-          [idOfItem]: {
+          [payload.id]: {
             title: payload.title,
-            id: idOfItem,
+            id: payload.id,
             isExpanded: false,
             isChecked: false,
             parentId: null,
@@ -45,15 +59,15 @@ export default function todoReducer(state = initialState, { type, payload }: Tod
 
     case ADD_SUB_TASK:
       if (!payload.title) return { ...state };
+
       findTask(state.items, payload.id).isExpanded = true;
-      const idOfSubItem = uniqueId();
 
       return {
         ...state,
         items: {
-          [idOfSubItem]: {
+          [payload.idOfSubItem]: {
             title: payload.title,
-            id: idOfSubItem,
+            id: payload.idOfSubItem,
             isExpanded: false,
             isChecked: false,
             parentId: payload.id,
@@ -75,8 +89,8 @@ export default function todoReducer(state = initialState, { type, payload }: Tod
         items: { ...state.items },
       };
 
-    case CHANGE_IS_EXPENDED:
-      findTask(state.items, payload.id).isExpanded = !findTask(state.items, payload.id).isExpanded;
+    case CHANGE_IS_EXPANDED:
+      findTask(state.items, payload.id).isExpanded = !payload.isExpanded;
 
       return {
         ...state,
@@ -99,6 +113,7 @@ export default function todoReducer(state = initialState, { type, payload }: Tod
     case CONFIRM_CHANGE_POS:
       let newDateObj = { ...state.items };
       const allIdsDateToChange = getSubTasksId(Object.values(state.items), payload.changePosItemId);
+      const itemToChangeTo = findTask(state.items, payload.id);
 
       allIdsDateToChange.forEach((id) => {
         newDateObj = {
@@ -108,7 +123,7 @@ export default function todoReducer(state = initialState, { type, payload }: Tod
             parentId: payload.changePosItemId === id ? payload.id : newDateObj[id].parentId,
             isExpanded: payload.id === id,
             date: {
-              current: findTask(state.items, payload.id).date.current,
+              current: itemToChangeTo.date.current,
               time: newDateObj[id].date.time,
             },
           },
@@ -156,7 +171,6 @@ export default function todoReducer(state = initialState, { type, payload }: Tod
         let newObj1 = { ...state.items };
 
         allIds.forEach((id) => {
-          // @ts-ignore
           newObj1 = {
             ...newObj1,
             [id]: {
