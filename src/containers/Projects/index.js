@@ -21,4 +21,7 @@ const mapDispatchToProps = (dispatch) => ({
     }),
 });
 
-export default compose(withTranslation(), connect(mapStateToProps, mapDispatchToProps))(Projects);
+export const Projections = compose(
+  withTranslation(),
+  connect(mapStateToProps, mapDispatchToProps),
+)(Projects);

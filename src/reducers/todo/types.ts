@@ -16,21 +16,10 @@ export type TodoTypeItem = {
 export type TodoItems = { [key: TodoTypeItem['id']]: TodoTypeItem };
 
 export interface TodoReducerState {
-  items: TodoItems;
+  posts: {
+    items: TodoItems;
+    status: string;
+  };
   itemIdToMove: null | string;
   itemIdCalendarOpen: null | string;
-}
-
-export interface TodoReducerPayload {
-  type: string;
-  payload: {
-    posts: TodoTypeItem[];
-    id: string;
-    idOfSubItem: string;
-    title: string;
-    date: number;
-    isChecked: boolean;
-    isExpanded: boolean;
-    changePosItemId: string;
-  };
 }

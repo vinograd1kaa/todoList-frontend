@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,8 +11,8 @@ import {
   AuthItemName,
   AuthItemImage,
 } from './styles';
-// eslint-disable-next-line import/named
-import { fetchGetAll, registeredUsers } from '../../reducers/auth';
+import { registeredUsers } from '../../reducers/auth/selectors';
+import { fetchGetAll } from '../../reducers/auth';
 
 export const Auth = () => {
   const dispatch = useDispatch();

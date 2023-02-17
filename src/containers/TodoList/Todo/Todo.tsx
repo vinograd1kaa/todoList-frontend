@@ -7,9 +7,10 @@ import { TodoAddTasksInput, TaskListItem, TodoButton, TodoItemDate } from './sty
 import TodoItem from './TodoItem';
 import Header from '../../../components/Header';
 import { selectDateSortBy } from '../../../reducers/todoSettings/selectors';
-import { selectTodoItems } from '../../../reducers/todo/selectors';
 import { TodoDate, TodoTypeItem } from '../../../reducers/todo/types';
-import { selectIsAuth, getIdIsAuth } from '../../../reducers/auth';
+import { getIdIsAuth } from '../../../reducers/auth/selectors';
+import { changeIsCalendarOpen, fetchCreate, fetchUserPosts } from '../../../reducers/todo';
+import { selectTodoItems } from '../../../reducers/todo/selectors';
 
 const Todo: React.FC<WithTranslation> = ({ t }) => {
   const dispatch = useDispatch();
@@ -17,17 +18,12 @@ const Todo: React.FC<WithTranslation> = ({ t }) => {
   const rootEl = useRef<HTMLDivElement>(null);
 
   const items = useSelector(selectTodoItems);
-  const isAuth = useSelector(selectIsAuth);
   const idAuthUser = useSelector(getIdIsAuth);
   const dateSettingsSortBy = useSelector(selectDateSortBy);
 
-  // @ts-ignore
-  React.useEffect(async () => {
-    if (isAuth) {
-      dispatch({
-        type: 'TODO/ASYNC_GET_POSTS',
-        payload: { idAuthUser },
-      });
+  React.useEffect(() => {
+    if (idAuthUser) {
+      dispatch(fetchUserPosts(idAuthUser));
     }
   }, []);
 
@@ -40,10 +36,7 @@ const Todo: React.FC<WithTranslation> = ({ t }) => {
         e.target.tagName !== 'svg' &&
         !e.target.className.includes('react-calendar')
       ) {
-        dispatch({
-          type: 'TODO/CHANGE_IS_CALENDAR_OPEN',
-          payload: { id: null },
-        });
+        dispatch(changeIsCalendarOpen({ id: null }));
       }
     };
     document.addEventListener('click', onClick);
@@ -59,7 +52,8 @@ const Todo: React.FC<WithTranslation> = ({ t }) => {
       date: { current: new Date().getTime(), time: moment().format('h:mm:ss') },
     };
 
-    dispatch({ type: 'TODO/ASYNC_ADD_TASK', payload: { title: addTaskInputValue, fields } });
+    await dispatch(fetchCreate(fields));
+    await dispatch(fetchUserPosts(idAuthUser));
     setAddTaskInputValue('');
   };
 
@@ -106,11 +100,11 @@ const Todo: React.FC<WithTranslation> = ({ t }) => {
             </TodoButton>
           </Form>
         </TodoBlock>
-        {sortedItems.map((arr: TodoTypeItem[]) => (
-          <TaskListItem key={arr[0].date.current}>
+        {sortedItems.map((arr: TodoTypeItem[], index) => (
+          <TaskListItem key={index}>
             <TodoItemDate>{checkDate(arr[0].date)}</TodoItemDate>
             <TodoItem
-              id="first"
+              _id="first"
               title=""
               rootEl={rootEl}
               items={arr}

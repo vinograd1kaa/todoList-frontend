@@ -17,9 +17,10 @@ import { Logo, RedCircle } from '../styles';
 type HamburgerMenuParams = {
   links: string[];
   nameIsAuth: string;
+  handleLogout: () => void;
 };
 
-const HamburgerMenu: React.FC<HamburgerMenuParams> = ({ nameIsAuth, links }) => {
+const HamburgerMenu: React.FC<HamburgerMenuParams> = ({ nameIsAuth, links, handleLogout }) => {
   const [open, setOpen] = useState(false);
 
   const handleClickHamburger = () => {
@@ -33,7 +34,7 @@ const HamburgerMenu: React.FC<HamburgerMenuParams> = ({ nameIsAuth, links }) => 
       </Button>
       <UserInfoWrapper>
         <UserInfo>{nameIsAuth}</UserInfo>
-        {!nameIsAuth.includes('registered') && <LogoutBtn>Logout</LogoutBtn>}
+        {!nameIsAuth.includes('registered') && <LogoutBtn onClick={handleLogout}>Logout</LogoutBtn>}
       </UserInfoWrapper>
       <Content open={open}>
         <Logo center="true" />

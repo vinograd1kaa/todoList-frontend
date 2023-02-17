@@ -31,7 +31,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => {
+    clearDataLogout: (state) => {
       state.data = null;
     },
   },
@@ -45,6 +45,19 @@ const authSlice = createSlice({
       state.status = 'loaded';
     },
     [fetchAuth.rejected]: (state) => {
+      state.data = null;
+      state.status = 'error';
+    },
+
+    [fetchAuthMeInfo.pending]: (state) => {
+      state.data = null;
+      state.status = 'loading';
+    },
+    [fetchAuthMeInfo.fulfilled]: (state, action) => {
+      state.data = action.payload;
+      state.status = 'loaded';
+    },
+    [fetchAuthMeInfo.rejected]: (state) => {
       state.data = null;
       state.status = 'error';
     },
@@ -64,11 +77,6 @@ const authSlice = createSlice({
   },
 });
 
-export const selectIsAuth = (state) => state && Boolean(state.auth.data);
-export const getNameIsAuth = (state) => state.auth.data && state.auth.data.fullName;
-export const getIdIsAuth = (state) => state.auth.data && state.auth.data._id;
-export const registeredUsers = (state) => state.auth.registeredUsers;
+export const { clearDataLogout } = authSlice.actions;
 
 export const auth = authSlice.reducer;
-
-export const { logout } = authSlice.actions;

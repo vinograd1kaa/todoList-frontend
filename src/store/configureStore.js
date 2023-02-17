@@ -5,8 +5,6 @@ import { rootReducer } from '../reducers/index';
 import rootSaga from '../sagas';
 import { dateButtons } from '../utils/todoSettings';
 import { fetchTodoWorker } from '../sagas/todoSettings';
-// eslint-disable-next-line import/named
-import { fetchTodoPostsWorker } from '../sagas/todo';
 
 const localStorageButton = localStorage.getItem('activeButton') || '1';
 const findSortBy = dateButtons[localStorageButton].sortBy;
@@ -37,7 +35,6 @@ const initStore = () => {
   );
   sagaMiddleware.run(rootSaga);
   sagaMiddleware.run(fetchTodoWorker);
-  sagaMiddleware.run(fetchTodoPostsWorker);
 
   return store;
 };

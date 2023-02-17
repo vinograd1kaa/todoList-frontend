@@ -1,16 +1,14 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Button, TextField } from '@mui/material';
-import { Navigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import Header from '../../components/Header/Header';
 import { Container, LoginTitle, RegisterBlock } from './styles';
-import { fetchAuth, selectIsAuth } from '../../reducers/auth';
+import { fetchAuth } from '../../reducers/auth';
 
 export const Login = () => {
   const { email } = useParams();
-  const isAuth = useSelector(selectIsAuth);
   const dispatch = useDispatch();
   const {
     register,
@@ -35,10 +33,6 @@ export const Login = () => {
       window.localStorage.setItem('token', data.payload.token);
     }
   };
-
-  // if (isAuth) {
-  //   return <Navigate to="/todo" />;
-  // }
 
   return (
     <>

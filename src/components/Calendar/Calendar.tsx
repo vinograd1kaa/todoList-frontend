@@ -6,12 +6,12 @@ import '../../globalStyles/react-calendar.css';
 import { TodoDate } from '../../reducers/todo/types';
 
 type CalendarProps = {
-  handleClickCalendarDay: (time: number) => void;
+  handleCalendarDay: (time: number) => void;
   rootEl: any;
   taskDate: TodoDate;
 };
 
-const Calendar: React.FC<CalendarProps> = ({ handleClickCalendarDay, rootEl, taskDate }) => {
+const Calendar: React.FC<CalendarProps> = ({ handleCalendarDay, rootEl, taskDate }) => {
   const [value, onChange] = useState<Date>(new Date(taskDate.current) || new Date());
 
   return (
@@ -20,7 +20,7 @@ const Calendar: React.FC<CalendarProps> = ({ handleClickCalendarDay, rootEl, tas
         className="my-calendar"
         onChange={onChange}
         value={value}
-        onClickDay={(time) => handleClickCalendarDay(time.getTime())}
+        onClickDay={(time) => handleCalendarDay(time.getTime())}
       />
     </CalendarContainer>
   );
