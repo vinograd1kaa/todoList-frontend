@@ -17,6 +17,22 @@
       "addTasksButton": "Add",
       "emptyFullTodo": "This item does not exist..."
     },
+    "Auth": {
+      "AuthTitle": "Registered Accounts",
+      "Register": {
+        "specify": {
+          "name": "Укажите полное имя",
+          "email": "Укажите почту",
+          "password": "Укажите пароль"
+        },
+        "title": "Create Acc",
+        "button": "Create"
+      },
+      "Login": {
+        "title": "Login",
+        "button": "Sign in"
+      }
+    },
     "Footer": {
       "copyright": "© 2020 | SKILLDAR | All Rights Reserved",
       "contact": "Contact",

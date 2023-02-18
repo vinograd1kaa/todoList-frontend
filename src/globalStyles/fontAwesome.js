@@ -13,6 +13,7 @@ import {
   faTrash,
   faCalendarAlt,
   faInfoCircle,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 
@@ -31,4 +32,5 @@ library.add(
   faTrash,
   faCalendarAlt,
   faInfoCircle,
+  faUser,
 );

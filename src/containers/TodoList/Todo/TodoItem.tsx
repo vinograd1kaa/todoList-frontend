@@ -7,7 +7,7 @@ import {
   TaskArrowIcon,
   TaskTitle,
   TaskPlusIcon,
-  TaskTitleEditingInput,
+  TaskTitleEditInput,
   TaskInputAddSubTask,
   TaskChangePosArrowIcon,
   TaskToggleIcon,
@@ -17,13 +17,22 @@ import {
   TaskInfoCircle,
 } from './styles/Todo';
 import Calendar from '../../../components/Calendar';
-import { getSubTasksId } from '../../../utils/todo';
-import { selectTodoIdCalendarOpen, selectTodoItemIdToMove } from '../../../reducers/todo/selectors';
+import { getSubTasksId } from '../../../utils/getSubTasks';
 import { TodoTypeItem, TodoDate } from '../../../reducers/todo/types';
+import {
+  changeIdItemToMove,
+  changeIsCalendarOpen,
+  fetchCreate,
+  fetchDelete,
+  fetchHandleUpdate,
+  fetchUserPosts,
+} from '../../../reducers/todo';
+import { getIdIsAuth } from '../../../reducers/auth/selectors';
+import { selectTodoIdCalendarOpen, selectTodoItemIdToMove } from '../../../reducers/todo/selectors';
 
 type TodoItemParams = {
   title: string;
-  id: string;
+  _id: string;
   isExpanded: boolean;
   isChecked?: boolean;
   parentId?: string | boolean;
@@ -32,9 +41,14 @@ type TodoItemParams = {
   date: TodoDate;
 };
 
+type TodoInputState = {
+  state: boolean | string;
+  value: string;
+};
+
 const TodoItem: React.FC<TodoItemParams> = ({
   items,
-  id,
+  _id,
   title,
   date,
   isExpanded,
@@ -43,98 +57,128 @@ const TodoItem: React.FC<TodoItemParams> = ({
   rootEl,
 }) => {
   const dispatch = useDispatch();
-  const [subTaskAddingInputState, setSubTaskAddingInputState] = useState<string | false>(false);
-  const [subTaskAddingInputValue, setSubTaskAddingInputValue] = useState('');
-  const [titleEditingState, setTitleEditingState] = useState<string | false>(false);
-  const [titleInputValue, setTitleInputValue] = useState<string>('');
+  const [subTaskAddInput, setSubTaskAddInput] = useState<TodoInputState>({
+    state: false,
+    value: '',
+  });
+  const [taskEditInput, setTaskEditInput] = useState<TodoInputState>({
+    state: false,
+    value: '',
+  });
   const [currentCalendarDay, setCurrentCalendarDay] = useState<number>();
+
+  const id = _id;
+  const idAuthUser = useSelector(getIdIsAuth);
   const idToMove = useSelector(selectTodoItemIdToMove);
   const idCalendarOpen = useSelector(selectTodoIdCalendarOpen);
 
-  const handleClickAddSubTaskInputBlur = () => {
-    dispatch({
-      type: 'TODO/ADD_SUB_TASK',
-      payload: { id, title: subTaskAddingInputValue },
-    });
-    setSubTaskAddingInputValue('');
-    setSubTaskAddingInputState(false);
+  const handleAddSubTaskInputBlur = async () => {
+    const fields = {
+      title: subTaskAddInput.value,
+      isChecked: false,
+      isExpanded: true,
+      parentId: id,
+      date,
+    };
+
+    await dispatch(fetchHandleUpdate({ id: parentId, params: { values: { isExpanded: true } } }));
+    await dispatch(fetchCreate(fields));
+    await dispatch(fetchUserPosts(idAuthUser));
+    setSubTaskAddInput({ value: '', state: false });
   };
 
-  const handleKeyDownAddSubTaskInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDownAddSubTaskInput = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.keyCode === 13) {
-      dispatch({
-        type: 'TODO/ADD_SUB_TASK',
-        payload: {
-          id,
-          title: subTaskAddingInputValue,
+      const fields = {
+        title: subTaskAddInput.value,
+        isChecked: false,
+        isExpanded: true,
+        parentId: id,
+        date,
+      };
+
+      await dispatch(fetchCreate(fields));
+      await dispatch(fetchUserPosts(idAuthUser));
+      setSubTaskAddInput({ value: '', state: false });
+    }
+  };
+
+  const handleTitleEditBlur = async () => {
+    await dispatch(fetchHandleUpdate({ id, params: { values: { title: taskEditInput.value } } }));
+    await dispatch(fetchUserPosts(idAuthUser));
+    setTaskEditInput({ ...taskEditInput, state: false });
+  };
+
+  const onKeyDownTitleEdit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.keyCode === 13) {
+      await dispatch(fetchHandleUpdate({ id, params: { values: { title: taskEditInput.value } } }));
+      await dispatch(fetchUserPosts(idAuthUser));
+      setTaskEditInput({ ...taskEditInput, state: false });
+    }
+  };
+
+  const handleTitle = () => {
+    setTaskEditInput({ value: title, state: id });
+  };
+
+  const handleArrowIcon = async () => {
+    await dispatch(fetchHandleUpdate({ id, params: { values: { isExpanded: !isExpanded } } }));
+    await dispatch(fetchUserPosts(idAuthUser));
+  };
+
+  const handleCircleIcon = async () => {
+    await dispatch(fetchHandleUpdate({ id, params: { values: { isChecked: !isChecked } } }));
+    await dispatch(fetchUserPosts(idAuthUser));
+  };
+
+  const handleChangePos = async () => {
+    await dispatch(changeIdItemToMove(id));
+    await dispatch(fetchUserPosts(idAuthUser));
+  };
+
+  const handleConfirmChangePos = async () => {
+    await dispatch(
+      fetchHandleUpdate({
+        id: idToMove,
+        params: {
+          changeParentId: parentId,
+          values: { date: { ...date, current: date.current } },
         },
-      });
-      setSubTaskAddingInputValue('');
-      setSubTaskAddingInputState(false);
-    }
+      }),
+    );
+    await dispatch(changeIdItemToMove(null));
+    await dispatch(fetchUserPosts(idAuthUser));
   };
 
-  const handleClickTitleEditingBlur = () => {
-    dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
-    setTitleEditingState(false);
+  const handlePlusIcon = () => {
+    setSubTaskAddInput({ ...subTaskAddInput, state: id });
   };
 
-  const handleKeyDownTitleEditing = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.keyCode === 13) {
-      dispatch({ type: 'TODO/CHANGE_TASK_TITLE', payload: { id, title: titleInputValue } });
-      setTitleInputValue('');
-      setTitleEditingState(false);
-    }
+  const handleTrashIcon = async () => {
+    await dispatch(fetchDelete(id));
+    await dispatch(fetchUserPosts(idAuthUser));
   };
 
-  const handleClickTitle = () => {
-    setTitleInputValue(title);
-    setTitleEditingState(id);
+  const handleCalendar = async () => {
+    await dispatch(changeIsCalendarOpen(id));
+    await dispatch(fetchUserPosts(idAuthUser));
   };
 
-  const handleClickArrowIcon = () => {
-    dispatch({ type: 'TODO/CHANGE_IS_EXPENDED', payload: { id } });
-  };
-
-  const handleClickCircleIcon = () => {
-    dispatch({ type: 'TODO/CHANGE_IS_CHECKED', payload: { id, isChecked } });
-  };
-
-  const handleClickChangePos = () => {
-    dispatch({ type: 'TODO/ITEM_ID_TO_MOVE', payload: { id } });
-  };
-
-  const handleClickConfirmChangePos = () => {
-    dispatch({
-      type: 'TODO/CONFIRM_CHANGE_POS',
-      payload: { id, changePosItemId: idToMove },
-    });
-  };
-
-  const handleClickPlusIcon = () => {
-    setSubTaskAddingInputState(id);
-  };
-
-  const handleClickTrashIcon = () => {
-    dispatch({
-      type: 'TODO/DELETE_TASK',
-      payload: { id },
-    });
-  };
-
-  const handleClickCalendar = () => {
-    dispatch({
-      type: 'TODO/CHANGE_IS_CALENDAR_OPEN',
-      payload: { id },
-    });
-  };
-
-  const handleClickCalendarDay = (time: number) => {
+  const handleCalendarDay = async (time: number) => {
     if (currentCalendarDay === time) {
-      dispatch({
-        type: 'TODO/CHANGE_IS_CALENDAR_OPEN',
-        payload: { id, date: time },
-      });
+      await dispatch(
+        fetchHandleUpdate({
+          id,
+          params: {
+            changeParentId: null,
+            values: {
+              date: { ...date, current: time },
+            },
+          },
+        }),
+      );
+      await dispatch(changeIsCalendarOpen(null));
+      await dispatch(fetchUserPosts(idAuthUser));
     }
     setCurrentCalendarDay(time);
   };
@@ -143,19 +187,19 @@ const TodoItem: React.FC<TodoItemParams> = ({
     switch (true) {
       case idToMove === id:
         return (
-          <TaskToggleIcon onClick={handleClickChangePos}>
+          <TaskToggleIcon onClick={handleChangePos}>
             <FontAwesomeIcon icon="cross" />
           </TaskToggleIcon>
         );
       case idToMove && idToMove !== id && !getSubTasksId(items, idToMove).includes(id):
         return (
-          <TaskToggleIcon onClick={handleClickConfirmChangePos}>
+          <TaskToggleIcon onClick={handleConfirmChangePos}>
             <FontAwesomeIcon icon="sticky-note" />
           </TaskToggleIcon>
         );
       default:
         return (
-          <TaskChangePosArrowIcon onClick={handleClickChangePos}>
+          <TaskChangePosArrowIcon onClick={handleChangePos}>
             <FontAwesomeIcon icon="arrow-right" />
           </TaskChangePosArrowIcon>
         );
@@ -171,26 +215,26 @@ const TodoItem: React.FC<TodoItemParams> = ({
     <TaskItem key={id} style={{ paddingLeft: `${title ? '25px' : '0'}` }}>
       {id !== 'first' && (
         <>
-          <TaskArrowIcon onClick={handleClickArrowIcon} isOpened={idToMove || isExpanded} />
-          {titleEditingState !== id ? (
-            <TaskTitle onClick={handleClickTitle}>{title}</TaskTitle>
+          <TaskArrowIcon onClick={handleArrowIcon} isOpened={Boolean(idToMove) || isExpanded} />
+          {taskEditInput.state !== id ? (
+            <TaskTitle onClick={handleTitle}>{title}</TaskTitle>
           ) : (
-            <TaskTitleEditingInput
+            <TaskTitleEditInput
               type="text"
-              value={titleInputValue}
-              onBlur={handleClickTitleEditingBlur}
-              onChange={(e) => setTitleInputValue(e.target.value)}
-              onKeyDown={(e) => handleKeyDownTitleEditing(e)}
+              value={taskEditInput.value}
+              onBlur={handleTitleEditBlur}
+              onChange={(e) => setTaskEditInput({ ...taskEditInput, value: e.target.value })}
+              onKeyDown={(e) => onKeyDownTitleEdit(e)}
               autoFocus
             />
           )}
-          {subTaskAddingInputState === id && (
+          {subTaskAddInput.state === id && (
             <TaskInputAddSubTask
               type="text"
-              value={subTaskAddingInputValue}
-              onBlur={handleClickAddSubTaskInputBlur}
-              onChange={(e) => setSubTaskAddingInputValue(e.target.value)}
-              onKeyDown={(e) => handleKeyDownAddSubTaskInput(e)}
+              value={subTaskAddInput.value}
+              onBlur={handleAddSubTaskInputBlur}
+              onChange={(e) => setSubTaskAddInput({ ...subTaskAddInput, value: e.target.value })}
+              onKeyDown={(e) => onKeyDownAddSubTaskInput(e)}
               autoFocus
             />
           )}
@@ -202,35 +246,31 @@ const TodoItem: React.FC<TodoItemParams> = ({
 
           {renderMoveIcon()}
 
-          <TaskPlusIcon onClick={handleClickPlusIcon}>
+          <TaskPlusIcon onClick={handlePlusIcon}>
             <FontAwesomeIcon icon="plus" />
           </TaskPlusIcon>
 
-          <TaskCheckedCircle onClick={handleClickCircleIcon}>
+          <TaskCheckedCircle onClick={handleCircleIcon}>
             {isChecked && <FontAwesomeIcon icon="check" />}
           </TaskCheckedCircle>
 
-          <TodoCalendarIcon onClick={handleClickCalendar} isOpened={idCalendarOpen === id}>
+          <TodoCalendarIcon onClick={handleCalendar} isOpened={idCalendarOpen === id}>
             <FontAwesomeIcon icon="calendar-alt" />
           </TodoCalendarIcon>
 
-          <TaskTrashIcon onClick={handleClickTrashIcon}>
+          <TaskTrashIcon onClick={handleTrashIcon}>
             <FontAwesomeIcon icon="trash" />
           </TaskTrashIcon>
 
           {idCalendarOpen === id && (
-            <Calendar
-              rootEl={rootEl}
-              taskDate={date}
-              handleClickCalendarDay={handleClickCalendarDay}
-            />
+            <Calendar rootEl={rootEl} taskDate={date} handleCalendarDay={handleCalendarDay} />
           )}
         </>
       )}
       <ul>
         {isExpanded &&
           renderItems.map((task) => (
-            <TodoItem key={task.id} {...task} items={items} parentId={task.id} rootEl={rootEl} />
+            <TodoItem key={task._id} {...task} parentId={task._id} items={items} rootEl={rootEl} />
           ))}
       </ul>
     </TaskItem>

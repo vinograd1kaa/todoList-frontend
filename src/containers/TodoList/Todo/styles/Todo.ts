@@ -32,7 +32,7 @@ export const TodoButton = styled('button')`
   }
 
   &:active {
-    background: #32784e;
+    background: #337ab7;
   }
 `;
 
@@ -109,7 +109,7 @@ export const TaskTrashIcon = styled('span')`
   color: #a33939;
 }`;
 
-export const TaskTitleEditingInput = styled('input')`
+export const TaskTitleEditInput = styled('input')`
   margin: 0;
   border-radius: 0;
 }`;

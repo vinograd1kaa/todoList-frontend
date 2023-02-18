@@ -26,8 +26,8 @@ export const Form = styled('div')`
   display: flex;
 `;
 
-export const Title = styled('h2')`
-  font-size: 20px;
-  text-align: center;
-  line-height: 50px;
-`;
+// export const Title = styled('h2')`
+//   font-size: 20px;
+//   text-align: center;
+//   line-height: 50px;
+// `;

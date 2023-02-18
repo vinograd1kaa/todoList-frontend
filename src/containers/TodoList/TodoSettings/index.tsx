@@ -2,7 +2,7 @@ import React from 'react';
 import DateButtons from './DateButtons/DateButtons';
 import Header from '../../../components/Header';
 
-const TodoSettings: React.FC = () => {
+export const TodoSettings: React.FC = () => {
   return (
     <div>
       <Header />
@@ -10,5 +10,3 @@ const TodoSettings: React.FC = () => {
     </div>
   );
 };
-
-export default TodoSettings;

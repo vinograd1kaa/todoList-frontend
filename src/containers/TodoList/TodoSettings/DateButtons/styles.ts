@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+export const DateButtonsContainer = styled('div')`
+  margin-top: 76px;
+`;
+
 export const DateButton = styled('button')<{ bgColor: boolean }>`
   padding: 6px;
   margin: 3px 4px 3px 0;

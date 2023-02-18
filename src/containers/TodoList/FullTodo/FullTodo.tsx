@@ -2,22 +2,20 @@ import React from 'react';
 import { useParams } from 'react-router';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { WithTranslation } from 'react-i18next';
 import { Container, FullTodoBlock, FullTodoItem, Line, FullTodoItemWrap } from './styles';
 import Header from '../../../components/Header';
 import EmptyFullTodo from './EmptyFullTodo';
-import { getSubTasksId } from '../../../utils/todo';
-import { selectTodoItems } from '../../../reducers/todo/selectors';
+import { getSubTasksId } from '../../../utils/getSubTasks';
 import { selectDateSortBy } from '../../../reducers/todoSettings/selectors';
+import { selectTodoItems } from '../../../reducers/todo/selectors';
 
-const FullTodo: React.FC<WithTranslation> = () => {
+export const FullTodo: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const items = useSelector(selectTodoItems);
   const dateSettingsSortBy = useSelector(selectDateSortBy);
 
-  const item = items[id];
+  const item = id && items[id];
   if (!item) return <EmptyFullTodo />;
-  // @ts-ignore
   const subTasksId = getSubTasksId(Object.values(items), id).filter((taskId) => taskId !== id);
 
   const itemDate = dateSettingsSortBy
@@ -45,7 +43,9 @@ const FullTodo: React.FC<WithTranslation> = () => {
           )}
           <FullTodoItem>
             subTasks:
-            {subTasksId.length ? ` ${subTasksId.map((i) => items[i].title).join(', ')}` : ' null'}
+            {subTasksId.length
+              ? ` ${subTasksId.map((i: any) => items[i].title).join(', ')}`
+              : ' null'}
             <Line />
           </FullTodoItem>
         </FullTodoBlock>
@@ -53,5 +53,3 @@ const FullTodo: React.FC<WithTranslation> = () => {
     </>
   );
 };
-
-export default FullTodo;

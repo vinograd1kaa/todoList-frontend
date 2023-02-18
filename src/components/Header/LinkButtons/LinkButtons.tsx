@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ButtonsContainer, ButtonWrap, LinkButton } from './styles';
 
-const LinkButtons: React.FC = () => {
-  const links = ['projects', 'todo', 'settings'];
+type LinkButtonsParams = {
+  links: string[];
+};
 
+const LinkButtons: React.FC<LinkButtonsParams> = ({ links }) => {
   return (
     <ButtonsContainer>
       {links.map((item) => (

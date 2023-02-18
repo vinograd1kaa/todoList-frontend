@@ -4,9 +4,21 @@ export const Container = styled('div')`
   display: none;
   padding: 16px 35px;
   background: #26262e;
-  @media (max-width: 690px) {
-    display: block;
+  @media (max-width: 900px) {
+    display: flex;
   } ;
+`;
+
+export const UserInfoWrapper = styled('div')`
+  width: 100%;
+`;
+
+export const UserInfo = styled('div')`
+  width: 225px;
+  padding: 13px;
+  float: right;
+  border: 3px solid #26262e;
+  background: aqua;
 `;
 
 export const Content = styled('ul')<{ open: boolean }>`
@@ -44,6 +56,10 @@ export const Line = styled('div')`
 
 export const Button = styled('span')`
   color: white;
-  display: block;
-  width: 50px;
+`;
+
+export const LogoutBtn = styled('button')`
+  margin-left: 8px;
+  background: #ed1637;
+  cursor: pointer;
 `;

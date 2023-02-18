@@ -1,4 +1,5 @@
-import { assoc, compose } from 'lodash/fp';
+import { assoc, compose, get } from 'lodash/fp';
+import { createSelector } from 'reselect';
 import {
   GET_PROJECTS_FAIL,
   GET_PROJECTS_PENDING,
@@ -22,3 +23,9 @@ export default function projectsReducer(state = initialState, { type, payload })
       return state;
   }
 }
+
+const localState = get('projects');
+
+export const isLoadingSelector = createSelector(localState, get('isLoading'));
+
+export const projectsSelector = createSelector(localState, get('items'));

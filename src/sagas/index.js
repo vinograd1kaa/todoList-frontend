@@ -1,8 +1,8 @@
 import { all } from 'redux-saga/effects';
 import projects from './projects';
-import todo from './todo';
+import todoSettings from './todoSettings';
 
 export default function* rootSaga() {
   yield all([projects()]);
-  yield all([todo()]);
+  yield all([todoSettings()]);
 }

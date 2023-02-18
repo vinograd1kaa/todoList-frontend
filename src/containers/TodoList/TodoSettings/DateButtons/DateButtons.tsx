@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DateButton } from './styles';
+import { DateButtonsContainer, DateButton } from './styles';
 import {
   selectActiveDateButton,
   selectDateButtons,
@@ -23,7 +23,7 @@ const DateSettingsButtons: React.FC = () => {
   };
 
   return (
-    <>
+    <DateButtonsContainer>
       {Object.values(items).map((item) => (
         <DateButton
           bgColor={activeButton === item.id}
@@ -34,7 +34,7 @@ const DateSettingsButtons: React.FC = () => {
           {item.title}
         </DateButton>
       ))}
-    </>
+    </DateButtonsContainer>
   );
 };
 
