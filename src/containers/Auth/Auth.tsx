@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { WithTranslation } from 'react-i18next';
 import Header from '../../components/Header/Header';
 import {
   Container,
@@ -13,8 +14,9 @@ import {
 } from './styles';
 import { registeredUsers } from '../../reducers/auth/selectors';
 import { fetchGetAll } from '../../reducers/auth';
+import { UserType } from '../../reducers/auth/types';
 
-export const Auth = () => {
+export const Auth: React.FC<WithTranslation> = ({ t }) => {
   const dispatch = useDispatch();
   const users = useSelector(registeredUsers);
 
@@ -27,9 +29,9 @@ export const Auth = () => {
       <Header />
       <Container>
         <AuthBlock>
-          <AuthBlockTitle>Registered Accounts</AuthBlockTitle>
+          <AuthBlockTitle>{t('Auth.AuthTitle')}</AuthBlockTitle>
           {Boolean(users.length) &&
-            users.map((user: any) => (
+            users.map((user: UserType) => (
               <Link key={user._id} to={`/login/${user.email}`}>
                 <AuthItem>
                   <AuthItemImage>
@@ -44,5 +46,3 @@ export const Auth = () => {
     </>
   );
 };
-
-export default Auth;

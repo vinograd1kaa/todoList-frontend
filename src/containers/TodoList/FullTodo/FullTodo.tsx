@@ -2,7 +2,6 @@ import React from 'react';
 import { useParams } from 'react-router';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { WithTranslation } from 'react-i18next';
 import { Container, FullTodoBlock, FullTodoItem, Line, FullTodoItemWrap } from './styles';
 import Header from '../../../components/Header';
 import EmptyFullTodo from './EmptyFullTodo';
@@ -10,7 +9,7 @@ import { getSubTasksId } from '../../../utils/getSubTasks';
 import { selectDateSortBy } from '../../../reducers/todoSettings/selectors';
 import { selectTodoItems } from '../../../reducers/todo/selectors';
 
-export const FullTodo: React.FC<WithTranslation> = () => {
+export const FullTodo: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const items = useSelector(selectTodoItems);
   const dateSettingsSortBy = useSelector(selectDateSortBy);

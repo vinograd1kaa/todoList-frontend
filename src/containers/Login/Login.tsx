@@ -1,20 +1,22 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { Button, TextField } from '@mui/material';
 import { useParams } from 'react-router';
+import { WithTranslation } from 'react-i18next';
 import Header from '../../components/Header/Header';
 import { Container, LoginTitle, RegisterBlock } from './styles';
 import { fetchAuth } from '../../reducers/auth';
+import { LoginValues, UserType } from '../../reducers/auth/types';
 
-export const Login = () => {
+export const Login: React.FC<WithTranslation> = ({ t }) => {
   const { email } = useParams();
   const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<LoginValues>({
     defaultValues: {
       email,
       password: '123456',
@@ -22,15 +24,16 @@ export const Login = () => {
     mode: 'onChange',
   });
 
-  const onSubmit = async (values) => {
-    const data = await dispatch(fetchAuth(values));
+  const onSubmit: SubmitHandler<LoginValues> = async (values: LoginValues) => {
+    // @ts-ignore
+    const { payload }: UserType = await dispatch(fetchAuth(values));
 
-    if (!data.payload) {
+    if (!payload) {
       return alert('Не удалось авторизоваться');
     }
 
-    if ('token' in data.payload) {
-      window.localStorage.setItem('token', data.payload.token);
+    if ('token' in payload) {
+      window.localStorage.setItem('token', payload.token);
     }
   };
 
@@ -39,7 +42,7 @@ export const Login = () => {
       <Header />
       <Container>
         <RegisterBlock>
-          <LoginTitle>Login</LoginTitle>
+          <LoginTitle>{t('Auth.Login.title')}</LoginTitle>
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               style={{ margin: 10 }}
@@ -64,7 +67,7 @@ export const Login = () => {
               disabled={!isValid}
               type="submit"
             >
-              Sign in
+              {t('Auth.Login.button')}
             </Button>
           </form>
         </RegisterBlock>

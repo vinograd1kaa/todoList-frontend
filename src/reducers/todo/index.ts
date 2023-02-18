@@ -1,23 +1,35 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from '../../axios';
-import { TodoReducerState, TodoTypeItem } from './types';
+import {
+  CreateTodoTaskFields,
+  TodoItems,
+  TodoReducerState,
+  TodoTypeItem,
+  TodoUpdateTaskType,
+} from './types';
 
-export const fetchUserPosts = createAsyncThunk('auth/fetchUserPosts', async (id: string) => {
+export const fetchUserPosts = createAsyncThunk('auth/fetchUserPosts', async (id: string | null) => {
   const { data } = await axios.get(`/posts/${id}`);
   return data;
 });
 
-export const fetchCreate = createAsyncThunk('auth/fetchCreate', async (fields: any) => {
-  await axios.post('/posts', fields);
-});
+export const fetchCreate = createAsyncThunk(
+  'auth/fetchCreate',
+  async (fields: CreateTodoTaskFields) => {
+    await axios.post('/posts', fields);
+  },
+);
 
 export const fetchDelete = createAsyncThunk('auth/fetchDelete', async (id: string) => {
   await axios.delete(`/posts/${id}`);
 });
 
-export const fetchHandleUpdate = createAsyncThunk('auth/fetchHandleUpdate', async (fields: any) => {
-  await axios.put(`/posts/${fields.id}`, fields.params);
-});
+export const fetchHandleUpdate = createAsyncThunk(
+  'auth/fetchHandleUpdate',
+  async (fields: TodoUpdateTaskType) => {
+    await axios.put(`/posts/${fields.id}`, fields.params);
+  },
+);
 
 const initialState: TodoReducerState = {
   posts: {
@@ -28,7 +40,6 @@ const initialState: TodoReducerState = {
   itemIdCalendarOpen: null,
 };
 
-// @ts-ignore
 const todoSlice = createSlice({
   name: 'todo',
   initialState,
@@ -39,7 +50,6 @@ const todoSlice = createSlice({
       }
       state.itemIdCalendarOpen = action.payload;
     },
-    // @ts-ignore
     changeIdItemToMove: (state: TodoReducerState, action: { payload: string }) => {
       if (action.payload === state.itemIdToMove) {
         state.itemIdToMove = null;
@@ -47,7 +57,6 @@ const todoSlice = createSlice({
       }
       state.itemIdToMove = action.payload;
     },
-    // @ts-ignore
     clearPostsLogout: (state: TodoReducerState) => {
       state.posts.items = {};
     },
@@ -59,7 +68,7 @@ const todoSlice = createSlice({
     });
     builder.addCase(fetchUserPosts.fulfilled, (state: TodoReducerState, action) => {
       state.posts.items = action.payload.reduce(
-        (acc: any, obj: TodoTypeItem) => ((acc[obj._id] = obj), acc),
+        (acc: TodoItems, obj: TodoTypeItem) => ((acc[obj._id!] = obj), acc),
         {},
       );
       state.posts.status = 'loaded';

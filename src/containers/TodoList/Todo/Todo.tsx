@@ -72,10 +72,9 @@ const Todo: React.FC<WithTranslation> = ({ t }) => {
   };
 
   const sortedItems: TodoTypeItem[][] = Object.values(
-    // @ts-ignore
     Object.values(items)
-      .sort((a: any, b: any) => b.date.current - a.date.current)
-      .reduce((acc: any, obj: any) => {
+      .sort((a: TodoTypeItem, b: TodoTypeItem) => b.date.current - a.date.current)
+      .reduce((acc: any, obj: TodoTypeItem) => {
         const val = moment(obj.date.current).format('DMYYYY');
         if (!acc[val]) acc[val] = [];
         acc[val].push(obj);

@@ -2,19 +2,21 @@ import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Button, TextField } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { WithTranslation } from 'react-i18next';
 import { Container, RegisterBlock, RegisterTitle } from './styles';
 import Header from '../../components/Header/Header';
 import { fetchRegister } from '../../reducers/auth';
+import { UserType, RegisterValues } from '../../reducers/auth/types';
 
-export const Register = () => {
+export const Register: React.FC<WithTranslation> = ({ t }) => {
   const [statusRegistration, setStatusRegistration] = useState(false);
   const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<RegisterValues>({
     defaultValues: {
       fullName: '',
       email: '',
@@ -23,10 +25,11 @@ export const Register = () => {
     mode: 'onChange',
   });
 
-  const onSubmit = async (values) => {
-    const data = await dispatch(fetchRegister(values));
+  const onSubmit: SubmitHandler<RegisterValues> = async (values: RegisterValues) => {
+    // @ts-ignore
+    const { payload }: UserType = await dispatch(fetchRegister(values));
 
-    if (!data.payload) {
+    if (!payload) {
       return alert('Не удалось зарегестрироваться');
     }
 
@@ -42,7 +45,7 @@ export const Register = () => {
       <Header />
       <Container>
         <RegisterBlock>
-          <RegisterTitle>Registration</RegisterTitle>
+          <RegisterTitle>{t('Auth.Register.title')}</RegisterTitle>
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               style={{ margin: 10 }}
@@ -50,7 +53,7 @@ export const Register = () => {
               type="name"
               error={Boolean(errors.fullName?.message)}
               helperText={errors.fullName?.message}
-              {...register('fullName', { required: 'Укажите полное имя' })}
+              {...register('fullName', { required: t('Auth.Register.specify.name') })}
               fullWidth
             />
             <TextField
@@ -59,16 +62,16 @@ export const Register = () => {
               type="email"
               error={Boolean(errors.email?.message)}
               helperText={errors.email?.message}
-              {...register('email', { required: 'Укажите почту' })}
+              {...register('email', { required: t('Auth.Register.specify.email') })}
               fullWidth
             />
             <TextField
               style={{ margin: 10 }}
-              label="Пароль"
+              label="Password"
               type="password"
               error={Boolean(errors.password?.message)}
               helperText={errors.password?.message}
-              {...register('password', { required: 'Укажите пароль' })}
+              {...register('password', { required: t('Auth.Register.specify.password') })}
               fullWidth
             />
             <Button
@@ -76,7 +79,7 @@ export const Register = () => {
               disabled={!isValid}
               type="submit"
             >
-              Register
+              {t('Auth.Register.button')}
             </Button>
           </form>
         </RegisterBlock>

@@ -3,6 +3,28 @@ export type TodoDate = {
   time: string;
 };
 
+export type CreateTodoTaskFields = {
+  title: string;
+  isChecked: boolean;
+  isExpanded: boolean;
+  parentId: string | null;
+  date: TodoDate;
+};
+
+export type TodoUpdateTaskType = {
+  id: any;
+  params: {
+    changeParentId?: any;
+    values: {
+      isExpanded?: boolean;
+      title?: string;
+      isChecked?: boolean;
+      parentId?: string | null;
+      date?: any;
+    };
+  };
+};
+
 export type TodoTypeItem = {
   title: string;
   id: string;
@@ -13,7 +35,9 @@ export type TodoTypeItem = {
   date: TodoDate;
 };
 
-export type TodoItems = { [key: TodoTypeItem['id']]: TodoTypeItem };
+export type TodoItems = {
+  [key: TodoTypeItem['id']]: TodoTypeItem;
+};
 
 export interface TodoReducerState {
   posts: {

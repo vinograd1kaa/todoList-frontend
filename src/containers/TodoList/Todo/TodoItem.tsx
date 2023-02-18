@@ -1,8 +1,7 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
 import {
   TaskItem,
   TaskArrowIcon,
@@ -82,7 +81,7 @@ const TodoItem: React.FC<TodoItemParams> = ({
       date,
     };
 
-    await dispatch(fetchHandleUpdate({ id: parentId, params: { isExpanded: true } }));
+    await dispatch(fetchHandleUpdate({ id: parentId, params: { values: { isExpanded: true } } }));
     await dispatch(fetchCreate(fields));
     await dispatch(fetchUserPosts(idAuthUser));
     setSubTaskAddInput({ value: '', state: false });
@@ -105,14 +104,14 @@ const TodoItem: React.FC<TodoItemParams> = ({
   };
 
   const handleTitleEditBlur = async () => {
-    await dispatch(fetchHandleUpdate({ id, params: { title: taskEditInput.value } }));
+    await dispatch(fetchHandleUpdate({ id, params: { values: { title: taskEditInput.value } } }));
     await dispatch(fetchUserPosts(idAuthUser));
     setTaskEditInput({ ...taskEditInput, state: false });
   };
 
   const onKeyDownTitleEdit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.keyCode === 13) {
-      await dispatch(fetchHandleUpdate({ id, params: { title: taskEditInput.value } }));
+      await dispatch(fetchHandleUpdate({ id, params: { values: { title: taskEditInput.value } } }));
       await dispatch(fetchUserPosts(idAuthUser));
       setTaskEditInput({ ...taskEditInput, state: false });
     }
@@ -123,12 +122,12 @@ const TodoItem: React.FC<TodoItemParams> = ({
   };
 
   const handleArrowIcon = async () => {
-    await dispatch(fetchHandleUpdate({ id, params: { isExpanded: !isExpanded } }));
+    await dispatch(fetchHandleUpdate({ id, params: { values: { isExpanded: !isExpanded } } }));
     await dispatch(fetchUserPosts(idAuthUser));
   };
 
   const handleCircleIcon = async () => {
-    await dispatch(fetchHandleUpdate({ id, params: { isChecked: !isChecked } }));
+    await dispatch(fetchHandleUpdate({ id, params: { values: { isChecked: !isChecked } } }));
     await dispatch(fetchUserPosts(idAuthUser));
   };
 
@@ -139,8 +138,15 @@ const TodoItem: React.FC<TodoItemParams> = ({
 
   const handleConfirmChangePos = async () => {
     await dispatch(
-      fetchHandleUpdate({ id: idToMove, params: { parentId: id, date: date.current } }),
+      fetchHandleUpdate({
+        id: idToMove,
+        params: {
+          changeParentId: parentId,
+          values: { date: { ...date, current: date.current } },
+        },
+      }),
     );
+    await dispatch(changeIdItemToMove(null));
     await dispatch(fetchUserPosts(idAuthUser));
   };
 
@@ -164,11 +170,14 @@ const TodoItem: React.FC<TodoItemParams> = ({
         fetchHandleUpdate({
           id,
           params: {
-            parentId: null,
-            date: { current: time, time: moment().format('h:mm:ss') },
+            changeParentId: null,
+            values: {
+              date: { ...date, current: time },
+            },
           },
         }),
       );
+      await dispatch(changeIsCalendarOpen(null));
       await dispatch(fetchUserPosts(idAuthUser));
     }
     setCurrentCalendarDay(time);
